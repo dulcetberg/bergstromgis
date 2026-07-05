@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>About — Brian Bergstrom</title>
+<meta name="description" content="How Brian Bergstrom got into GIS, what actually drives the work, and how he's kept building since finishing his master's.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="css/brand.css">
+<style>
+  .page-hero {
+    padding: 4rem 0 3rem;
+    display: grid;
+    gap: 2.5rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 800px) {
+    .page-hero { grid-template-columns: 0.85fr 1.15fr; align-items: center; }
+  }
+  .page-hero img { border-radius: 14px; }
+  .page-hero .photo-caption {
+    font-size: 0.82rem;
+    margin-top: 0.6rem;
+  }
+  .page-hero h1 { font-size: clamp(1.9rem, 4vw, 2.6rem); }
+  .page-hero .lede { font-size: 1.08rem; }
+
+  .about-section {
+    padding: 3rem 0;
+    border-top: 1px solid var(--rule);
+  }
+  .about-section h2 { font-size: 1.5rem; }
+  .about-section .section-body {
+    max-width: 68ch;
+  }
+
+  .timeline {
+    list-style: none;
+    margin: 1.75rem 0 0;
+    padding: 0;
+    max-width: 68ch;
+  }
+  .timeline li {
+    position: relative;
+    padding: 0 0 1.75rem 1.5rem;
+    border-left: 2px solid var(--rule);
+  }
+  .timeline li:last-child { border-left-color: transparent; padding-bottom: 0; }
+  .timeline li::before {
+    content: "";
+    position: absolute;
+    left: -7px; top: 0.3rem;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--primary);
+  }
+  .timeline .when {
+    display: block;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    color: var(--accent);
+    font-size: 0.95rem;
+    margin-bottom: 0.25rem;
+  }
+
+  blockquote.pull-quote {
+    max-width: 60ch;
+    margin: 1.75rem 0;
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: 1.1rem;
+    color: var(--primary);
+    border-left: 3px solid var(--accent);
+    padding-left: 1.25rem;
+  }
+
+  .growth-pair {
+    display: grid;
+    gap: 1.25rem;
+    grid-template-columns: 1fr;
+    margin: 2rem 0 1rem;
+    max-width: 68ch;
+  }
+  @media (min-width: 640px) {
+    .growth-pair { grid-template-columns: 1fr 1fr; }
+  }
+  .growth-pair figure { margin: 0; }
+  .growth-pair img {
+    border-radius: 10px;
+    border: 1px solid var(--rule);
+  }
+  .growth-pair figcaption {
+    font-size: 0.82rem;
+    margin-top: 0.5rem;
+  }
+
+  .practice-list {
+    max-width: 68ch;
+    padding-left: 1.15rem;
+  }
+  .practice-list li { margin-bottom: 0.6rem; }
+
+  .contact-cta {
+    padding: 4rem 0 5rem;
+    border-top: 1px solid var(--rule);
+    text-align: center;
+  }
+  .contact-cta .actions { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; margin-top: 1.5rem; }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <nav class="site-nav container" aria-label="Primary">
+    <a class="wordmark" href="index.html">Brian Bergstrom</a>
+    <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks">
+      Menu
+    </button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="work-civic.html">Work</a></li>
+      <li><a href="about.html" aria-current="page">About</a></li>
+      <li><a href="../resume/resume.html">Resume</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main id="main">
+  <div class="container">
+    <section class="page-hero">
+      <div>
+        <img src="images/desk.jpg" alt="Brian's desk: an iMac showing Python and DuckDB code running next to a small Buddha statue.">
+        <p class="photo-caption">No headshot here — just my actual desk. I'd rather you see the work than my face.</p>
+      </div>
+      <div>
+        <h1>About</h1>
+        <p class="lede">
+          I'm a GIS Analyst based in the Chicago area. I got here by a longer road than most
+          people in this field — thirteen years of retail, a self-taught detour through IT,
+          and a master's degree I found through a friend's recommendation. I don't drive,
+          which turns out to matter more to how I work than almost anything else on my
+          resume.
+        </p>
+      </div>
+    </section>
+
+    <section class="about-section">
+      <h2>How I got here</h2>
+      <ul class="timeline">
+        <li>
+          <span class="when">2001 – 2014</span>
+          <p>
+            Cashier and service clerk at Jewel-Osco, thirteen years. It taught me more about
+            time management, staying calm under pressure, and handling money carefully than
+            any class did. I don't try to force a straight line from this job to GIS —
+            there isn't one. It's just where I spent my twenties and early thirties.
+          </p>
+        </li>
+        <li>
+          <span class="when">2018</span>
+          <p>BS in Information Technology, AIU Online.</p>
+        </li>
+        <li>
+          <span class="when">2020 – 2023</span>
+          <p>
+            Enrolled in the GIS master's program at Elmhurst University on a friend's
+            recommendation, partly because it was advertised as "no coding required." I
+            ended up writing Python and Arcade expressions in almost every project I built.
+          </p>
+        </li>
+        <li>
+          <span class="when">2023</span>
+          <p>
+            Program Data Coordinator at NAMI DuPage, and — concurrently — their GIS Intern.
+            Secured an Esri nonprofit grant that saved the organization thousands of dollars
+            in licensing, and built the StoryMap that's still the piece of that work I'm
+            proudest of. Left at the end of the year to finish my degree.
+          </p>
+        </li>
+        <li>
+          <span class="when">December 2023</span>
+          <p>MS in Geographic Information Systems, Elmhurst University.</p>
+        </li>
+        <li>
+          <span class="when">2023 – present</span>
+          <p>
+            Self-directed study, described in full below — no formal employer, but the
+            busiest, most productive stretch of GIS work I've done.
+          </p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="about-section">
+      <h2>What actually drives this work</h2>
+      <div class="section-body">
+        <p>
+          I come from a very underserved mental health community — people who don't
+          typically drive or own up-to-date technology, who are assumed to have access to
+          things they don't actually have.
+        </p>
+        <blockquote class="pull-quote">
+          "I come from a very underserved mental health community. My projects are for them,
+          even if they will never understand what I am doing 'with computers.'"
+        </blockquote>
+        <p>
+          I don't think there's one tidy through-line connecting retail, IT, and GIS — when
+          I've been asked directly, my honest answer has been that there isn't. What is real
+          and specific is this: the mental-health-and-access work comes directly from where
+          I live and who I live near, every day, not from a résumé narrative built backward
+          to sound good.
+        </p>
+      </div>
+    </section>
+
+    <section class="about-section">
+      <h2>Independent study, 2023 – present</h2>
+      <div class="section-body">
+        <p>
+          After finishing my degree, I kept going — self-directed study of open-source GIS
+          and Python tools (geemap, leafmap, OSMnx, DuckDB) under practitioners like Qiusheng
+          Wu and Milan Janosov. I keep learning "regardless if it does not find me a job... it
+          is the learning I enjoy doing." That stretch produced a cluster of live web apps
+          and open-source tools, all built in the same intense burst in June 2026.
+        </p>
+      </div>
+
+      <div class="growth-pair">
+        <figure>
+          <img src="images/elevation map lisle.jpg" alt="2D elevation classification map of Lisle, Illinois, made for an AGS 530 course assignment in 2022, showing raster elevation from 568 to 1584 feet with rivers and ponds layered on top.">
+          <figcaption>2022 — a class assignment, made as a student.</figcaption>
+        </figure>
+        <figure>
+          <img src="images/3d elevation lisle.jpg" alt="3D elevation diorama of the same area of Lisle, Illinois, made independently in October 2024 using more advanced 3D terrain rendering.">
+          <figcaption>2024 — the same town, revisited on my own, well after graduating.</figcaption>
+        </figure>
+      </div>
+      <p class="section-body">
+        There's a third piece in that same series — an animated historical timelapse of
+        Lisle starting from 1986, made in late 2025.
+        <a href="images/timelapse lisle.gif" target="_blank" rel="noopener">View the timelapse <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens an animated image in a new tab)</span></a>
+      </p>
+    </section>
+
+    <section class="about-section">
+      <h2>How I actually work</h2>
+      <ul class="practice-list section-body">
+        <li>
+          I'm a practicing Buddhist and attend a weekly Zoom Dharma discussion group. It's
+          helped me stay stable on my medication and my mental health over the past year,
+          and it trains my mind for sitting with hard problems instead of rushing past them
+          — that's the tone I've tried to carry into this whole site.
+        </li>
+        <li>
+          I lean on AI for a lot of the common questions and debugging that used to eat my
+          time, especially in Python libraries like folium and DuckDB. It's part of how I
+          actually build now, not a secret.
+        </li>
+        <li>
+          Outside of GIS, I read non-mainstream fantasy fiction — authors like Scott Lynch
+          and Peter S. Beagle — and spend most of my leisure time watching Twitch, when I'm
+          not playing JRPGs and puzzle games.
+        </li>
+      </ul>
+    </section>
+
+    <section class="about-section">
+      <h2>What's next</h2>
+      <div class="section-body">
+        <p>
+          I'm open to full-time GIS Analyst roles and freelance or consulting work — I don't
+          want to over-tailor this site to just one of those. A few people in the GIS
+          community have told me I could teach a Python GIS course, and someone close to me
+          has floated the idea of starting a consulting business. I haven't committed to
+          either, but I'm open to both.
+        </p>
+        <p>
+          Before this site existed, I had a simpler one. It's still up, and I'm keeping it
+          there as an archive:
+          <a href="https://sites.google.com/view/brian-bergstrom/" target="_blank" rel="noopener">sites.google.com/view/brian-bergstrom <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
+        </p>
+      </div>
+    </section>
+  </div>
+
+  <section id="contact" class="contact-cta container">
+    <h2>Let's talk about a job, a project, or both.</h2>
+    <p>I'm open to full-time GIS Analyst roles and freelance/consulting work.</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="mailto:dulcetberg@gmail.com">Email me</a>
+      <a class="btn btn-outline" href="https://www.linkedin.com/in/brianbergstrom86/" target="_blank" rel="noopener">LinkedIn <span class="visually-hidden">(opens in a new tab)</span></a>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-contact">
+      <a class="btn btn-outline" href="mailto:dulcetberg@gmail.com">dulcetberg@gmail.com</a>
+      <a class="btn btn-outline" href="https://www.linkedin.com/in/brianbergstrom86/" target="_blank" rel="noopener">LinkedIn</a>
+      <a class="btn btn-outline" href="../resume/resume.html">Resume</a>
+    </div>
+    <p class="footer-note">&copy; Brian Bergstrom. Built by hand, hosted on GitHub Pages.</p>
+  </div>
+</footer>
+
+<script>
+  document.documentElement.classList.add('js-ready');
+  var toggle = document.getElementById('navToggle');
+  var links = document.getElementById('navLinks');
+  toggle.addEventListener('click', function () {
+    var open = links.classList.toggle('is-open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+</script>
+</body>
+</html>

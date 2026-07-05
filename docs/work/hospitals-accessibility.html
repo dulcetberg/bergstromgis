@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hospital Accessibility Analysis — Brian Bergstrom</title>
+<meta name="description" content="A live dashboard analyzing healthcare accessibility across Illinois, streaming cloud-native geospatial data in real time.">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../css/brand.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <nav class="site-nav container" aria-label="Primary">
+    <a class="wordmark" href="../index.html">Brian Bergstrom</a>
+    <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks">Menu</button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../work-civic.html">Work</a></li>
+      <li><a href="../about.html">About</a></li>
+      <li><a href="../../resume/resume.html">Resume</a></li>
+      <li><a href="../contact.html">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main id="main">
+  <div class="container">
+    <a class="breadcrumb" href="../work-civic.html">&larr; Back to civic work</a>
+
+    <header class="project-header">
+      <span class="tag tag-civic">Civic — Independent Study</span>
+      <h1>Hospital Accessibility Analysis</h1>
+      <p class="subtitle">A dashboard analyzing healthcare accessibility across Illinois, built on live cloud-native geospatial data rather than a static extract.</p>
+      <div class="meta-row">
+        <span class="stat">Overture Maps GeoParquet via AWS S3</span>
+        <span class="stat">Live U.S. Census API</span>
+      </div>
+    </header>
+  </div>
+
+  <div class="container project-body">
+    <p>
+      This is the most technically ambitious thing I've built during my independent
+      study. It streams live Overture Maps GeoParquet data straight from AWS S3 —
+      rather than working from a downloaded, aging extract — and combines it with the
+      U.S. Census API in real time to analyze how healthcare access lines up against
+      demographics.
+    </p>
+
+    <h2>Illinois-focused, not "national"</h2>
+    <p>
+      I want to be straightforward about scope here: the intent was always Illinois. The
+      dashboard shows data for other states too, but that's incidental — Overture Maps
+      and Census data are both national datasets, and I haven't filtered them down. It
+      wasn't a deliberate design choice to go national, and I'd rather say that plainly
+      than oversell it.
+    </p>
+
+    <h2>How it's held up</h2>
+    <p>
+      I posted this on LinkedIn without expecting much, and it's gotten real, specific
+      feedback from people in the field — a GIS data consultant flagged the clustering
+      technique as worth borrowing, and a startup founder told me it directly shaped
+      ideas for his own product. That kind of validation matters more to me than any
+      metric I could put on the dashboard itself.
+    </p>
+
+    <div class="callout">
+      <span class="callout-label">Worth knowing</span>
+      <p>
+        This app is first in line to migrate from its current home at dulcetgis.com over
+        to my permanent domain, bergstromgis.com — driven by that outside validation, not
+        just personal preference.
+      </p>
+    </div>
+
+    <div class="evidence-panel">
+      <p>Live and streaming real data right now.</p>
+      <a class="btn btn-primary" href="https://hospitals.dulcetgis.com" target="_blank" rel="noopener">
+        View the dashboard <span class="visually-hidden">(opens in a new tab)</span>
+      </a>
+    </div>
+  </div>
+
+  <section id="contact" class="contact-cta container">
+    <h2>Let's talk about a job, a project, or both.</h2>
+    <p>I'm open to full-time GIS Analyst roles and freelance/consulting work.</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="mailto:dulcetberg@gmail.com">Email me</a>
+      <a class="btn btn-outline" href="https://www.linkedin.com/in/brianbergstrom86/" target="_blank" rel="noopener">LinkedIn <span class="visually-hidden">(opens in a new tab)</span></a>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-contact">
+      <a class="btn btn-outline" href="mailto:dulcetberg@gmail.com">dulcetberg@gmail.com</a>
+      <a class="btn btn-outline" href="https://www.linkedin.com/in/brianbergstrom86/" target="_blank" rel="noopener">LinkedIn</a>
+      <a class="btn btn-outline" href="../../resume/resume.html">Resume</a>
+    </div>
+    <p class="footer-note">&copy; Brian Bergstrom. Built by hand, hosted on GitHub Pages.</p>
+  </div>
+</footer>
+
+<script>
+  document.documentElement.classList.add('js-ready');
+  var toggle = document.getElementById('navToggle');
+  var links = document.getElementById('navLinks');
+  toggle.addEventListener('click', function () {
+    var open = links.classList.toggle('is-open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Food Insecurity in DuPage County — Brian Bergstrom</title>
+<meta name="description" content="A 2023 GIS capstone proving real food insecurity in one of the wealthiest counties in the country, now being rebuilt open-source at a 90-mile Chicago radius.">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../css/brand.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <nav class="site-nav container" aria-label="Primary">
+    <a class="wordmark" href="../index.html">Brian Bergstrom</a>
+    <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks">Menu</button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../work-civic.html">Work</a></li>
+      <li><a href="../about.html">About</a></li>
+      <li><a href="../../resume/resume.html">Resume</a></li>
+      <li><a href="../contact.html">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main id="main">
+  <div class="container">
+    <a class="breadcrumb" href="../work-civic.html">&larr; Back to civic work</a>
+
+    <header class="project-header">
+      <span class="tag tag-civic">Civic — MS-GIS Capstone, 2023 &rarr; present</span>
+      <h1>Food Insecurity in DuPage County</h1>
+      <p class="subtitle">My 2023 GIS capstone, and the open-source tool I'm rebuilding from it now.</p>
+      <div class="meta-row">
+        <span class="stat">166 / 523 locations (31%) bus-accessible</span>
+        <span class="stat">10 surviving Pace routes</span>
+      </div>
+    </header>
+  </div>
+
+  <div class="project-hero-media">
+    <div class="media-inner">
+      <img src="../images/capstone map.jpg" alt="Map comparing food-desert access across DuPage and Cook counties, overlaying SNAP retailers, farmer's markets, and Pace bus routes on 2020 Census demographic data.">
+    </div>
+  </div>
+
+  <div class="container project-body">
+    <p>
+      DuPage County is one of the wealthiest counties in the United States — which is
+      exactly why nobody was looking for food insecurity there. For my 2023 MS-GIS
+      capstone at Elmhurst University, I layered 2020 Census data (poverty status, race
+      and ethnicity, internet access) against USDA Farmer's Market and SNAP retailer
+      locations and Pace bus routes, using ArcGIS Online and Arcade to build custom
+      pop-ups showing where bus routes actually intersected with food access.
+    </p>
+
+    <p>
+      The numbers were stark: of 523 SNAP-accepting locations in DuPage County, only 166
+      — 31% — were reachable by bus. Only 10 Pace bus routes remained active in the
+      county as of 2023, after more than half were cut in late 2022.
+    </p>
+
+    <blockquote class="pull-quote">
+      "I have ridden the bus and train lines for most of my adult life, so I offer a
+      unique perspective."
+    </blockquote>
+
+    <h2>An honest result, not a clean one</h2>
+    <p>
+      The capstone's own conclusion didn't neatly confirm my starting hypothesis: placing
+      food pantries along bus lines didn't turn out to be the whole fix. Churches were
+      already filling more of that gap organically than I expected going in. I consider
+      that a real finding, not a shortcoming — a hypothesis tested and refined, not
+      confirmed for its own sake.
+    </p>
+    <p>
+      My professor wasn't impressed, and the food pantries I approached were mostly
+      indifferent. The Northern Illinois Food Bank later built a comparable tool of their
+      own — without the bus-line layer this capstone was built around. I've come to see
+      this less as a weak project and more as one that was ahead of what its immediate
+      audience wanted to hear.
+    </p>
+
+    <h2>Rebuilding it, open-source</h2>
+    <p>
+      I'm now rebuilding this project's core thesis from scratch — open-source instead of
+      Esri, and expanded from a single county to a 90-mile radius from Chicago
+      (<code>il_food_desert</code> and <code>illinois-food-desert-router</code> on
+      GitHub). It's the recent project I've put the most time into, and it's still in
+      progress — the data entry is currently manual, which is the main thing standing
+      between where it is now and a public launch.
+    </p>
+
+    <div class="callout">
+      <span class="callout-label">Worth knowing</span>
+      <p>
+        The original capstone app is hosted on my university's ArcGIS Online account,
+        which I no longer control — it's still resolving as of this writing, but could go
+        down without warning. The underlying project files are preserved separately.
+      </p>
+    </div>
+
+    <div class="evidence-panel">
+      <p>See the original capstone analysis, or the open-source rebuild in progress.</p>
+      <a class="btn btn-primary" href="https://elmhurst.maps.arcgis.com/apps/instant/nearby/index.html?appid=8c790b39648c493eadf14dafafc0fc83" target="_blank" rel="noopener">
+        View the 2023 capstone <span class="visually-hidden">(opens in a new tab)</span>
+      </a>
+      <a class="btn btn-outline" href="https://github.com/dulcetberg/illinois-food-desert-router" target="_blank" rel="noopener">
+        View the rebuild on GitHub <span class="visually-hidden">(opens in a new tab)</span>
+      </a>
+    </div>
+  </div>
+
+  <section id="contact" class="contact-cta container">
+    <h2>Let's talk about a job, a project, or both.</h2>
+    <p>I'm open to full-time GIS Analyst roles and freelance/consulting work.</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="mailto:dulcetberg@gmail.com">Email me</a>
+      <a class="btn btn-outline" href="https://www.linkedin.com/in/brianbergstrom86/" target="_blank" rel="noopener">LinkedIn <span class="visually-hidden">(opens in a new tab)</span></a>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-contact">
+      <a class="btn btn-outline" href="mailto:dulcetberg@gmail.com">dulcetberg@gmail.com</a>
+      <a class="btn btn-outline" href="https://www.linkedin.com/in/brianbergstrom86/" target="_blank" rel="noopener">LinkedIn</a>
+      <a class="btn btn-outline" href="../../resume/resume.html">Resume</a>
+    </div>
+    <p class="footer-note">&copy; Brian Bergstrom. Built by hand, hosted on GitHub Pages.</p>
+  </div>
+</footer>
+
+<script>
+  document.documentElement.classList.add('js-ready');
+  var toggle = document.getElementById('navToggle');
+  var links = document.getElementById('navLinks');
+  toggle.addEventListener('click', function () {
+    var open = links.classList.toggle('is-open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>You Are Not Alone — NAMI DuPage StoryMap — Brian Bergstrom</title>
+<meta name="description" content="A StoryMap built from 31 in-person community interviews, mapping mental health resources across DuPage County.">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../css/brand.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <nav class="site-nav container" aria-label="Primary">
+    <a class="wordmark" href="../index.html">Brian Bergstrom</a>
+    <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks">Menu</button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../work-civic.html">Work</a></li>
+      <li><a href="../about.html">About</a></li>
+      <li><a href="../../resume/resume.html">Resume</a></li>
+      <li><a href="../contact.html">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main id="main">
+  <div class="container">
+    <a class="breadcrumb" href="../work-civic.html">&larr; Back to civic work</a>
+
+    <header class="project-header">
+      <span class="tag tag-civic">Civic — NAMI DuPage, 2023</span>
+      <h1>You Are Not Alone</h1>
+      <p class="subtitle">A StoryMap built from 31 in-person community interviews, mapping mental health resources across DuPage County.</p>
+      <div class="meta-row">
+        <span class="stat">31 responses</span>
+        <span class="stat">2 weeks</span>
+        <span class="stat">still live today</span>
+      </div>
+    </header>
+  </div>
+
+  <div class="container project-body">
+    <p>
+      This was the centerpiece of my GIS internship at NAMI DuPage, which I held
+      concurrently with my role as their Program Data Coordinator in 2023. NAMI had
+      secured an Esri nonprofit grant — sponsored by Tom Ricker of DuPage GIS — that
+      saved the organization thousands of dollars in ArcGIS Enterprise licensing. This
+      StoryMap is the clearest example of what that access made possible.
+    </p>
+
+    <h2>How it was actually built</h2>
+    <p>
+      I collected the data myself, in person, over two weeks — going to the community
+      center during bingo days and talking to people directly through Survey123, not
+      sending out a link and hoping for responses. 31 people told me where they'd look
+      for mental health support in DuPage County, and what stood in the way. I mapped
+      those answers into a StoryMap using Experience Builder and cartographic principles
+      from my coursework, showing mental health resources across the county alongside
+      the gaps people described.
+    </p>
+
+    <blockquote class="pull-quote">
+      "My projects are for them, even if they will never understand what I am doing
+      'with computers.'"
+    </blockquote>
+
+    <h2>Why it mattered</h2>
+    <p>
+      31 responses is a small number next to a big-data dashboard, but that was never
+      the point. This was about people in my own community — many of whom don't drive
+      or have reliable internet access — seeing that someone had actually gone and asked
+      them, and that the answer was mapped out, not filed away. Reception from NAMI staff
+      and the community was positive.
+    </p>
+
+    <div class="evidence-panel">
+      <p>The StoryMap is still live at the original link.</p>
+      <a class="btn btn-primary" href="https://storymaps.arcgis.com/stories/2e6e4954e3a348ae9e89a023f4027777" target="_blank" rel="noopener">
+        View the StoryMap <span class="visually-hidden">(opens in a new tab)</span>
+      </a>
+    </div>
+  </div>
+
+  <section id="contact" class="contact-cta container">
+    <h2>Let's talk about a job, a project, or both.</h2>
+    <p>I'm open to full-time GIS Analyst roles and freelance/consulting work.</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="mailto:dulcetberg@gmail.com">Email me</a>
+      <a class="btn btn-outline" href="https://www.linkedin.com/in/brianbergstrom86/" target="_blank" rel="noopener">LinkedIn <span class="visually-hidden">(opens in a new tab)</span></a>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-contact">
+      <a class="btn btn-outline" href="mailto:dulcetberg@gmail.com">dulcetberg@gmail.com</a>
+      <a class="btn btn-outline" href="https://www.linkedin.com/in/brianbergstrom86/" target="_blank" rel="noopener">LinkedIn</a>
+      <a class="btn btn-outline" href="../../resume/resume.html">Resume</a>
+    </div>
+    <p class="footer-note">&copy; Brian Bergstrom. Built by hand, hosted on GitHub Pages.</p>
+  </div>
+</footer>
+
+<script>
+  document.documentElement.classList.add('js-ready');
+  var toggle = document.getElementById('navToggle');
+  var links = document.getElementById('navLinks');
+  toggle.addEventListener('click', function () {
+    var open = links.classList.toggle('is-open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+</script>
+</body>
+</html>

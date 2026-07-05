@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brian Bergstrom — Resume</title>
+<link rel="icon" type="image/svg+xml" href="../docs/favicon.svg">
+<style>
+  /* ===== local, self-hosted fonts (no CDN) ===== */
+  @font-face {
+    font-family: 'Fraunces';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('../fonts/Fraunces-Regular.woff2') format('woff2');
+  }
+  @font-face {
+    font-family: 'Fraunces';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('../fonts/Fraunces-SemiBold.woff2') format('woff2');
+  }
+  @font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('../fonts/Inter-Regular.woff2') format('woff2');
+  }
+  @font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('../fonts/Inter-Medium.woff2') format('woff2');
+  }
+  @font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('../fonts/Inter-SemiBold.woff2') format('woff2');
+  }
+
+  /* ===== brand tokens — Fieldwork ===== */
+  :root {
+    --bg: #F7F4EE;
+    --text: #2B2A26;
+    --primary: #2F5233;
+    --accent: #753918;
+    --rule: #DAD4C6;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #e9e9e6;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* the page itself: fixed 8.5 x 11in, for accurate on-screen preview */
+  .page {
+    width: 8.5in;
+    min-height: 11in;
+    margin: 2rem auto;
+    padding: 0.65in 0.7in;
+    background: var(--bg);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1), 0 12px 32px rgba(0,0,0,0.12);
+  }
+
+  header.resume-header {
+    margin-bottom: 1.1rem;
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 2rem;
+    color: var(--primary);
+    margin: 0 0 0.3rem;
+    letter-spacing: -0.01em;
+  }
+
+  .contact-line {
+    font-size: 0.85rem;
+    color: var(--text);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 0.9rem;
+  }
+
+  .contact-line a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .contact-line a:hover { text-decoration: underline; }
+
+  .contact-line span::after {
+    content: "";
+  }
+
+  .summary {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    max-width: 62ch;
+    margin: 0.9rem 0 0;
+  }
+
+  section.resume-section {
+    margin-top: 1.5rem;
+  }
+
+  h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--primary);
+    border-bottom: 1.5px solid var(--primary);
+    padding-bottom: 0.25rem;
+    margin: 0 0 0.7rem;
+  }
+
+  .entry {
+    margin-bottom: 0.9rem;
+  }
+  .entry:last-child { margin-bottom: 0; }
+
+  .entry-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0 1rem;
+  }
+
+  .entry-title {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text);
+  }
+
+  .entry-org {
+    font-weight: 500;
+    color: var(--accent);
+  }
+
+  .entry-meta {
+    font-size: 0.82rem;
+    color: var(--text);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  ul.bullets {
+    margin: 0.35rem 0 0;
+    padding-left: 1.15rem;
+  }
+  ul.bullets li {
+    font-size: 0.88rem;
+    line-height: 1.55;
+    margin-bottom: 0.28rem;
+  }
+  ul.bullets li:last-child { margin-bottom: 0; }
+
+  ul.inline-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  ul.inline-list li {
+    font-size: 0.88rem;
+    line-height: 1.65;
+  }
+
+  .skills-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  @media print {
+    html, body { background: #fff; }
+    .page {
+      margin: 0;
+      box-shadow: none;
+      width: auto;
+      min-height: auto;
+    }
+    @page {
+      size: 8.5in 11in;
+      margin: 0.65in 0.7in;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .page {
+      width: 100%;
+      padding: 1.25rem;
+      margin: 0;
+    }
+  }
+
+  .util-bar {
+    max-width: 8.5in;
+    margin: 1.5rem auto 0;
+    padding: 0 0.25rem;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 0.9rem;
+  }
+  .util-bar a {
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .util-bar a:hover { text-decoration: underline; }
+
+  :focus-visible {
+    outline: 3px solid #1957c2;
+    outline-offset: 3px;
+  }
+
+  @media print {
+    .util-bar { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="util-bar">
+  <a href="../docs/index.html">&larr; Back to portfolio</a>
+  <a href="resume.pdf" download>Download PDF</a>
+</div>
+
+<main class="page">
+
+  <header class="resume-header">
+    <h1>Brian Bergstrom</h1>
+    <p class="contact-line">
+      <span>331-444-9594</span>
+      <span><a href="mailto:dulcetberg@gmail.com">dulcetberg@gmail.com</a></span>
+      <span><a href="https://www.linkedin.com/in/brianbergstrom86/">linkedin.com/in/brianbergstrom86</a></span>
+      <span><a href="https://sites.google.com/view/brian-bergstrom/">Portfolio</a></span>
+    </p>
+    <p class="summary">
+      GIS Analyst who turns overlooked problems into clear, data-backed findings — from proving real food insecurity exists in one of the wealthiest counties in the country to mapping community mental health needs across DuPage County. Strong in spatial and demographic analysis, Python-based geospatial data work, and turning complex data into tools non-technical stakeholders can actually use.
+    </p>
+  </header>
+
+  <section class="resume-section" aria-labelledby="certifications-heading">
+    <h2 id="certifications-heading">Certifications</h2>
+    <ul class="inline-list">
+      <li>Web Technician</li>
+      <li>Database Proficiency</li>
+      <li>Esri MOOCs: Spatial Analysis, Cartography</li>
+    </ul>
+  </section>
+
+  <section class="resume-section" aria-labelledby="skills-heading">
+    <h2 id="skills-heading">Skills &amp; Tools</h2>
+    <ul class="inline-list skills-grid">
+      <li>QGIS, ArcGIS Pro, ArcGIS Online, Arcade, ArcGIS Insights, Experience Builder, StoryMaps</li>
+      <li>Spatial analysis, Cartographic design, Demographic &amp; accessibility research</li>
+      <li>Python, Anaconda, matplotlib, NumPy, Pandas, DuckDB</li>
+      <li>Leafmap, OpenStreetMap, OSMnx, Geemap, Google Earth Engine</li>
+      <li>Cloud-native geospatial data (GeoParquet, AWS S3), REST/API integration (U.S. Census API)</li>
+      <li>HTML5, CSS3, JavaScript, Databases, SQL, Excel (advanced), Access</li>
+      <li>Leadership, Team Building, Problem Solving, Analytical, Critical Thinking</li>
+      <li>Dashboard creation, GIS scripting, Application design, Web authoring</li>
+    </ul>
+  </section>
+
+  <section class="resume-section" aria-labelledby="education-heading">
+    <h2 id="education-heading">Education</h2>
+
+    <div class="entry">
+      <div class="entry-line">
+        <span class="entry-title">Master of Science in Geographic Information Systems (GIS)</span>
+        <span class="entry-meta">Completed December 2023</span>
+      </div>
+      <div class="entry-line">
+        <span class="entry-org">Elmhurst University</span>
+        <span class="entry-meta">Elmhurst, IL</span>
+      </div>
+      <ul class="bullets">
+        <li>Capstone: analyzed food insecurity in DuPage County by layering Census demographic data against SNAP retailer and Pace bus-route data in ArcGIS Online and Arcade — found only 166 of 523 SNAP-accepting locations (31%) were reachable by bus after more than half of Pace's routes were cut in 2022</li>
+        <li>Worked with students in an online team environment, advocating for those who felt unheard and collaborating on shared geospatial projects</li>
+        <li>Built geospatial applications to help the community, staying current with the field through regular industry conferences</li>
+      </ul>
+    </div>
+
+    <div class="entry">
+      <div class="entry-line">
+        <span class="entry-title">Bachelor of Science in Information Technology</span>
+        <span class="entry-meta">Completed May 2018</span>
+      </div>
+      <div class="entry-line">
+        <span class="entry-org">American InterContinental University (AIU Online)</span>
+        <span class="entry-meta">Schaumburg, IL</span>
+      </div>
+      <ul class="bullets">
+        <li>Learned to work with others in a team environment and work around different schedules</li>
+        <li>Developed time management skills along with healthy work/life balance</li>
+        <li>Led group projects regularly to establish strong leadership and project management skills</li>
+      </ul>
+    </div>
+
+    <div class="entry">
+      <div class="entry-line">
+        <span class="entry-title">Associate of Arts</span>
+        <span class="entry-meta">Completed May 5, 2015</span>
+      </div>
+      <div class="entry-line">
+        <span class="entry-org">College of DuPage</span>
+        <span class="entry-meta">Glen Ellyn, IL</span>
+      </div>
+      <ul class="bullets">
+        <li>Founded a mental health awareness club on campus, securing funding and partnerships through student-led fundraising and collaboration with other campus organizations</li>
+        <li>Worked with many different student clubs to establish awareness and advocacy</li>
+        <li>Won two awards for helping PTK Honors Society in Honors in Action Project</li>
+        <li>Developed a foundation for mental health advocacy on campus</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="resume-section" aria-labelledby="independent-study-heading">
+    <h2 id="independent-study-heading">Independent Study</h2>
+    <div class="entry">
+      <div class="entry-line">
+        <span class="entry-title">Open-Source GIS &amp; Geospatial Development</span>
+        <span class="entry-meta">2023 – Present</span>
+      </div>
+      <ul class="bullets">
+        <li>Self-directed study of open-source GIS and Python tools (geemap, leafmap, OSMnx, DuckDB) under practitioners including Qiusheng Wu and Milan Janosov</li>
+        <li>Built and deployed an Illinois healthcare-accessibility dashboard streaming live Overture Maps GeoParquet data from AWS S3 alongside the U.S. Census API — its clustering methodology was independently recognized by a GIS data consultant on LinkedIn</li>
+        <li>Rebuilt and expanded prior food-access research into a new open-source tool analyzing food-pantry accessibility via public transit across a 90-mile Chicago-area radius</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="resume-section" aria-labelledby="experience-heading">
+    <h2 id="experience-heading">Professional Experience</h2>
+
+    <div class="entry">
+      <div class="entry-line">
+        <span class="entry-org">NAMI DuPage</span>
+        <span class="entry-meta">Wheaton, IL</span>
+      </div>
+      <div class="entry-line">
+        <span class="entry-title">Program Data Coordinator</span>
+        <span class="entry-meta">2023</span>
+      </div>
+      <ul class="bullets">
+        <li>Cleaned up program data that was messy and inaccurate using pandas and performed data analysis</li>
+        <li>Provided numbers to teammates to help them better evaluate program metrics and finalized data into shared Excel reports for team review</li>
+        <li>Worked alongside grant writer to create grant reports to get funding for the organization</li>
+        <li>Accomplished goals and tasks in a timely manner, often earlier than the deadline</li>
+      </ul>
+
+      <div class="entry-line" style="margin-top:0.7rem;">
+        <span class="entry-title">GIS Intern</span>
+        <span class="entry-meta">March – May 2023</span>
+      </div>
+      <ul class="bullets">
+        <li>Secured an Esri nonprofit grant (sponsored by DuPage GIS), saving NAMI DuPage thousands of dollars in ArcGIS Enterprise licensing while enabling ongoing GIS data management and web map services</li>
+        <li>Created GIS apps using GIS scripting, application design, and web authoring; managed ArcGIS Enterprise user groups and content permissions</li>
+        <li>Collected data from 31 community interviews via Survey123 to build a StoryMap mapping mental health resources across DuPage County, applying cartographic principles</li>
+      </ul>
+    </div>
+
+    <div class="entry">
+      <div class="entry-line">
+        <span class="entry-org">Jewel-Osco</span>
+        <span class="entry-meta">Lisle, IL</span>
+      </div>
+      <div class="entry-line">
+        <span class="entry-title">Cashier/Service Clerk</span>
+        <span class="entry-meta">2001 – 2014</span>
+      </div>
+      <ul class="bullets">
+        <li>Provided customer service to shoppers</li>
+        <li>Helped find items customers needed</li>
+        <li>Accurately balanced drawer with various types of tender</li>
+        <li>Routinely showed up early</li>
+      </ul>
+    </div>
+  </section>
+
+</main>
+
+</body>
+</html>

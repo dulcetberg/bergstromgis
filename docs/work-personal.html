@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Personal Work — Brian Bergstrom</title>
+<meta name="description" content="Personal-interest GIS projects by Brian Bergstrom: film location mapping, world religions, and World Cup fatigue analysis.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="css/brand.css">
+<style>
+  .page-hero {
+    padding: 4rem 0 2.5rem;
+    max-width: 68ch;
+  }
+  .page-hero h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); }
+  .page-hero p { font-size: 1.05rem; }
+
+  .work-section { padding-bottom: 5rem; }
+
+  .contact-cta {
+    padding: 4rem 0 5rem;
+    border-top: 1px solid var(--rule);
+    text-align: center;
+  }
+  .contact-cta .actions { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; margin-top: 1.5rem; }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <nav class="site-nav container" aria-label="Primary">
+    <a class="wordmark" href="index.html">Brian Bergstrom</a>
+    <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks">
+      Menu
+    </button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="work-civic.html">Work</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="../resume/resume.html">Resume</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main id="main">
+  <div class="container">
+    <div class="page-hero">
+      <h1>Personal work</h1>
+      <p>
+        Not everything I build is trying to fix something. Some of it is just for fun, or
+        for a friend — genuine technical care applied to whatever I'm into, not a client ask.
+      </p>
+      <nav class="work-toggle" aria-label="Filter work by category">
+        <a href="work-civic.html">Civic</a>
+        <a href="work-personal.html" aria-current="page">Personal</a>
+      </nav>
+    </div>
+  </div>
+
+  <section class="work-section container" aria-label="Personal projects">
+    <div class="project-grid">
+
+      <article class="project-card">
+        <div class="card-media">
+          <svg viewBox="0 0 200 200" aria-hidden="true">
+            <path d="M100 30a70 70 0 1 0 0 140a55 55 0 1 1 0-140z" fill="currentColor" opacity="0.65"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <span class="tag tag-personal">Personal — gift</span>
+          <h3>Vampire Film Atlas</h3>
+          <p>A temporal heat map of roughly 500 vampire and horror film filming and setting locations across the U.S., spanning 1960 to 2026.</p>
+          <p class="card-note">Built as a gift for a friend who runs the horror-film Discord community I'm part of.</p>
+          <a class="card-link" href="work/vampire-film-atlas.html">
+            Read the story <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </article>
+
+      <article class="project-card">
+        <div class="card-media">
+          <svg viewBox="0 0 200 200" aria-hidden="true">
+            <circle cx="100" cy="100" r="65" fill="none" stroke="currentColor" stroke-width="4"/>
+            <line x1="100" y1="35" x2="100" y2="165" stroke="currentColor" stroke-width="3" opacity="0.6"/>
+            <line x1="35" y1="100" x2="165" y2="100" stroke="currentColor" stroke-width="3" opacity="0.6"/>
+            <line x1="53" y1="53" x2="147" y2="147" stroke="currentColor" stroke-width="3" opacity="0.4"/>
+            <line x1="147" y1="53" x2="53" y2="147" stroke="currentColor" stroke-width="3" opacity="0.4"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <span class="tag tag-personal">Personal — gift</span>
+          <h3>World Religions Dashboard</h3>
+          <p>Maps global religious distribution, with particular methodological care on Norse/Neopagan Ásatrú data — ties back to my own interest in Buddhist practice.</p>
+          <p class="card-note">Also built as a gift, for a friend who practices that faith.</p>
+          <a class="card-link" href="work/world-religions-dashboard.html">
+            Read the story <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </article>
+
+      <article class="project-card">
+        <div class="card-media">
+          <svg viewBox="0 0 200 200" aria-hidden="true">
+            <circle cx="100" cy="100" r="65" fill="none" stroke="currentColor" stroke-width="4"/>
+            <path d="M100 35 L118 75 L162 82 L130 113 L138 158 L100 136 L62 158 L70 113 L38 82 L82 75 Z" fill="currentColor" opacity="0.55"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <span class="tag tag-personal">Personal — pure interest</span>
+          <h3>World Cup Fatigue Dashboard</h3>
+          <p>Tracks player and team fatigue across the 2026 World Cup, combining travel distance between matches with days of rest.</p>
+          <a class="card-link" href="work/worldcup-fatigue-dashboard.html">
+            Read the story <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <section id="contact" class="contact-cta container">
+    <h2>Let's talk about a job, a project, or both.</h2>
+    <p>I'm open to full-time GIS Analyst roles and freelance/consulting work.</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="mailto:dulcetberg@gmail.com">Email me</a>
+      <a class="btn btn-outline" href="https://www.linkedin.com/in/brianbergstrom86/" target="_blank" rel="noopener">LinkedIn <span class="visually-hidden">(opens in a new tab)</span></a>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-contact">
+      <a class="btn btn-outline" href="mailto:dulcetberg@gmail.com">dulcetberg@gmail.com</a>
+      <a class="btn btn-outline" href="https://www.linkedin.com/in/brianbergstrom86/" target="_blank" rel="noopener">LinkedIn</a>
+      <a class="btn btn-outline" href="../resume/resume.html">Resume</a>
+    </div>
+    <p class="footer-note">&copy; Brian Bergstrom. Built by hand, hosted on GitHub Pages.</p>
+  </div>
+</footer>
+
+<script>
+  document.documentElement.classList.add('js-ready');
+  var toggle = document.getElementById('navToggle');
+  var links = document.getElementById('navLinks');
+  toggle.addEventListener('click', function () {
+    var open = links.classList.toggle('is-open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Civic Work — Brian Bergstrom</title>
+<meta name="description" content="Civic GIS work by Brian Bergstrom: mental health access, food insecurity, transit equity, healthcare accessibility, and more.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="css/brand.css">
+<style>
+  .page-hero {
+    padding: 4rem 0 2.5rem;
+    max-width: 68ch;
+  }
+  .page-hero h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); }
+  .page-hero p { font-size: 1.05rem; }
+
+  .work-section { padding-bottom: 5rem; }
+
+  .contact-cta {
+    padding: 4rem 0 5rem;
+    border-top: 1px solid var(--rule);
+    text-align: center;
+  }
+  .contact-cta .actions { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; margin-top: 1.5rem; }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <nav class="site-nav container" aria-label="Primary">
+    <a class="wordmark" href="index.html">Brian Bergstrom</a>
+    <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks">
+      Menu
+    </button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="work-civic.html" aria-current="page">Work</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="../resume/resume.html">Resume</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main id="main">
+  <div class="container">
+    <div class="page-hero">
+      <h1>Civic work</h1>
+      <p>
+        Maps and tools built for people who are usually assumed to have a car, current
+        technology, or money to spare — food access, mental health, transit, and healthcare.
+      </p>
+      <nav class="work-toggle" aria-label="Filter work by category">
+        <a href="work-civic.html" aria-current="page">Civic</a>
+        <a href="work-personal.html">Personal</a>
+      </nav>
+    </div>
+  </div>
+
+  <section class="work-section container" aria-label="Civic projects">
+    <div class="project-grid">
+
+      <article class="project-card">
+        <div class="card-media">
+          <svg viewBox="0 0 200 200" aria-hidden="true">
+            <circle cx="60" cy="70" r="10" fill="currentColor"/>
+            <circle cx="110" cy="50" r="7" fill="currentColor" opacity="0.7"/>
+            <circle cx="140" cy="100" r="12" fill="currentColor" opacity="0.5"/>
+            <circle cx="90" cy="120" r="8" fill="currentColor" opacity="0.8"/>
+            <circle cx="150" cy="150" r="6" fill="currentColor" opacity="0.6"/>
+            <circle cx="50" cy="140" r="9" fill="currentColor" opacity="0.4"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <span class="tag tag-civic">Civic — NAMI DuPage, 2023</span>
+          <h3>You Are Not Alone</h3>
+          <p>31 in-person community interviews turned into a StoryMap mapping mental health resources across DuPage County. Still live today.</p>
+          <p class="card-stat">31 responses · 2 weeks</p>
+          <a class="card-link" href="work/nami-storymap.html">
+            Read the story <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </article>
+
+      <article class="project-card">
+        <div class="card-media">
+          <svg viewBox="0 0 200 200" aria-hidden="true">
+            <circle cx="100" cy="100" r="30" fill="none" stroke="currentColor" stroke-width="4"/>
+            <circle cx="100" cy="100" r="55" fill="none" stroke="currentColor" stroke-width="4" opacity="0.7"/>
+            <circle cx="100" cy="100" r="80" fill="none" stroke="currentColor" stroke-width="4" opacity="0.4"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <span class="tag tag-civic">Civic — Independent Study</span>
+          <h3>Hospital Accessibility Analysis</h3>
+          <p>Streams live Overture Maps GeoParquet data from AWS S3 alongside the U.S. Census API to analyze healthcare access across Illinois.</p>
+          <p class="card-stat">Recognized on LinkedIn by a GIS data consultant</p>
+          <a class="card-link" href="work/hospitals-accessibility.html">
+            Read the story <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </article>
+
+      <article class="project-card">
+        <div class="card-media">
+          <img src="images/capstone map.jpg" alt="Map comparing food-desert access across DuPage and Cook counties, overlaying SNAP retailers, farmer's markets, and Pace bus routes on 2020 Census demographic data.">
+        </div>
+        <div class="card-body">
+          <span class="tag tag-civic">Civic — MS-GIS Capstone, 2023 → present</span>
+          <h3>Food Insecurity in DuPage County</h3>
+          <p>My 2023 capstone layering Census data against SNAP retailers and Pace bus routes. Now being rebuilt open-source at a 90-mile Chicago radius — still in progress.</p>
+          <p class="card-stat">166 / 523 locations (31%) bus-accessible</p>
+          <a class="card-link" href="work/food-desert.html">
+            Read the story <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </article>
+
+      <article class="project-card">
+        <div class="card-media">
+          <svg viewBox="0 0 200 200" aria-hidden="true">
+            <path d="M20 70 Q 60 30, 100 70 T 180 70" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>
+            <path d="M20 110 Q 60 70, 100 110 T 180 110" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" opacity="0.7"/>
+            <path d="M20 150 Q 60 110, 100 150 T 180 150" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" opacity="0.45"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <span class="tag tag-civic">Civic — Independent Study</span>
+          <h3>Chicagoland Transit Heat Vulnerability</h3>
+          <p>Rates CTA stations across walkable zones by heat vulnerability, layering climate and demographic data to flag where extreme heat hits transit riders hardest.</p>
+          <a class="card-link" href="work/transit-heat-vulnerability.html">
+            Read the story <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </article>
+
+      <article class="project-card">
+        <div class="card-media">
+          <svg viewBox="0 0 200 200" aria-hidden="true">
+            <circle cx="100" cy="70" r="45" fill="currentColor" opacity="0.6"/>
+            <circle cx="70" cy="55" r="30" fill="currentColor" opacity="0.5"/>
+            <circle cx="130" cy="55" r="30" fill="currentColor" opacity="0.5"/>
+            <rect x="93" y="110" width="14" height="55" fill="currentColor" opacity="0.8"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <span class="tag tag-civic">Civic — Independent Study</span>
+          <h3>DuPage Forest Preserve Trail &amp; Tree Canopy Analyzer</h3>
+          <p>Analyzes canopy cover and trail elevation across DuPage County Forest Preserves to find the shadiest walking routes — built to solve my own need for a cool trail.</p>
+          <a class="card-link" href="work/tree-cover-analyzer.html">
+            Read the story <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </article>
+
+      <article class="project-card">
+        <div class="card-media">
+          <svg viewBox="0 0 200 200" aria-hidden="true">
+            <path d="M60 90 a40 40 0 1 1 80 0 a25 25 0 0 1 -15 45 h-50 a25 25 0 0 1 -15 -45z" fill="currentColor" opacity="0.6"/>
+            <line x1="80" y1="150" x2="75" y2="170" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+            <line x1="100" y1="155" x2="95" y2="178" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+            <line x1="120" y1="150" x2="115" y2="170" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <span class="tag tag-civic">Civic — Independent Study</span>
+          <h3>Illinois Weather Dashboard</h3>
+          <p>Live precipitation and humidity across Illinois weather stations — built after I noticed an unusually long stormy stretch and wanted to see it mapped out.</p>
+          <a class="card-link" href="work/illinois-weather-dashboard.html">
+            Read the story <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </article>
+
+      <article class="project-card">
+        <div class="card-media">
+          <svg viewBox="0 0 200 200" aria-hidden="true">
+            <g fill="currentColor" opacity="0.6">
+              <rect x="30" y="30" width="24" height="24"/>
+              <rect x="88" y="30" width="24" height="24"/>
+              <rect x="146" y="30" width="24" height="24"/>
+              <rect x="30" y="88" width="24" height="24"/>
+              <rect x="88" y="88" width="24" height="24"/>
+              <rect x="146" y="88" width="24" height="24"/>
+              <rect x="30" y="146" width="24" height="24"/>
+              <rect x="88" y="146" width="24" height="24"/>
+              <rect x="146" y="146" width="24" height="24"/>
+            </g>
+          </svg>
+        </div>
+        <div class="card-body">
+          <span class="tag tag-civic">Civic — Independent Study</span>
+          <h3>ICE Detention Facility Map</h3>
+          <p>Maps every U.S. Immigration and Customs Enforcement detention facility and its reported population as of March 2026, built on an ArcGIS Dashboard — making a large, dispersed federal system visible in one place.</p>
+          <a class="card-link" href="work/ice-detention-map.html">
+            Read the story <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <section id="contact" class="contact-cta container">
+    <h2>Let's talk about a job, a project, or both.</h2>
+    <p>I'm open to full-time GIS Analyst roles and freelance/consulting work.</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="mailto:dulcetberg@gmail.com">Email me</a>
+      <a class="btn btn-outline" href="https://www.linkedin.com/in/brianbergstrom86/" target="_blank" rel="noopener">LinkedIn <span class="visually-hidden">(opens in a new tab)</span></a>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-contact">
+      <a class="btn btn-outline" href="mailto:dulcetberg@gmail.com">dulcetberg@gmail.com</a>
+      <a class="btn btn-outline" href="https://www.linkedin.com/in/brianbergstrom86/" target="_blank" rel="noopener">LinkedIn</a>
+      <a class="btn btn-outline" href="../resume/resume.html">Resume</a>
+    </div>
+    <p class="footer-note">&copy; Brian Bergstrom. Built by hand, hosted on GitHub Pages.</p>
+  </div>
+</footer>
+
+<script>
+  document.documentElement.classList.add('js-ready');
+  var toggle = document.getElementById('navToggle');
+  var links = document.getElementById('navLinks');
+  toggle.addEventListener('click', function () {
+    var open = links.classList.toggle('is-open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+</script>
+</body>
+</html>

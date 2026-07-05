@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contact — Brian Bergstrom</title>
+<meta name="description" content="Get in touch with Brian Bergstrom about a GIS Analyst role, a freelance project, or both.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="css/brand.css">
+<style>
+  .page-hero {
+    padding: 4rem 0 2.5rem;
+    max-width: 62ch;
+  }
+  .page-hero h1 { font-size: clamp(1.9rem, 4vw, 2.6rem); }
+  .page-hero p { font-size: 1.08rem; }
+
+  .contact-layout {
+    padding-bottom: 5rem;
+    display: grid;
+    gap: 2.5rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 860px) {
+    .contact-layout { grid-template-columns: 0.85fr 1.15fr; align-items: start; }
+  }
+
+  .methods-panel {
+    background: var(--bg-raised);
+    border: 1px solid var(--rule);
+    border-radius: 14px;
+    padding: 1.75rem;
+  }
+  .methods-panel h2 { font-size: 1.15rem; }
+  .methods-panel .btn { width: 100%; justify-content: center; margin-bottom: 0.75rem; }
+  .methods-panel .btn:last-child { margin-bottom: 0; }
+
+  .contact-form {
+    background: var(--bg-raised);
+    border: 1px solid var(--rule);
+    border-radius: 14px;
+    padding: 2rem;
+  }
+  .contact-form h2 { font-size: 1.15rem; margin-top: 0; }
+  .form-field {
+    margin-bottom: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .form-field label {
+    font-weight: 600;
+    font-size: 0.92rem;
+  }
+  .form-field .hint {
+    font-size: 0.8rem;
+  }
+  .form-field input,
+  .form-field select,
+  .form-field textarea {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--text);
+    background: var(--bg);
+    border: 1.5px solid var(--rule);
+    border-radius: 8px;
+    padding: 0.7rem 0.9rem;
+  }
+  .form-field input:focus-visible,
+  .form-field select:focus-visible,
+  .form-field textarea:focus-visible {
+    border-color: var(--primary);
+  }
+  .form-field textarea { resize: vertical; min-height: 140px; }
+  .honeypot-field { position: absolute; left: -9999px; }
+
+  .form-success {
+    background: var(--bg);
+    border: 1.5px solid var(--primary);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+  }
+  .form-success p { margin: 0; }
+
+  .about-cta {
+    padding: 3rem 0 5rem;
+    border-top: 1px solid var(--rule);
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <nav class="site-nav container" aria-label="Primary">
+    <a class="wordmark" href="index.html">Brian Bergstrom</a>
+    <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks">
+      Menu
+    </button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="work-civic.html">Work</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="../resume/resume.html">Resume</a></li>
+      <li><a href="contact.html" aria-current="page">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main id="main">
+  <div class="container">
+    <section class="page-hero">
+      <h1>Get in touch</h1>
+      <p>
+        I'm open to full-time GIS Analyst roles and freelance or consulting work — whether
+        this turns into a job, a project, or just a conversation, I'd like to hear from
+        you. Use whichever method is easiest.
+      </p>
+    </section>
+
+    <div class="contact-layout">
+      <aside class="methods-panel" aria-label="Other ways to reach me">
+        <h2>Other ways to reach me</h2>
+        <a class="btn btn-primary" href="mailto:dulcetberg@gmail.com">Email dulcetberg@gmail.com</a>
+        <a class="btn btn-outline" href="https://www.linkedin.com/in/brianbergstrom86/" target="_blank" rel="noopener">
+          LinkedIn <span class="visually-hidden">(opens in a new tab)</span>
+        </a>
+        <a class="btn btn-outline" href="../resume/resume.html">View resume</a>
+      </aside>
+
+      <div>
+        <form class="contact-form" id="contactForm" action="https://formsubmit.co/dulcetberg@gmail.com" method="POST">
+          <h2>Send a message</h2>
+
+          <input type="text" name="_honey" class="honeypot-field" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <input type="hidden" name="_subject" value="New message from the portfolio site">
+          <input type="hidden" name="_template" value="table">
+
+          <div class="form-field">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" required autocomplete="name">
+          </div>
+
+          <div class="form-field">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required autocomplete="email">
+          </div>
+
+          <div class="form-field">
+            <label for="reason">What's this about?</label>
+            <select id="reason" name="reason">
+              <option>A job opportunity</option>
+              <option>A freelance or consulting project</option>
+              <option>Something else</option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" required></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Send message</button>
+        </form>
+
+        <div class="form-success" id="formSuccess" role="status" aria-live="polite" tabindex="-1" hidden>
+          <p>Thanks — your message sent. I'll get back to you soon.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="about-cta container">
+    <p>Want more context first? Read <a href="about.html">how I got here</a> or see <a href="work-civic.html">what I've built</a>.</p>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-contact">
+      <a class="btn btn-outline" href="mailto:dulcetberg@gmail.com">dulcetberg@gmail.com</a>
+      <a class="btn btn-outline" href="https://www.linkedin.com/in/brianbergstrom86/" target="_blank" rel="noopener">LinkedIn</a>
+      <a class="btn btn-outline" href="../resume/resume.html">Resume</a>
+    </div>
+    <p class="footer-note">&copy; Brian Bergstrom. Built by hand, hosted on GitHub Pages.</p>
+  </div>
+</footer>
+
+<script>
+  document.documentElement.classList.add('js-ready');
+  var toggle = document.getElementById('navToggle');
+  var links = document.getElementById('navLinks');
+  toggle.addEventListener('click', function () {
+    var open = links.classList.toggle('is-open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+
+  var form = document.getElementById('contactForm');
+  var success = document.getElementById('formSuccess');
+  if ('fetch' in window) {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var data = new FormData(form);
+      fetch('https://formsubmit.co/ajax/dulcetberg@gmail.com', {
+        method: 'POST',
+        headers: { Accept: 'application/json' },
+        body: data
+      })
+        .then(function (res) { return res.json(); })
+        .then(function () {
+          form.hidden = true;
+          success.hidden = false;
+          success.focus();
+        })
+        .catch(function () {
+          form.submit();
+        });
+    });
+  }
+</script>
+</body>
+</html>
