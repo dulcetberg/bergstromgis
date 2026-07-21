@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Canadian Wildfire Smoke Dashboard — Brian Bergstrom</title>
+<meta name="description" content="A live, auto-updating dashboard tracking Canadian wildfire smoke and its impact on Chicago-area air quality.">
+<link rel="canonical" href="https://bergstromgis.com/work/wildfire-smoke-dashboard.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Brian Bergstrom">
+<meta property="og:title" content="Canadian Wildfire Smoke Dashboard — Brian Bergstrom">
+<meta property="og:description" content="A live, auto-updating dashboard tracking Canadian wildfire smoke and its impact on Chicago-area air quality.">
+<meta property="og:image" content="https://bergstromgis.com/images/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Brian Bergstrom — GIS that makes the overlooked undeniable.">
+<meta property="og:url" content="https://bergstromgis.com/work/wildfire-smoke-dashboard.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Canadian Wildfire Smoke Dashboard — Brian Bergstrom">
+<meta name="twitter:description" content="A live, auto-updating dashboard tracking Canadian wildfire smoke and its impact on Chicago-area air quality.">
+<meta name="twitter:image" content="https://bergstromgis.com/images/og-image.png">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="alternate icon" href="../favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../css/brand.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <nav class="site-nav container" aria-label="Primary">
+    <a class="wordmark" href="../index.html">Brian Bergstrom</a>
+    <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks">Menu</button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../work-civic.html">Work</a></li>
+      <li><a href="../about.html">About</a></li>
+      <li><a href="../../resume/resume.html">Resume</a></li>
+      <li><a href="../contact.html">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main id="main">
+  <div class="container">
+    <a class="breadcrumb" href="../work-civic.html">&larr; Back to civic work</a>
+
+    <header class="project-header">
+      <span class="tag tag-civic">Civic — Independent Study</span>
+      <h1>Canadian Wildfire Smoke Dashboard</h1>
+      <p class="subtitle">A live, auto-updating dashboard tracking Canadian wildfire smoke and its impact on Chicago-area air quality — rebuilds itself daily, no manual updates.</p>
+      <div class="meta-row">
+        <span class="stat">NOAA Hazard Mapping System</span>
+        <span class="stat">EPA AirNow API</span>
+        <span class="stat">Auto-rebuilds daily via GitHub Actions</span>
+      </div>
+    </header>
+  </div>
+
+  <div class="project-hero-media">
+    <div class="media-inner">
+      <img src="../images/wildfire-smoke-dashboard.jpg" alt="Screenshot of the Canadian Wildfire Smoke Dashboard, showing an animated smoke plume extending from Canada across the Midwest to Chicago, satellite fire detection density near the Canada-US border, and Chicago-area PM2.5 monitors color-coded by AQI severity.">
+    </div>
+  </div>
+
+  <div class="container project-body">
+    <p>
+      In July 2026, smoke from over 800 Canadian wildfires pushed Chicago's air
+      quality to "hazardous" levels — worst in the world at one point, with an
+      AQI as high as 753. I built this dashboard to map that event, and then
+      took it a step further: rather than a one-time snapshot, it's set up to
+      keep tracking whatever's currently happening, indefinitely, without me
+      touching it again.
+    </p>
+
+    <h2>What it shows</h2>
+    <p>
+      An animated day-by-day smoke plume extent from NOAA's Hazard Mapping
+      System, a satellite fire-detection density layer showing where the
+      source fires are burning, and hourly PM2.5/AQI readings from 20
+      Chicago-area monitoring stations via the EPA AirNow API — all on one
+      map, with an AQI legend so the severity is easy to read at a glance.
+    </p>
+
+    <h2>Actually live, not just "live" in the marketing sense</h2>
+    <p>
+      A GitHub Actions workflow reruns the full pipeline every morning: it
+      re-fetches fresh smoke, fire, and air-quality data for a rolling
+      eight-day window, rebuilds the dashboard, and pushes the update
+      automatically. There's no backend server — it's a static site that
+      rebuilds itself on a schedule. The API key that powers the AirNow data
+      pull is stored as an encrypted GitHub secret, never exposed in the
+      public repository.
+    </p>
+
+    <div class="callout">
+      <span class="callout-label">Worth knowing</span>
+      <p>
+        The date window is relative ("yesterday back seven days"), not fixed
+        to the July 2026 event — so as that event fades, the dashboard will
+        keep reflecting whatever's actually happening next, rather than
+        staying frozen on old data.
+      </p>
+    </div>
+
+    <div class="evidence-panel">
+      <p>Live and rebuilding itself daily.</p>
+      <a class="btn btn-primary" href="https://dulcetberg.github.io/wildfire-smoke-dashboard/" target="_blank" rel="noopener">
+        View the dashboard <span class="visually-hidden">(opens in a new tab)</span>
+      </a>
+      <a class="btn btn-outline" href="https://github.com/dulcetberg/wildfire-smoke-dashboard" target="_blank" rel="noopener">
+        View the code <span class="visually-hidden">(opens in a new tab)</span>
+      </a>
+    </div>
+  </div>
+
+  <section id="contact" class="contact-cta container">
+    <h2>Let's talk about a job, a project, or both.</h2>
+    <p>I'm open to full-time GIS Analyst roles and freelance/consulting work.</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="mailto:brian@bergstromgis.com">Email me</a>
+      <a class="btn btn-outline" href="https://www.linkedin.com/in/brianbergstrom86/" target="_blank" rel="noopener">LinkedIn <span class="visually-hidden">(opens in a new tab)</span></a>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-contact">
+      <a class="btn btn-outline" href="mailto:brian@bergstromgis.com">brian@bergstromgis.com</a>
+      <a class="btn btn-outline" href="https://www.linkedin.com/in/brianbergstrom86/" target="_blank" rel="noopener">LinkedIn</a>
+      <a class="btn btn-outline" href="../../resume/resume.html">Resume</a>
+    </div>
+    <p class="footer-note">&copy; Brian Bergstrom. Built by hand, hosted on GitHub Pages.</p>
+  </div>
+</footer>
+
+<script>
+  document.documentElement.classList.add('js-ready');
+  var toggle = document.getElementById('navToggle');
+  var links = document.getElementById('navLinks');
+  toggle.addEventListener('click', function () {
+    var open = links.classList.toggle('is-open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+</script>
+</body>
+</html>
