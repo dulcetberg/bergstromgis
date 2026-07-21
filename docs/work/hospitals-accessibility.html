@@ -52,7 +52,7 @@
       <p class="subtitle">A dashboard analyzing healthcare accessibility across Illinois, built on live cloud-native geospatial data rather than a static extract.</p>
       <div class="meta-row">
         <span class="stat">Overture Maps GeoParquet via AWS S3</span>
-        <span class="stat">Live U.S. Census API</span>
+        <span class="stat">Census boundary data via pygris</span>
       </div>
     </header>
   </div>
@@ -67,9 +67,9 @@
     <p>
       This is the most technically ambitious thing I've built during my independent
       study. It streams live Overture Maps GeoParquet data straight from AWS S3 —
-      rather than working from a downloaded, aging extract — and combines it with the
-      U.S. Census API in real time to analyze how healthcare access lines up against
-      demographics.
+      rather than working from a downloaded, aging extract — and combines it with
+      Census tract boundary data via pygris to analyze how healthcare access lines
+      up against geography across Illinois.
     </p>
 
     <h2>Illinois-focused, not "national"</h2>
@@ -83,11 +83,12 @@
 
     <h2>How it's held up</h2>
     <p>
-      I posted this on LinkedIn without expecting much, and it's gotten real, specific
-      feedback from people in the field — a GIS data consultant flagged the clustering
-      technique as worth borrowing, and a startup founder told me it directly shaped
-      ideas for his own product. That kind of validation matters more to me than any
-      metric I could put on the dashboard itself.
+      I posted this on LinkedIn without expecting much, and it sparked real technical
+      conversation with people in the field — one GIS developer raised the challenge of
+      trying the same approach on Overture's much larger buildings dataset, and a senior
+      software engineer suggested an edge-caching architecture (CloudFront and
+      Lambda@Edge) that could make a production version more efficient. That kind of
+      engagement matters more to me than any metric I could put on the dashboard itself.
     </p>
 
     <div class="callout">
