@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chicagoland Food Pantries &amp; Transit Access — Brian Bergstrom</title>
+<meta name="description" content="An interactive map of 285+ Chicago-area food pantries cross-referenced against real CTA, Metra, and Pace transit lines.">
+<link rel="canonical" href="https://bergstromgis.com/work/food-pantry-transit-map.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Brian Bergstrom">
+<meta property="og:title" content="Chicagoland Food Pantries &amp; Transit Access — Brian Bergstrom">
+<meta property="og:description" content="An interactive map of 285+ Chicago-area food pantries cross-referenced against real CTA, Metra, and Pace transit lines.">
+<meta property="og:image" content="https://bergstromgis.com/images/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Brian Bergstrom — GIS that makes the overlooked undeniable.">
+<meta property="og:url" content="https://bergstromgis.com/work/food-pantry-transit-map.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Chicagoland Food Pantries &amp; Transit Access — Brian Bergstrom">
+<meta name="twitter:description" content="An interactive map of 285+ Chicago-area food pantries cross-referenced against real CTA, Metra, and Pace transit lines.">
+<meta name="twitter:image" content="https://bergstromgis.com/images/og-image.png">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="alternate icon" href="../favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../css/brand.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <nav class="site-nav container" aria-label="Primary">
+    <a class="wordmark" href="../index.html">Brian Bergstrom</a>
+    <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks">Menu</button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../work-civic.html">Work</a></li>
+      <li><a href="../about.html">About</a></li>
+      <li><a href="../../resume/resume.html">Resume</a></li>
+      <li><a href="../contact.html">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main id="main">
+  <div class="container">
+    <a class="breadcrumb" href="../work-civic.html">&larr; Back to civic work</a>
+
+    <header class="project-header">
+      <span class="tag tag-civic">Civic — Independent Study</span>
+      <h1>Chicagoland Food Pantries &amp; Transit Access</h1>
+      <p class="subtitle">An interactive map of food pantries across the Chicago metro area, cross-referenced against real transit lines to show who can actually reach help without a car.</p>
+      <div class="meta-row">
+        <span class="stat">285 geocoded pantries</span>
+        <span class="stat">CTA, Metra &amp; Pace transit data</span>
+        <span class="stat">180 within 0.5 mi of transit</span>
+      </div>
+    </header>
+  </div>
+
+  <div class="project-hero-media">
+    <div class="media-inner">
+      <img src="../images/food-pantry-transit-map.jpg" alt="Screenshot of the Chicagoland Food Pantries and Transit Access map, showing CTA, Metra, and Pace transit lines alongside clustered food pantry markers across the Chicago metro area.">
+    </div>
+  </div>
+
+  <div class="container project-body">
+    <p>
+      Food access and transit access are the same question for a lot of people: it doesn't
+      matter if a pantry exists if there's no practical way to get there. This project maps
+      food pantries across a 90-mile radius of Chicago and checks each one against real
+      CTA, Metra, and Pace route geometries to flag what's actually reachable on foot from
+      transit — not just what's nearby on a map.
+    </p>
+
+    <h2>Real data, not a curated sample</h2>
+    <p>
+      The pantry list comes from scraping and deduplicating listings across 156 Illinois
+      cities from a public food-pantry directory, then geocoding every address through the
+      Census Bureau's official batch geocoder (with an OpenStreetMap fallback for the
+      addresses it couldn't resolve). Hours of operation were extracted from freeform
+      description text and normalized into consistent formatting — a messier, more honest
+      process than it sounds, since real-world pantry listings are anything but
+      standardized.
+    </p>
+
+    <h2>Transit data from the source, not guesswork</h2>
+    <p>
+      CTA, Metra, and Pace route geometries come directly from the RTA's own official
+      ArcGIS feature service — the same authoritative source the agencies themselves use.
+      Clicking any transit line pops up its current fare and a link to its real, live
+      schedule page. Clicking a pantry shows its hours, phone number, and whether it falls
+      within a half-mile walk of any of those lines, calculated as an actual spatial join,
+      not an eyeballed estimate.
+    </p>
+
+    <div class="callout">
+      <span class="callout-label">Worth knowing</span>
+      <p>
+        Building this surfaced a real data-quality problem: an official regional transit
+        dataset listed Pace bus schedule links that pointed to a discontinued website.
+        I traced it, found Pace's current URL pattern, and verified all 137 routes
+        individually rather than trusting the source data at face value.
+      </p>
+    </div>
+
+    <div class="evidence-panel">
+      <p>Live, interactive, and open source.</p>
+      <a class="btn btn-primary" href="../foodpantries/" target="_blank" rel="noopener">
+        View the map <span class="visually-hidden">(opens in a new tab)</span>
+      </a>
+      <a class="btn btn-outline" href="https://github.com/dulcetberg/chicagoland-food-pantry-transit-map" target="_blank" rel="noopener">
+        View the code <span class="visually-hidden">(opens in a new tab)</span>
+      </a>
+    </div>
+  </div>
+
+  <section id="contact" class="contact-cta container">
+    <h2>Let's talk about a job, a project, or both.</h2>
+    <p>I'm open to full-time GIS Analyst roles and freelance/consulting work.</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="mailto:brian@bergstromgis.com">Email me</a>
+      <a class="btn btn-outline" href="https://www.linkedin.com/in/brianbergstrom86/" target="_blank" rel="noopener">LinkedIn <span class="visually-hidden">(opens in a new tab)</span></a>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-contact">
+      <a class="btn btn-outline" href="mailto:brian@bergstromgis.com">brian@bergstromgis.com</a>
+      <a class="btn btn-outline" href="https://www.linkedin.com/in/brianbergstrom86/" target="_blank" rel="noopener">LinkedIn</a>
+      <a class="btn btn-outline" href="../../resume/resume.html">Resume</a>
+    </div>
+    <p class="footer-note">&copy; Brian Bergstrom. Built by hand, hosted on GitHub Pages.</p>
+  </div>
+</footer>
+
+<script>
+  document.documentElement.classList.add('js-ready');
+  var toggle = document.getElementById('navToggle');
+  var links = document.getElementById('navLinks');
+  toggle.addEventListener('click', function () {
+    var open = links.classList.toggle('is-open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+</script>
+</body>
+</html>
