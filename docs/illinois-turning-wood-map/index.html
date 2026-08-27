@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Illinois Turning Wood Map</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  :root {
+    color-scheme: light;
+    --surface-1: #fcfcfb;
+    --page-plane: #f9f9f7;
+    --text-primary: #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted: #898781;
+    --border: rgba(11,11,11,0.10);
+    --blue-450: #2a78d6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --surface-1: #1a1a19; --page-plane: #0d0d0d;
+      --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+      --border: rgba(255,255,255,0.10); --blue-450: #3987e5;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --surface-1: #1a1a19; --page-plane: #0d0d0d;
+    --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+    --border: rgba(255,255,255,0.10); --blue-450: #3987e5;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page-plane); color: var(--text-primary); font-family: system-ui, -apple-system, "Segoe UI", sans-serif; line-height: 1.6; }
+  main { max-width: 1000px; margin: 0 auto; padding: 3rem 1.5rem 6rem; }
+  h1 { font-size: clamp(1.7rem, 3.6vw, 2.3rem); font-weight: 700; line-height: 1.2; margin: 0 0 0.75rem; text-wrap: balance; }
+  h2 { font-size: 1.4rem; font-weight: 700; margin: 0 0 0.5rem; }
+  p { max-width: 68ch; margin: 0 0 1.1rem; color: var(--text-secondary); }
+  .eyebrow { font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--blue-450); font-weight: 600; margin-bottom: 0.75rem; display: block; }
+  header.page { border-bottom: 1px solid var(--border); padding-bottom: 2rem; margin-bottom: 2.5rem; }
+  section { margin-bottom: 3.5rem; }
+
+  .map-panel { background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .control-row { display: flex; align-items: center; gap: 0.75rem; padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+  .control-row label { font-size: 0.85rem; color: var(--text-muted); }
+  #species-select { font: inherit; font-size: 0.95rem; padding: 0.5rem 0.8rem; border-radius: 6px; border: 1px solid var(--border); background: var(--page-plane); color: var(--text-primary); }
+  #map { height: 600px; width: 100%; }
+  .legend { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; padding: 0.9rem 1.25rem; font-size: 0.8rem; color: var(--text-muted); border-top: 1px solid var(--border); }
+  .legend .swatch { width: 16px; height: 16px; border-radius: 3px; display: inline-block; border: 1px solid var(--border); }
+  .legend .nodata { background: repeating-linear-gradient(45deg, #d8d6cf, #d8d6cf 3px, transparent 3px, transparent 6px); }
+
+  .callout { background: var(--surface-1); border: 1px solid var(--border); border-left: 3px solid var(--blue-450); border-radius: 8px; padding: 1.1rem 1.4rem; margin: 1.5rem 0; }
+  .callout p { margin: 0; }
+  .callout .label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--blue-450); font-weight: 700; display: block; margin-bottom: 0.4rem; }
+
+  footer { border-top: 1px solid var(--border); padding-top: 1.5rem; margin-top: 3rem; font-size: 0.85rem; color: var(--text-muted); }
+  a { color: var(--blue-450); }
+  .popup-rank { margin: 0; padding-left: 1.1rem; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<main>
+
+  <header class="page">
+    <span class="eyebrow">Illinois &middot; 102 Counties &middot; USDA Forest Inventory Data</span>
+    <h1>Illinois Turning Wood Map</h1>
+    <p>Where 16 prized wood-turning species actually grow across Illinois, based on real USDA Forest Service inventory data, not folklore. Pick a species below, or click any county to see what actually grows there.</p>
+  </header>
+
+  <section id="map-section">
+    <h2>Standing volume by species</h2>
+    <p>Color shows relative standing wood volume for the selected species, county by county. This is live, standing forest, not harvestable lumber ready to buy.</p>
+
+    <div class="map-panel">
+      <div class="control-row">
+        <label for="species-select">Species:</label>
+        <select id="species-select"></select>
+      </div>
+      <div id="map"></div>
+      <div class="legend" id="legend"></div>
+    </div>
+  </section>
+
+  <div class="callout">
+    <span class="label">What this actually measures</span>
+    <p>Volume figures come from the USDA Forest Service's Forest Inventory and Analysis (FIA) program, real ground-surveyed forest plots, not a model or a guess. A county showing "no data" for a species means it wasn't detected in that county's sampled plots, not necessarily that none exists there at all &mdash; FIA samples on a grid, it doesn't count every tree.</p>
+  </div>
+
+  <section id="methodology">
+    <h2>Methodology</h2>
+    <p><strong>Species:</strong> 16 species commonly sought by wood turners, all confirmed present in Illinois FIA data: black walnut, butternut, black cherry, common persimmon, Osage-orange, sugar maple, boxelder, white oak, northern red oak, bur oak, shagbark hickory, American sycamore, black locust, red mulberry, American basswood, and eastern redcedar.</p>
+    <p><strong>Volume:</strong> gross total-stem wood volume of live trees at least 1 inch d.b.h., in cubic feet, on forest land, from the most recent Illinois FIA evaluation (2024).</p>
+    <p><strong>Geography:</strong> all 102 Illinois counties (2 have no FIA data at all and are shown as no-data).</p>
+    <p>Data pulled August 2026 via the <a href="https://apps.fs.usda.gov/fiadb-api/" target="_blank" rel="noopener">FIADB-API</a>.</p>
+  </section>
+
+  <footer>
+    By <a href="https://bergstromgis.com">Brian Bergstrom</a>. Built with USDA Forest Service Forest Inventory and Analysis (FIA) data and U.S. Census Bureau TIGER/Line boundaries.
+  </footer>
+
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// Each species gets its own ramp, loosely inspired by its actual wood tone --
+// since only one species is ever shown at once, there's no simultaneous-
+// comparison colorblind-safety concern the way there would be with multiple
+// categories on screen at the same time.
+const SPECIES_RAMPS = {
+  "Black walnut":       ["#e8dcc8", "#c9a876", "#a67c4a", "#7d5732", "#4a3220"],
+  "Butternut":          ["#f0e6d2", "#dcc99a", "#c4a670", "#a17f4a", "#7a5c2e"],
+  "Black cherry":       ["#f5ddd4", "#e3ac97", "#cc7a5c", "#a84e34", "#7a2f1c"],
+  "Common persimmon":   ["#d9d3cc", "#a89e93", "#6e6259", "#453a33", "#211a16"],
+  "Osage-orange":       ["#fdf0c9", "#fad884", "#f2af3e", "#d4890f", "#9c6106"],
+  "Sugar maple":        ["#fdf1d6", "#f8dda0", "#eec066", "#d99b32", "#a8721a"],
+  "Boxelder":           ["#fbe2e6", "#f3b8c3", "#e8899c", "#cf5872", "#9c3450"],
+  "White oak":          ["#f4efe4", "#e3d6b8", "#cbb787", "#a8935c", "#7d6a3c"],
+  "Northern red oak":   ["#f7e6de", "#eec3ae", "#dd9878", "#c06b48", "#8f4429"],
+  "Bur oak":            ["#f0e8d8", "#dcc9a0", "#c2a56e", "#9c7c47", "#6e5730"],
+  "Shagbark hickory":   ["#f5ecd8", "#e6cf9c", "#d1ab63", "#ab7f37", "#7a5a22"],
+  "American sycamore":  ["#eef2ec", "#d3ddd0", "#aec2a8", "#82a179", "#597551"],
+  "Black locust":       ["#f0f2d8", "#dde39c", "#bfcb64", "#95a838", "#6a7a1e"],
+  "Red mulberry":       ["#fbecd0", "#f2cf8e", "#e3ab52", "#c4832a", "#8f5f19"],
+  "American basswood":  ["#faf8f0", "#f0ead9", "#e0d5b8", "#c7b48a", "#a3905f"],
+  "Eastern redcedar":   ["#f8e2dc", "#eeb8ac", "#df8b78", "#c25b45", "#8f3624"],
+};
+const NODATA_COLOR = "#c9c7bd";
+let geoData, map, layer, currentSpecies;
+
+function quantileBreaks(values, n) {
+  const sorted = [...values].sort((a, b) => a - b);
+  const breaks = [];
+  for (let i = 1; i < n; i++) {
+    breaks.push(sorted[Math.floor((sorted.length * i) / n)]);
+  }
+  breaks.push(Infinity);
+  return breaks;
+}
+
+function classify(value, breaks) {
+  if (value === null || value === undefined) return -1;
+  for (let i = 0; i < breaks.length; i++) if (value <= breaks[i]) return i;
+  return breaks.length - 1;
+}
+
+function colorFor(value, breaks, ramp) {
+  const idx = classify(value, breaks);
+  return idx === -1 ? NODATA_COLOR : ramp[Math.min(idx, ramp.length - 1)];
+}
+
+fetch("web_wood_data.geojson")
+  .then(r => r.json())
+  .then(data => {
+    geoData = data;
+    const speciesList = Object.keys(data.features[0].properties)
+      .filter(k => !["GEOID", "NAME", "top_species"].includes(k))
+      .sort();
+
+    const select = document.getElementById("species-select");
+    select.innerHTML = speciesList.map(s => `<option value="${s}">${s}</option>`).join("");
+    select.value = "Black walnut";
+    currentSpecies = "Black walnut";
+
+    initMap();
+    select.addEventListener("change", () => {
+      currentSpecies = select.value;
+      redraw();
+    });
+  });
+
+function initMap() {
+  map = L.map("map", { scrollWheelZoom: false }).setView([40.0, -89.2], 7);
+  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
+    attribution: '&copy; OpenStreetMap contributors &copy; Esri', maxZoom: 16,
+  }).addTo(map);
+
+  map.createPane("labels");
+  map.getPane("labels").style.zIndex = 650;
+  map.getPane("labels").style.pointerEvents = "none";
+  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}", {
+    pane: "labels", maxZoom: 16,
+  }).addTo(map);
+
+  redraw();
+}
+
+function redraw() {
+  const values = geoData.features.map(f => f.properties[currentSpecies]).filter(v => v !== null && v !== undefined);
+  const breaks = quantileBreaks(values, 5);
+  const ramp = SPECIES_RAMPS[currentSpecies] || SPECIES_RAMPS["Black walnut"];
+
+  if (layer) map.removeLayer(layer);
+  layer = L.geoJSON(geoData, {
+    style: f => ({
+      fillColor: colorFor(f.properties[currentSpecies], breaks, ramp),
+      weight: 0.6, color: "#ffffff88", fillOpacity: 0.85,
+    }),
+    onEachFeature: (f, lyr) => {
+      const p = f.properties;
+      const val = p[currentSpecies];
+      const rankList = p.top_species.map((s, i) =>
+        `<li>${s.name}: ${s.volume.toLocaleString()} cu ft</li>`
+      ).join("");
+      lyr.bindPopup(
+        `<strong>${p.NAME} County</strong><br>` +
+        `${currentSpecies}: ${val !== null ? val.toLocaleString() + " cu ft" : "not detected"}<br>` +
+        `<br><strong>Top 5 species in this county:</strong>` +
+        `<ol class="popup-rank">${rankList}</ol>`,
+        { autoPan: false }
+      );
+    },
+  }).addTo(map);
+
+  buildLegend(breaks, ramp);
+}
+
+function buildLegend(breaks, ramp) {
+  const el = document.getElementById("legend");
+  el.innerHTML = "";
+  const fmt = n => n === Infinity ? "+" : Math.round(n).toLocaleString();
+  let prev = 0;
+  ramp.forEach((color, i) => {
+    const span = document.createElement("span");
+    const label = i === ramp.length - 1 ? `${fmt(prev)}+` : `${fmt(prev)}–${fmt(breaks[i])}`;
+    span.innerHTML = `<span class="swatch" style="background:${color}"></span> ${label}`;
+    el.appendChild(span);
+    prev = breaks[i];
+  });
+  const nd = document.createElement("span");
+  nd.innerHTML = `<span class="swatch nodata"></span> not detected`;
+  el.appendChild(nd);
+}
+</script>
+</body>
+</html>
