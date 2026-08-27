@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chicagoland Third Places — Brian Bergstrom</title>
+<meta name="description" content="Every cafe, library, community center, and social facility across 319 Chicagoland municipalities, mapped per capita so towns of any size can be compared fairly.">
+<link rel="canonical" href="https://bergstromgis.com/work/chicagoland-third-places.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Brian Bergstrom">
+<meta property="og:title" content="Chicagoland Third Places — Brian Bergstrom">
+<meta property="og:description" content="Every cafe, library, community center, and social facility across 319 Chicagoland municipalities, mapped per capita so towns of any size can be compared fairly.">
+<meta property="og:image" content="https://bergstromgis.com/images/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Brian Bergstrom — GIS that makes the overlooked undeniable.">
+<meta property="og:url" content="https://bergstromgis.com/work/chicagoland-third-places.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Chicagoland Third Places — Brian Bergstrom">
+<meta name="twitter:description" content="Every cafe, library, community center, and social facility across 319 Chicagoland municipalities, mapped per capita so towns of any size can be compared fairly.">
+<meta name="twitter:image" content="https://bergstromgis.com/images/og-image.png">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="alternate icon" href="../favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../css/brand.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <nav class="site-nav container" aria-label="Primary">
+    <a class="wordmark" href="../index.html">Brian Bergstrom</a>
+    <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks">Menu</button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../work-civic.html">Work</a></li>
+      <li><a href="../about.html">About</a></li>
+      <li><a href="../../resume/resume.html">Resume</a></li>
+      <li><a href="../contact.html">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main id="main">
+  <div class="container">
+    <a class="breadcrumb" href="../work-civic.html">&larr; Back to civic work</a>
+
+    <header class="project-header">
+      <span class="tag tag-civic">Civic — Independent Study</span>
+      <h1>Chicagoland Third Places</h1>
+      <p class="subtitle">Every cafe, library, community center, and social facility across 319 Chicagoland municipalities, mapped per capita so towns of any size can be compared fairly.</p>
+      <div class="meta-row">
+        <span class="stat">OpenStreetMap via Overpass API</span>
+        <span class="stat">Census TIGER/Line + ACS population data</span>
+      </div>
+    </header>
+  </div>
+
+  <div class="project-hero-media">
+    <div class="media-inner">
+      <img src="../images/chicagoland-third-places.jpg" alt="Screenshot of the Chicagoland Third Places map, showing a choropleth of third places per 10,000 residents across Cook, DuPage, Kane, Lake, McHenry, and Will counties, with the densest concentration in and around Chicago.">
+    </div>
+  </div>
+
+  <div class="container project-body">
+    <p>
+      "Third places" is Ray Oldenburg's term for the informal public spots people
+      gather outside of home and work: cafes, libraries, community centers, social
+      facilities. This maps every one of them I could find on OpenStreetMap across
+      319 towns and cities in the six-county Chicagoland region, and compares them
+      per capita instead of by raw count, since a raw count just tells you which
+      town is biggest.
+    </p>
+
+    <h2>The angle I started with didn't hold up</h2>
+    <p>
+      I originally set out to build something bigger: pairing this with an analysis
+      of how thoroughly each area has actually been mapped on OpenStreetMap, on the
+      assumption that wealthier areas would be more completely mapped and worse-off
+      areas would show up as under-mapped. The real numbers said the opposite of
+      what I expected. Population density predicted mapping completeness far better
+      than income did, and when I checked the same question at a different level of
+      geography (towns instead of census tracts), the pattern flipped entirely. That's
+      a real, documented problem in spatial statistics called the Modifiable Areal
+      Unit Problem. I decided that was a more honest finding to write up than to
+      build around, so I cut it from the interactive page and put my effort into
+      making the third-places map itself as useful as I could.
+    </p>
+
+    <h2>Built to actually be used, not just looked at</h2>
+    <p>
+      Past the map itself, there's a ZIP code search so you can jump straight to
+      your own area, and a second map showing all 2,645 individual locations
+      plotted where they really are, not just aggregated by town. Both maps
+      distinguish three categories: cafes, social facilities, and community/civic
+      spaces (libraries and community centers combined).
+    </p>
+
+    <div class="callout">
+      <span class="callout-label">Worth knowing</span>
+      <p>
+        A town showing zero third places means OpenStreetMap has nothing tagged
+        there, not necessarily that nothing exists. Some towns are genuinely
+        underserved; some may just be under-mapped. I built it to show both
+        possibilities honestly rather than assume one.
+      </p>
+    </div>
+
+    <h2>What actually took the most work</h2>
+    <p>
+      Not the mapping logic, the click reliability. Individual map pins would
+      intermittently fail to open their popup, worse the more you clicked, in a
+      way that didn't show up in any browser console error. It turned out Leaflet's
+      popups automatically nudge the map to keep themselves visible by default,
+      which silently shifts every other pin's on-screen position by a few pixels
+      each time you open one. I only found it by scripting a headless browser to
+      click through the page automatically and compare it against my own manual
+      testing, since a script clicks the exact same pixel every time and a real
+      hand doesn't.
+    </p>
+
+    <div class="evidence-panel">
+      <p>Explore all 319 municipalities, or search your own ZIP code.</p>
+      <a class="btn btn-primary" href="../chicagoland-third-places/" target="_blank" rel="noopener">
+        View the map <span class="visually-hidden">(opens in a new tab)</span>
+      </a>
+      <a class="btn btn-outline" href="https://github.com/dulcetberg/chicagoland-third-places" target="_blank" rel="noopener">
+        View the code <span class="visually-hidden">(opens in a new tab)</span>
+      </a>
+    </div>
+  </div>
+
+  <section id="contact" class="contact-cta container">
+    <h2>Let's talk about a job, a project, or both.</h2>
+    <p>I'm open to full-time GIS Analyst roles and freelance/consulting work.</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="mailto:brian@bergstromgis.com">Email me</a>
+      <a class="btn btn-outline" href="https://www.linkedin.com/in/brianbergstrom86/" target="_blank" rel="noopener">LinkedIn <span class="visually-hidden">(opens in a new tab)</span></a>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-contact">
+      <a class="btn btn-outline" href="mailto:brian@bergstromgis.com">brian@bergstromgis.com</a>
+      <a class="btn btn-outline" href="https://www.linkedin.com/in/brianbergstrom86/" target="_blank" rel="noopener">LinkedIn</a>
+      <a class="btn btn-outline" href="../../resume/resume.html">Resume</a>
+    </div>
+    <p class="footer-note">&copy; Brian Bergstrom. Built by hand, hosted on GitHub Pages.</p>
+  </div>
+</footer>
+
+<script>
+  document.documentElement.classList.add('js-ready');
+  var toggle = document.getElementById('navToggle');
+  var links = document.getElementById('navLinks');
+  toggle.addEventListener('click', function () {
+    var open = links.classList.toggle('is-open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+</script>
+</body>
+</html>

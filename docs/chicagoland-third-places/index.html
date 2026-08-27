@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Where Chicagoland's Third Places Are (and Aren't)</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  :root {
+    color-scheme: light;
+    --surface-1: #fcfcfb;
+    --page-plane: #f9f9f7;
+    --text-primary: #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted: #898781;
+    --gridline: #e1e0d9;
+    --border: rgba(11,11,11,0.10);
+    --blue-450: #2a78d6;
+    --cat-cafe: #2a78d6;
+    --cat-social: #eb6834;
+    --cat-civic: #1baf7a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --surface-1: #1a1a19; --page-plane: #0d0d0d;
+      --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+      --gridline: #2c2c2a; --border: rgba(255,255,255,0.10); --blue-450: #3987e5;
+      --cat-cafe: #3987e5; --cat-social: #d95926; --cat-civic: #199e70;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --surface-1: #1a1a19; --page-plane: #0d0d0d;
+    --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+    --gridline: #2c2c2a; --border: rgba(255,255,255,0.10); --blue-450: #3987e5;
+    --cat-cafe: #3987e5; --cat-social: #d95926; --cat-civic: #199e70;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page-plane); color: var(--text-primary); font-family: system-ui, -apple-system, "Segoe UI", sans-serif; line-height: 1.6; }
+  main { max-width: 1000px; margin: 0 auto; padding: 3rem 1.5rem 6rem; }
+  h1 { font-size: clamp(1.7rem, 3.6vw, 2.3rem); font-weight: 700; line-height: 1.2; margin: 0 0 0.75rem; text-wrap: balance; }
+  h2 { font-size: 1.4rem; font-weight: 700; margin: 0 0 0.5rem; }
+  h3 { font-size: 1.05rem; margin: 0 0 0.4rem; }
+  p { max-width: 68ch; margin: 0 0 1.1rem; color: var(--text-secondary); }
+  .eyebrow { font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--blue-450); font-weight: 600; margin-bottom: 0.75rem; display: block; }
+  header.page { border-bottom: 1px solid var(--border); padding-bottom: 2rem; margin-bottom: 2.5rem; }
+  section { margin-bottom: 3.5rem; }
+
+  .map-panel { background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  #map { height: 560px; width: 100%; }
+  .legend { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; padding: 0.9rem 1.25rem; font-size: 0.8rem; color: var(--text-muted); border-top: 1px solid var(--border); }
+  .legend .swatch { width: 16px; height: 16px; border-radius: 3px; display: inline-block; border: 1px solid var(--border); }
+  .legend .nodata { background: repeating-linear-gradient(45deg, #d8d6cf, #d8d6cf 3px, transparent 3px, transparent 6px); }
+  .toggle-row { display: flex; gap: 0.5rem; padding: 1rem 1.25rem 0; }
+  .toggle-btn { font: inherit; font-size: 0.85rem; padding: 0.45rem 0.9rem; border-radius: 999px; border: 1px solid var(--border); background: var(--surface-1); color: var(--text-secondary); cursor: pointer; }
+  .toggle-btn.active { background: var(--blue-450); color: #fff; border-color: var(--blue-450); font-weight: 600; }
+  .zip-search-row { display: flex; align-items: center; gap: 0.6rem; padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); }
+  #zip-input { font: inherit; font-size: 0.9rem; padding: 0.5rem 0.8rem; border-radius: 6px; border: 1px solid var(--border); background: var(--page-plane); color: var(--text-primary); width: 160px; }
+  #zip-message { font-size: 0.85rem; color: var(--text-muted); }
+  #zip-message.error { color: #d03b3b; }
+  .third-place-dot { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1000 !important; }
+  .third-place-dot > div { border: 1.5px solid #ffffff; box-shadow: 0 0 0 1px rgba(0,0,0,0.2); }
+
+  .lists-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-top: 1.5rem; }
+  @media (min-width: 760px) { .lists-grid { grid-template-columns: 1fr 1fr 1fr; } }
+  .list-card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; }
+  .list-card ol { margin: 0; padding-left: 1.3rem; color: var(--text-secondary); }
+  .list-card li { margin-bottom: 0.5rem; font-size: 0.92rem; }
+  .list-card li strong { color: var(--text-primary); }
+  .list-card .stat { color: var(--text-muted); font-variant-numeric: tabular-nums; }
+
+  .callout { background: var(--surface-1); border: 1px solid var(--border); border-left: 3px solid var(--blue-450); border-radius: 8px; padding: 1.1rem 1.4rem; margin: 1.5rem 0; }
+  .callout p { margin: 0; }
+  .callout .label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--blue-450); font-weight: 700; display: block; margin-bottom: 0.4rem; }
+
+  footer { border-top: 1px solid var(--border); padding-top: 1.5rem; margin-top: 3rem; font-size: 0.85rem; color: var(--text-muted); }
+  a { color: var(--blue-450); }
+</style>
+</head>
+<body>
+<main>
+
+  <header class="page">
+    <span class="eyebrow">Chicagoland &middot; OpenStreetMap &middot; 319 Municipalities</span>
+    <h1>Where Chicagoland's Third Places Are (and Aren't)</h1>
+    <p>"Third places" are the informal public spaces where people gather outside of home and work &mdash; cafes, libraries, community centers, social facilities. This maps every one of them across 319 towns and cities in Cook, DuPage, Kane, Lake, McHenry, and Will counties, and shows which places actually have the most, relative to how many people live there.</p>
+  </header>
+
+  <section id="map-section">
+    <h2>Third places per 10,000 residents</h2>
+    <p>Raw counts favor big cities by default &mdash; Chicago will always have the most cafes just by having the most people. Dividing by population instead shows which towns are relatively well-served, regardless of size.</p>
+
+    <div class="map-panel">
+      <div class="toggle-row">
+        <button class="toggle-btn active" id="btn-percapita">Per 10,000 residents</button>
+        <button class="toggle-btn" id="btn-raw">Raw count</button>
+      </div>
+      <div id="map"></div>
+      <div class="legend" id="legend"></div>
+    </div>
+  </section>
+
+  <section id="points-map">
+    <h2>Every location, individually</h2>
+    <p>The map above shows relative patterns by town. This one shows the real thing &mdash; all 2,645 actual cafes, libraries, community centers, and social facilities, plotted where they really are. Zoom into your own neighborhood and see what's actually nearby.</p>
+    <div class="map-panel">
+      <div class="zip-search-row">
+        <input type="text" id="zip-input" placeholder="Enter a ZIP code..." inputmode="numeric" maxlength="5">
+        <button id="zip-search-btn" class="toggle-btn">Go</button>
+        <span id="zip-message"></span>
+      </div>
+      <div id="points-map-el" style="height:560px; width:100%;"></div>
+      <div class="legend" id="points-legend"></div>
+    </div>
+  </section>
+
+  <section id="lists">
+    <h2>The extremes, by name</h2>
+    <div class="lists-grid">
+      <div class="list-card">
+        <h3>Best served</h3>
+        <p style="font-size:0.8rem; margin-bottom:0.75rem;">Towns of 5,000+ residents, most third places per capita</p>
+        <ol id="list-top"></ol>
+      </div>
+      <div class="list-card">
+        <h3>Least served (but not zero)</h3>
+        <p style="font-size:0.8rem; margin-bottom:0.75rem;">Towns of 5,000+ residents with at least one third place</p>
+        <ol id="list-bottom"></ol>
+      </div>
+      <div class="list-card">
+        <h3>Zero third places</h3>
+        <p style="font-size:0.8rem; margin-bottom:0.75rem;">Towns of 5,000+ residents with none recorded at all</p>
+        <ol id="list-zero"></ol>
+      </div>
+    </div>
+
+    <div class="callout">
+      <span class="label">Worth remembering</span>
+      <p>A town showing zero here means OpenStreetMap has no cafe, library, community center, or social facility tagged inside its boundary &mdash; not necessarily that none exist. Some of these are genuinely underserved; some may just be under-mapped. Both are worth knowing.</p>
+    </div>
+  </section>
+
+  <section id="methodology">
+    <h2>Methodology</h2>
+    <p><strong>Geography:</strong> 319 Census-designated places (incorporated towns/cities) across Cook, DuPage, Kane, Lake, McHenry, and Will counties, from 2020 TIGER/Line boundaries.</p>
+    <p><strong>Third places:</strong> OpenStreetMap features tagged <code>amenity=cafe</code>, <code>library</code>, <code>community_centre</code>, or <code>social_facility</code>, pulled via the Overpass API, August 2026.</p>
+    <p><strong>Population:</strong> 2023 5-year American Community Survey estimates, by place.</p>
+    <p>OpenStreetMap data changes constantly &mdash; this is a snapshot, not a permanent record.</p>
+  </section>
+
+  <footer>
+    Built with OpenStreetMap contributors' data (© OpenStreetMap contributors, ODbL) and U.S. Census Bureau TIGER/Line and ACS data.
+  </footer>
+
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const BLUE_RAMP = ["#cde2fb", "#9ec5f4", "#5598e7", "#2a78d6", "#184f95"];
+const NODATA_COLOR = "#c9c7bd";
+let geoData, map, layer;
+let mode = "per_10k";
+
+function classify(value, breaks) {
+  if (value === null || value === undefined || isNaN(value)) return -1;
+  for (let i = 0; i < breaks.length; i++) if (value <= breaks[i]) return i;
+  return breaks.length - 1;
+}
+const BREAKS = { per_10k: [0.5, 1.5, 3, 5, 100], third_place_count: [0, 1, 3, 8, 10000] };
+const LABELS = { per_10k: ["0", "0.5-1.5", "1.5-3", "3-5", "5+"], third_place_count: ["0", "1", "2-3", "4-8", "9+"] };
+
+function colorFor(value) {
+  const idx = classify(value, BREAKS[mode]);
+  return idx === -1 ? NODATA_COLOR : BLUE_RAMP[Math.min(idx, BLUE_RAMP.length - 1)];
+}
+
+fetch("web_places_data.geojson")
+  .then(r => {
+    if (!r.ok) throw new Error(`web_places_data.geojson returned HTTP ${r.status}`);
+    return r.json();
+  })
+  .then(data => {
+    geoData = data;
+    initMap();
+    buildLegend();
+    buildLists(data);
+  })
+  .catch(err => console.error("PLACES MAP FAILED:", err));
+
+const CATEGORY_STYLE = {
+  cafe:            { color: getComputedStyle(document.documentElement).getPropertyValue('--cat-cafe').trim(),   label: "Cafes" },
+  social_facility: { color: getComputedStyle(document.documentElement).getPropertyValue('--cat-social').trim(), label: "Social Facilities" },
+  civic:           { color: getComputedStyle(document.documentElement).getPropertyValue('--cat-civic').trim(),  label: "Community & Civic Spaces" },
+};
+
+let pointsMap, zipLookup = {};
+
+fetch("zip_lookup.json")
+  .then(r => {
+    if (!r.ok) throw new Error(`zip_lookup.json returned HTTP ${r.status}`);
+    return r.json();
+  })
+  .then(data => { zipLookup = data; })
+  .catch(err => console.error("ZIP LOOKUP FAILED:", err));
+
+fetch("web_points_data.geojson")
+  .then(r => {
+    if (!r.ok) throw new Error(`web_points_data.geojson returned HTTP ${r.status}`);
+    return r.json();
+  })
+  .then(data => {
+    pointsMap = L.map("points-map-el", { scrollWheelZoom: false, zoomAnimation: false, markerZoomAnimation: false }).setView([41.85, -87.9], 10);
+    L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
+      attribution: '&copy; OpenStreetMap contributors &copy; Esri', maxZoom: 16,
+    }).addTo(pointsMap);
+
+    L.geoJSON(data, {
+      pointToLayer: (feature, latlng) => {
+        const style = CATEGORY_STYLE[feature.properties.category] || { color: "#898781" };
+        const icon = L.divIcon({
+          className: "third-place-dot",
+          html: `<div style="width:12px; height:12px; border-radius:50%; background:${style.color};"></div>`,
+          iconSize: [28, 28],
+          iconAnchor: [14, 14],
+        });
+        return L.marker(latlng, { icon });
+      },
+      onEachFeature: (feature, lyr) => {
+        const p = feature.properties;
+        const style = CATEGORY_STYLE[p.category] || { label: "Other" };
+        lyr.bindPopup(`<strong>${p.name || "(unnamed)"}</strong><br>${style.label}`, { autoPan: false });
+      },
+    }).addTo(pointsMap);
+
+    const legendEl = document.getElementById("points-legend");
+    legendEl.innerHTML = Object.values(CATEGORY_STYLE).map(s =>
+      `<span><span class="swatch" style="background:${s.color}; border-radius:50%;"></span> ${s.label}</span>`
+    ).join("");
+  })
+  .catch(err => console.error("POINTS MAP FAILED:", err));
+
+function searchZip() {
+  const el = document.getElementById("zip-input");
+  const msg = document.getElementById("zip-message");
+  const zip = el.value.trim();
+
+  if (!/^\d{5}$/.test(zip)) {
+    msg.textContent = "Enter a 5-digit ZIP code.";
+    msg.className = "error";
+    return;
+  }
+  const coords = zipLookup[zip];
+  if (!coords) {
+    msg.textContent = "That ZIP isn't in the six-county region covered here.";
+    msg.className = "error";
+    return;
+  }
+  if (!pointsMap) return;
+  pointsMap.flyTo([coords[0], coords[1]], 14, { duration: 1.2 });
+  msg.textContent = "";
+  msg.className = "";
+}
+
+document.getElementById("zip-search-btn").addEventListener("click", searchZip);
+document.getElementById("zip-input").addEventListener("keydown", e => {
+  if (e.key === "Enter") searchZip();
+});
+
+function initMap() {
+  map = L.map("map", { scrollWheelZoom: false }).setView([41.85, -87.9], 9);
+  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
+    attribution: '&copy; OpenStreetMap contributors &copy; Esri', maxZoom: 16,
+  }).addTo(map);
+  redrawLayer();
+}
+
+function redrawLayer() {
+  if (layer) map.removeLayer(layer);
+  layer = L.geoJSON(geoData, {
+    style: f => ({ fillColor: colorFor(f.properties[mode]), weight: 0.6, color: "#ffffff66", fillOpacity: 0.85 }),
+    onEachFeature: (f, lyr) => {
+      const p = f.properties;
+      lyr.bindTooltip(
+        `<strong>${p.NAME}</strong><br>Third places: ${p.third_place_count}<br>` +
+        `Population: ${p.population ? p.population.toLocaleString() : "n/a"}<br>` +
+        `Per 10k residents: ${p.per_10k !== null ? p.per_10k : "n/a"}`
+      );
+    },
+  }).addTo(map);
+  if (map.getZoom() <= 9) map.fitBounds(layer.getBounds());
+}
+
+document.getElementById("btn-percapita").onclick = () => setMode("per_10k", "btn-percapita");
+document.getElementById("btn-raw").onclick = () => setMode("third_place_count", "btn-raw");
+function setMode(m, btnId) {
+  mode = m;
+  document.querySelectorAll(".toggle-btn").forEach(b => b.classList.remove("active"));
+  document.getElementById(btnId).classList.add("active");
+  redrawLayer();
+  buildLegend();
+}
+
+function buildLegend() {
+  const el = document.getElementById("legend");
+  el.innerHTML = "";
+  BLUE_RAMP.forEach((color, i) => {
+    const span = document.createElement("span");
+    span.innerHTML = `<span class="swatch" style="background:${color}"></span> ${LABELS[mode][i]}`;
+    el.appendChild(span);
+  });
+  const nd = document.createElement("span");
+  nd.innerHTML = `<span class="swatch nodata"></span> no data`;
+  el.appendChild(nd);
+}
+
+function buildLists(data) {
+  const feats = data.features.map(f => f.properties).filter(p => p.population >= 5000);
+  const withPlaces = feats.filter(p => p.third_place_count > 0);
+
+  const top = [...withPlaces].sort((a,b) => b.per_10k - a.per_10k).slice(0, 8);
+  const bottom = [...withPlaces].sort((a,b) => a.per_10k - b.per_10k).slice(0, 8);
+  const zero = feats.filter(p => p.third_place_count === 0).sort((a,b) => b.population - a.population).slice(0, 8);
+
+  const renderList = (elId, items, statFn) => {
+    document.getElementById(elId).innerHTML = items.map(p =>
+      `<li><strong>${p.NAME}</strong> &mdash; <span class="stat">${statFn(p)}</span></li>`
+    ).join("");
+  };
+  renderList("list-top", top, p => `${p.per_10k}/10k (${p.third_place_count} total)`);
+  renderList("list-bottom", bottom, p => `${p.per_10k}/10k (${p.third_place_count} total)`);
+  renderList("list-zero", zero, p => `pop. ${p.population.toLocaleString()}`);
+}
+</script>
+</body>
+</html>
