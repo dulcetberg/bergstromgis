@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chicagoland's Activity Space Divide</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  :root {
+    color-scheme: light;
+    --surface-1: #fcfcfb;
+    --page-plane: #f9f9f7;
+    --text-primary: #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted: #898781;
+    --gridline: #e1e0d9;
+    --border: rgba(11,11,11,0.10);
+    --blue-450: #2a78d6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --surface-1: #1a1a19; --page-plane: #0d0d0d;
+      --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+      --gridline: #2c2c2a; --border: rgba(255,255,255,0.10); --blue-450: #3987e5;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --surface-1: #1a1a19; --page-plane: #0d0d0d;
+    --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+    --gridline: #2c2c2a; --border: rgba(255,255,255,0.10); --blue-450: #3987e5;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page-plane); color: var(--text-primary); font-family: system-ui, -apple-system, "Segoe UI", sans-serif; line-height: 1.6; }
+  main { max-width: 1040px; margin: 0 auto; padding: 3rem 1.5rem 6rem; }
+  h1 { font-size: clamp(1.7rem, 3.6vw, 2.3rem); font-weight: 700; line-height: 1.2; margin: 0 0 0.75rem; text-wrap: balance; }
+  h2 { font-size: 1.4rem; font-weight: 700; margin: 0 0 0.5rem; }
+  h3 { font-size: 1.05rem; margin: 0 0 0.4rem; }
+  p { max-width: 68ch; margin: 0 0 1.1rem; color: var(--text-secondary); }
+  .eyebrow { font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--blue-450); font-weight: 600; margin-bottom: 0.75rem; display: block; }
+  header.page { border-bottom: 1px solid var(--border); padding-bottom: 2rem; margin-bottom: 2.5rem; }
+  section { margin-bottom: 3.5rem; }
+
+  .map-panel { background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  #map { height: 620px; width: 100%; }
+  .legend { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; padding: 0.9rem 1.25rem; font-size: 0.8rem; color: var(--text-muted); border-top: 1px solid var(--border); }
+  .legend .swatch { width: 22px; height: 4px; display: inline-block; }
+
+  .stat-row { display: grid; grid-template-columns: 1fr; gap: 1rem; margin: 1.5rem 0; }
+  @media (min-width: 700px) { .stat-row { grid-template-columns: 1fr 1fr 1fr; } }
+  .stat-card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.1rem; }
+  .stat-card .value { font-size: 1.6rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .stat-card .label { font-size: 0.82rem; color: var(--text-muted); }
+  .stat-card.dim .value { color: var(--text-muted); }
+
+  .callout { background: var(--surface-1); border: 1px solid var(--border); border-left: 3px solid var(--blue-450); border-radius: 8px; padding: 1.1rem 1.4rem; margin: 1.5rem 0; }
+  .callout p { margin: 0; }
+  .callout .label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--blue-450); font-weight: 700; display: block; margin-bottom: 0.4rem; }
+  .callout.amber { border-left-color: #a9631e; }
+  .callout.amber .label { color: #a9631e; }
+
+  .example-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-top: 1.5rem; }
+  @media (min-width: 700px) { .example-grid { grid-template-columns: 1fr 1fr; } }
+  .example-card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 8px; padding: 1.1rem 1.25rem; }
+  .example-card h4 { margin: 0 0 0.5rem; font-size: 1.05rem; }
+  .example-card .metric { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.2rem; }
+  .example-card .metric strong { color: var(--text-primary); font-variant-numeric: tabular-nums; }
+
+  footer { border-top: 1px solid var(--border); padding-top: 1.5rem; margin-top: 3rem; font-size: 0.85rem; color: var(--text-muted); }
+  a { color: var(--blue-450); }
+  code { font-family: ui-monospace, monospace; background: var(--gridline); padding: 0.1em 0.4em; border-radius: 4px; font-size: 0.9em; }
+</style>
+</head>
+<body>
+<main>
+
+  <header class="page">
+    <span class="eyebrow">Chicagoland &middot; 319 Municipalities &middot; 609 Adjacent Pairs</span>
+    <h1>Chicagoland's Activity Space Divide</h1>
+    <p>A 2026 study in <a href="https://read.dukeupress.edu/demography/article/63/1/263/407659/The-Social-Context-of-Spatial-Choice-Activity" target="_blank" rel="noopener"><em>Demography</em></a> found that neighbors of different incomes rarely share the same everyday spaces, even living blocks apart. This asks the same question at the town level across Chicagoland: when two municipalities border each other, do they actually share nearby cafes, libraries, and community spaces, or does each effectively have its own separate world?</p>
+  </header>
+
+  <section id="map-section">
+    <h2>Where the divide is sharpest</h2>
+    <p>Each line connects two adjacent municipalities. Darker lines mean less overlap between what's actually reachable from each town, a proxy for shared activity space, not observed behavior (see the methodology note below for why that distinction matters).</p>
+
+    <div class="map-panel">
+      <div id="map"></div>
+      <div class="legend" id="legend"></div>
+    </div>
+  </section>
+
+  <section id="finding">
+    <h2>What actually predicts the divide</h2>
+    <p>Racial dissimilarity between adjacent towns, income gap, and the size mismatch between their catchments were tested together in a regression. Only two came out as real, independent predictors:</p>
+
+    <div class="stat-row">
+      <div class="stat-card">
+        <div class="value">p = 0.001</div>
+        <div class="label">Racial dissimilarity independently predicts less shared space</div>
+      </div>
+      <div class="stat-card dim">
+        <div class="value">p = 0.846</div>
+        <div class="label">Income gap alone shows no independent effect</div>
+      </div>
+      <div class="stat-card">
+        <div class="value">p &lt; 0.001</div>
+        <div class="label">Catchment size mismatch is also a real, separate factor</div>
+      </div>
+    </div>
+
+    <p>That's a real divergence from the original study, worth stating plainly rather than glossing over: the individual-level research centered income specifically. At the town level, using this structural proxy, race is what shows an independent effect and income doesn't. The overall model explains a modest but real share of the variation (R&sup2; = 0.042) &mdash; this is one real piece of a much bigger picture, not the whole explanation.</p>
+
+    <div class="callout">
+      <span class="label">The cleanest illustration</span>
+      <p><strong>Tinley Park and Matteson</strong> are direct neighbors with a racial dissimilarity of 71 (one of the highest in the region) but an income gap of just $5,202 &mdash; about as close to income-equal as adjacent towns get here. Their third-place catchments share zero overlap. If income drove this, these two towns should look demographically alike. They don't.</p>
+    </div>
+  </section>
+
+  <section id="examples">
+    <h2>Real neighbors, by name</h2>
+    <div class="example-grid" id="example-grid"></div>
+  </section>
+
+  <section id="methodology">
+    <h2>Methodology &amp; honest caveats</h2>
+    <p><strong>Geography:</strong> 319 Census-designated places across Cook, DuPage, Kane, Lake, McHenry, and Will counties. Adjacency determined by actual boundary proximity (within 50m, to catch places separated by a thin road), 609 adjacent pairs found.</p>
+    <p><strong>Catchment:</strong> all OSM third places (cafes, libraries, community centers, social facilities) within 1.5 miles of each municipality's boundary. Overlap is measured as the Jaccard index between two adjacent towns' catchments (shared third places &divide; total distinct third places across both).</p>
+    <p><strong>The core limitation, stated plainly:</strong> this measures <em>opportunity</em> for shared activity space, what's physically nearby both towns, not <em>observed behavior</em>, which is what the original individual-level mobility study actually measured. Two towns could share a large catchment on paper and still have residents who never actually cross into it. This is a structural proxy for the real question, not a replication of it.</p>
+    <p><strong>Demographics:</strong> 2023 5-year American Community Survey estimates (median household income; White alone, Black alone, and Hispanic population shares) by place.</p>
+    <p>Data pulled August 2026.</p>
+  </section>
+
+  <footer>
+    By <a href="https://bergstromgis.com">Brian Bergstrom</a>. Built with OpenStreetMap contributors' data (© OpenStreetMap contributors, ODbL) and U.S. Census Bureau TIGER/Line and ACS data. Inspired by Cai, Browning &amp; Anselin, <a href="https://read.dukeupress.edu/demography/article/63/1/263/407659/The-Social-Context-of-Spatial-Choice-Activity" target="_blank" rel="noopener">"The Social Context of Spatial Choice: Activity Locations and Residential Segregation,"</a> <em>Demography</em>, 2026.
+  </footer>
+
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const RAMP = ["#3a5a78", "#4a7ab0", "#5a9ad8", "#6fc0f0", "#8fe8ff"];
+const BREAKS = [0.4, 0.6, 0.75, 0.9, 1.01];
+
+function colorFor(v) {
+  for (let i = 0; i < BREAKS.length; i++) if (v <= BREAKS[i]) return RAMP[i];
+  return RAMP[RAMP.length - 1];
+}
+
+const map = L.map("map", { scrollWheelZoom: false }).setView([41.85, -87.9], 9);
+L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
+  attribution: '&copy; OpenStreetMap contributors &copy; Esri', maxZoom: 16,
+}).addTo(map);
+
+// custom pane above the vector overlay pane so town-name labels stay
+// readable on top of the network lines, not hidden underneath them
+map.createPane("labels");
+map.getPane("labels").style.zIndex = 650;
+map.getPane("labels").style.pointerEvents = "none";
+L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}", {
+  pane: "labels", maxZoom: 16,
+}).addTo(map);
+
+fetch("web_boundaries.geojson").then(r => r.json()).then(data => {
+  L.geoJSON(data, { interactive: false, style: { color: "#c3c2b7", weight: 0.5, fillOpacity: 0 } }).addTo(map);
+});
+
+fetch("web_edges.geojson").then(r => r.json()).then(data => {
+  data.features.forEach(feature => {
+    const p = feature.properties;
+    const latlngs = feature.geometry.coordinates.map(c => [c[1], c[0]]);
+    const popupContent =
+      `<strong>${p.name_a} &harr; ${p.name_b}</strong><br>` +
+      `Shared activity space: ${(100 - p.divide_score * 100).toFixed(0)}%<br>` +
+      `Racial dissimilarity: ${p.racial_dissimilarity}<br>` +
+      `Income gap: $${p.income_gap.toLocaleString()}`;
+
+    // invisible, much thicker line purely to make clicking easier -- the
+    // visible line stays thin so the network reads cleanly at a glance
+    L.polyline(latlngs, { color: "#000", weight: 16, opacity: 0 })
+      .bindPopup(popupContent, { autoPan: false })
+      .addTo(map);
+
+    L.polyline(latlngs, { color: colorFor(p.divide_score), weight: 2.5, opacity: 0.85, interactive: false })
+      .addTo(map);
+  });
+
+  const legend = document.getElementById("legend");
+  const labels = ["More shared", "", "", "", "More divided"];
+  RAMP.forEach((c, i) => {
+    const s = document.createElement("span");
+    s.innerHTML = `<span class="swatch" style="background:${c}"></span> ${labels[i]}`;
+    legend.appendChild(s);
+  });
+
+  // build example cards from the top divide-score, non-Chicago, meaningfully-sized pairs
+  const examples = [
+    { a: "Tinley Park", b: "Matteson", divide: 100, dissim: 71.4, gap: 5202 },
+    { a: "Frankfort", b: "Richton Park", divide: 100, dissim: 75.1, gap: 81990 },
+    { a: "Frankfort", b: "Matteson", divide: 100, dissim: 67.6, gap: 55097 },
+    { a: "Monee", b: "University Park", divide: 100, dissim: 47.1, gap: 23991 },
+  ];
+  const grid = document.getElementById("example-grid");
+  grid.innerHTML = examples.map(e => `
+    <div class="example-card">
+      <h4>${e.a} &harr; ${e.b}</h4>
+      <p class="metric">Shared activity space: <strong>0%</strong></p>
+      <p class="metric">Racial dissimilarity: <strong>${e.dissim}</strong></p>
+      <p class="metric">Income gap: <strong>$${e.gap.toLocaleString()}</strong></p>
+    </div>
+  `).join("");
+});
+</script>
+</body>
+</html>
