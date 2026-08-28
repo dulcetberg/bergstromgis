@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How the United States Took Shape</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #F7F4EE;
+    --bg-raised: #FFFFFF;
+    --text: #2B2A26;
+    --text-muted: #6b6a63;
+    --primary: #2F5233;
+    --primary-dark: #223D26;
+    --accent: #753918;
+    --rule: #DAD4C6;
+    --font-heading: 'Fraunces', Georgia, serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); line-height: 1.6; }
+  main { max-width: 1100px; margin: 0 auto; padding: 3rem 1.5rem 6rem; }
+  h1, h2 { font-family: var(--font-heading); font-weight: 600; color: var(--primary); line-height: 1.15; }
+  h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); margin: 0 0 0.75rem; text-wrap: balance; }
+  h2 { font-size: 1.4rem; margin: 0 0 0.5rem; }
+  p { margin: 0 0 1.1rem; color: var(--text); }
+  .eyebrow { font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); font-weight: 600; margin-bottom: 0.75rem; display: block; }
+  header.page { border-bottom: 1px solid var(--rule); padding-bottom: 2rem; margin-bottom: 2rem; }
+
+  .map-panel { background: var(--bg-raised); border: 1px solid var(--rule); border-radius: 14px; overflow: hidden; }
+  .map-wrap { position: relative; }
+  #map { height: 640px; width: 100%; }
+
+  .year-badge { position: absolute; top: 0.9rem; left: 0.9rem; z-index: 1000; background: rgba(255,255,255,0.95); border: 1px solid var(--rule); border-radius: 10px; padding: 0.5rem 1.1rem; pointer-events: none; }
+  .year-badge .year-num { font-family: var(--font-heading); font-size: 1.7rem; font-weight: 600; color: var(--primary); line-height: 1; }
+  .year-badge .year-label { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+  /* Leaflet's default zoom control sits top-left too, right under the year badge */
+  .map-wrap .leaflet-top.leaflet-left .leaflet-control-zoom { margin-top: 10.4rem; }
+
+  .event-banner { position: absolute; top: 0.9rem; right: 0.9rem; left: auto; max-width: 320px; max-height: 560px; overflow-y: auto; z-index: 1000; display: none; }
+  .event-banner.visible { display: flex; flex-direction: column; gap: 0.5rem; }
+  .event-card { background: rgba(255,255,255,0.97); border: 1px solid var(--rule); border-left: 4px solid var(--accent); border-radius: 10px; padding: 0.7rem 1rem; }
+  .event-card .event-year { font-size: 0.7rem; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.05em; }
+  .event-card .event-title { font-family: var(--font-heading); font-weight: 600; font-size: 1rem; color: var(--text); margin: 0.15rem 0 0.2rem; }
+  .event-card .event-desc { font-size: 0.82rem; color: var(--text-muted); margin: 0; }
+
+  .control-row { display: flex; align-items: center; gap: 0.9rem; padding: 1.1rem 1.25rem; border-top: 1px solid var(--rule); flex-wrap: wrap; }
+  #play-btn { font-size: 1.1rem; width: 2.6rem; height: 2.6rem; border-radius: 50%; border: 2px solid var(--primary); background: var(--primary); color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  #play-btn:hover { background: var(--primary-dark); }
+  .scrubber-wrap { flex: 1; min-width: 220px; display: flex; flex-direction: column; gap: 0.3rem; }
+  #year-slider { width: 100%; accent-color: var(--primary); }
+  .tick-labels { display: flex; justify-content: space-between; font-size: 0.68rem; color: var(--text-muted); padding: 0 2px; }
+  #speed-select { font: inherit; font-size: 0.85rem; padding: 0.4rem 0.6rem; border-radius: 6px; border: 1px solid var(--rule); background: var(--bg); color: var(--text); }
+
+  .legend-panel { padding: 1rem 1.25rem; border-top: 1px solid var(--rule); }
+  .legend-panel .legend-title { font-weight: 600; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text); margin-bottom: 0.6rem; }
+  .legend-grid { display: flex; flex-wrap: wrap; gap: 0.5rem 1.1rem; }
+  .legend-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; color: var(--text-muted); }
+  .legend-swatch { width: 14px; height: 14px; border-radius: 3px; display: inline-block; border: 1.5px solid rgba(0,0,0,0.25); }
+  .legend-swatch.indigenous { border-style: dashed; }
+
+  .callout { background: var(--bg-raised); border: 1px solid var(--rule); border-left: 4px solid var(--accent); border-radius: 8px; padding: 1.1rem 1.4rem; margin: 2rem 0; }
+  .callout .label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); font-weight: 700; display: block; margin-bottom: 0.4rem; }
+  .callout p { margin: 0; }
+
+  section { margin-top: 3rem; }
+  .references p { padding-left: 2em; text-indent: -2em; margin: 0 0 0.9rem; font-size: 0.85rem; }
+  .references a { word-break: break-word; }
+  footer { border-top: 1px solid var(--rule); padding-top: 1.5rem; margin-top: 3rem; font-size: 0.85rem; color: var(--text-muted); }
+  a { color: var(--accent); }
+  .popup-name { font-family: var(--font-heading); font-weight: 600; font-size: 1rem; }
+  .popup-power { font-size: 0.8rem; color: var(--text-muted); }
+
+  @media (max-width: 640px) {
+    main { padding: 1.75rem 1rem 4rem; }
+    header.page { padding-bottom: 1.5rem; margin-bottom: 1.5rem; }
+    #map { height: 420px; }
+
+    .year-badge { top: 0.6rem; left: 0.6rem; padding: 0.4rem 0.75rem; }
+    .map-wrap .leaflet-top.leaflet-left .leaflet-control-zoom { margin-top: 3.6rem; }
+    .year-badge .year-num { font-size: 1.3rem; }
+
+    /* The floating top-right event card would swallow most of a phone-width
+       map and collide with the year badge, so on mobile it drops out of the
+       absolutely-positioned overlay entirely and renders as a normal block
+       below the map instead -- same markup and DOM order, just repositioned
+       via CSS, no JS changes needed. */
+    .event-banner { position: static; max-width: none; max-height: none; overflow-y: visible; padding: 0.9rem 0.9rem 0; }
+    .event-banner.visible { display: flex; }
+
+    .control-row { padding: 0.9rem 1rem; gap: 0.6rem; }
+    #play-btn { width: 2.8rem; height: 2.8rem; }
+    .scrubber-wrap { min-width: 0; flex-basis: 100%; order: 3; }
+    #speed-select { flex: 1; }
+    .tick-labels span:nth-child(2), .tick-labels span:nth-child(4) { display: none; }
+
+    .legend-panel { padding: 0.9rem 1rem; }
+    .legend-grid { gap: 0.5rem 0.9rem; }
+    .legend-item { font-size: 0.76rem; }
+  }
+</style>
+</head>
+<body>
+<main>
+
+  <header class="page">
+    <span class="eyebrow">1492 &middot; 2026 &middot; 22 Snapshots &middot; Historical Basemaps Project</span>
+    <h1>How the United States Took Shape</h1>
+    <p>From the first sighting of land in 1492 to the fifty states of today, watch who actually controlled North American territory: Indigenous nations, colonial powers, and the country that eventually absorbed most of it. Press play, or drag the year slider yourself.</p>
+  </header>
+
+  <div class="map-panel">
+    <div class="map-wrap">
+      <div id="map"></div>
+      <div class="year-badge">
+        <div class="year-num" id="year-num">1492</div>
+        <div class="year-label">C.E.</div>
+      </div>
+      <div class="event-banner" id="event-banner"></div>
+    </div>
+    <div class="control-row">
+      <button id="play-btn" aria-label="Play">&#9654;</button>
+      <div class="scrubber-wrap">
+        <input type="range" id="year-slider" min="0" max="21" step="1" value="0">
+        <div class="tick-labels">
+          <span>1492</span><span>1700</span><span>1800</span><span>1900</span><span>2026</span>
+        </div>
+      </div>
+      <select id="speed-select">
+        <option value="1800">Slow</option>
+        <option value="1000" selected>Normal</option>
+        <option value="500">Fast</option>
+      </select>
+    </div>
+    <div class="legend-panel">
+      <div class="legend-title">Who controlled this territory</div>
+      <div class="legend-grid" id="legend"></div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <span class="label">Worth knowing</span>
+    <p>This map jumps between 21 real benchmark years, 1492 through 2010, plus a modern 2026 frame built from current Census boundaries, rather than smoothly morphing shapes between them. Borders didn't actually move gradually, they changed through specific wars, treaties, and purchases, so faking a smooth animation between snapshots would invent a precision that never existed. Indigenous nations are shown with dashed borders throughout the entire timeline, not just before 1776, because the land didn't stop being theirs when European powers drew lines on paper claiming otherwise.</p>
+  </div>
+
+  <section id="methodology">
+    <h2>Methodology</h2>
+    <p><strong>Boundaries:</strong> 21 benchmark-year snapshots (1492-2010) from the <a href="https://github.com/aourednik/historical-basemaps" target="_blank" rel="noopener">Historical Basemaps</a> project (GPL-3.0), clipped to a North American extent. The final 2026 frame uses real current U.S. Census Bureau TIGER/Line state boundaries, not a repeat of the source's last snapshot, since state lines haven't changed since Hawaii's 1959 statehood.</p>
+    <p><strong>Coloring:</strong> each colonial or national power gets a fixed color across the entire timeline. Indigenous nations share a color family but are individually named polygons with dashed borders, distinguishing "Indigenous nation" from "colonial/national power" without relying on hue alone. Click any territory for its real name.</p>
+    <p>Data pulled August 2026.</p>
+  </section>
+
+  <section id="references" class="references">
+    <h2>References</h2>
+    <p>aourednik. (2026). <em>Historical basemaps</em> [Data set]. GitHub. <a href="https://github.com/aourednik/historical-basemaps" target="_blank" rel="noopener">https://github.com/aourednik/historical-basemaps</a></p>
+    <p>U.S. Census Bureau. (2020). <em>TIGER/Line shapefiles</em> [Data set]. U.S. Department of Commerce. <a href="https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html" target="_blank" rel="noopener">https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html</a></p>
+  </section>
+
+  <footer>
+    By <a href="https://bergstromgis.com">Brian Bergstrom</a>.
+  </footer>
+
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="events.js"></script>
+<script src="powers.js"></script>
+<script>
+const YEARS = [1492, 1500, 1530, 1600, 1650, 1700, 1715, 1783, 1800, 1815,
+               1880, 1900, 1914, 1920, 1930, 1938, 1945, 1960, 1994, 2000, 2010, 2026];
+
+let map, currentLayer, geoData, byYear = {}, currentIndex = 0, playing = false, playTimer = null;
+
+function powerFor(name) {
+  for (const [power, spec] of Object.entries(POWERS)) {
+    if (spec.match && spec.match.test(name)) return power;
+  }
+  return "Indigenous nation";
+}
+
+fetch("web_timeline.geojson").then(r => r.json()).then(data => {
+  geoData = data;
+  for (const f of data.features) {
+    const y = f.properties.year;
+    (byYear[y] = byYear[y] || []).push(f);
+  }
+  computeDisplayYears(YEARS);
+  buildLegend();
+  initMap();
+  document.getElementById("year-slider").addEventListener("input", e => {
+    setIndex(parseInt(e.target.value, 10));
+  });
+  document.getElementById("play-btn").addEventListener("click", togglePlay);
+  document.getElementById("speed-select").addEventListener("change", () => {
+    if (playing) { stopPlay(); startPlay(); }
+  });
+  renderYear(YEARS[0]);
+});
+
+function initMap() {
+  map = L.map("map", { scrollWheelZoom: false }).setView([40, -97], 4);
+  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
+    attribution: '&copy; OpenStreetMap contributors &copy; Esri', maxZoom: 12,
+  }).addTo(map);
+  map.createPane("labels");
+  map.getPane("labels").style.zIndex = 650;
+  map.getPane("labels").style.pointerEvents = "none";
+  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}", {
+    pane: "labels", maxZoom: 12,
+  }).addTo(map);
+}
+
+// deterministic per-entity lightness variation within the Indigenous color
+// family, so many simultaneous nations stay visually separable
+function hashLightness(name) {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
+  return 0.75 + (h % 100) / 100 * 0.5; // 0.75 - 1.25 multiplier
+}
+
+function shadeColor(hex, factor) {
+  const n = parseInt(hex.slice(1), 16);
+  let r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+  r = Math.min(255, Math.round(r * factor));
+  g = Math.min(255, Math.round(g * factor));
+  b = Math.min(255, Math.round(b * factor));
+  return `rgb(${r},${g},${b})`;
+}
+
+function styleFor(feature) {
+  const name = feature.properties.name;
+  const power = powerFor(name);
+  const isIndigenous = power === "Indigenous nation";
+  const base = isIndigenous ? POWERS["Indigenous nation"].color : POWERS[power].color;
+  const fill = isIndigenous ? shadeColor(base, hashLightness(name)) : base;
+  return {
+    fillColor: fill,
+    fillOpacity: 0.75,
+    color: "#ffffff",
+    weight: 0.8,
+    dashArray: isIndigenous ? "3,2" : null,
+  };
+}
+
+function renderYear(year) {
+  if (currentLayer) map.removeLayer(currentLayer);
+  const features = byYear[year] || [];
+  currentLayer = L.geoJSON({ type: "FeatureCollection", features }, {
+    style: styleFor,
+    onEachFeature: (f, lyr) => {
+      const power = powerFor(f.properties.name);
+      lyr.bindPopup(`<div class="popup-name">${f.properties.name}</div><div class="popup-power">${power}</div>`, { autoPan: false });
+    },
+  }).addTo(map);
+
+  document.getElementById("year-num").textContent = year < 0 ? `${-year} BCE` : year;
+  showEventFor(year);
+}
+
+function setIndex(i) {
+  currentIndex = Math.max(0, Math.min(YEARS.length - 1, i));
+  document.getElementById("year-slider").value = currentIndex;
+  renderYear(YEARS[currentIndex]);
+}
+
+function showEventFor(year) {
+  const el = document.getElementById("event-banner");
+  const matches = EVENTS.filter(e => e.displayYear === year);
+  if (!matches.length) { el.classList.remove("visible"); el.innerHTML = ""; return; }
+  el.innerHTML = matches.map(e => `
+    <div class="event-card">
+      <div class="event-year">${e.year}</div>
+      <div class="event-title">${e.title}</div>
+      <p class="event-desc">${e.desc}</p>
+    </div>
+  `).join("");
+  el.classList.add("visible");
+}
+
+function togglePlay() { playing ? stopPlay() : startPlay(); }
+
+function startPlay() {
+  playing = true;
+  document.getElementById("play-btn").innerHTML = "&#10074;&#10074;";
+  const speed = parseInt(document.getElementById("speed-select").value, 10);
+  playTimer = setInterval(() => {
+    if (currentIndex >= YEARS.length - 1) { stopPlay(); return; }
+    setIndex(currentIndex + 1);
+  }, speed);
+}
+
+function stopPlay() {
+  playing = false;
+  document.getElementById("play-btn").innerHTML = "&#9654;";
+  clearInterval(playTimer);
+}
+
+function buildLegend() {
+  const el = document.getElementById("legend");
+  el.innerHTML = "";
+  Object.entries(POWERS).forEach(([power, spec]) => {
+    const item = document.createElement("span");
+    item.className = "legend-item";
+    const swatchClass = power === "Indigenous nation" ? "legend-swatch indigenous" : "legend-swatch";
+    item.innerHTML = `<span class="${swatchClass}" style="background:${spec.color}"></span> ${power}`;
+    el.appendChild(item);
+  });
+}
+</script>
+</body>
+</html>
