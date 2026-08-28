@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reportable Disease Cases Since RFK Jr. Took Over HHS — Brian Bergstrom</title>
+<meta name="description" content="A national map of real, state-by-state case counts for every CDC-notifiable disease, tracked against the actual dated timeline of federal vaccine policy changes since RFK Jr. took over HHS.">
+<link rel="canonical" href="https://bergstromgis.com/work/us-disease-surveillance-map.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Brian Bergstrom">
+<meta property="og:title" content="Reportable Disease Cases Since RFK Jr. Took Over HHS — Brian Bergstrom">
+<meta property="og:description" content="A national map of real, state-by-state case counts for every CDC-notifiable disease, tracked against the actual dated timeline of federal vaccine policy changes since RFK Jr. took over HHS.">
+<meta property="og:image" content="https://bergstromgis.com/images/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Brian Bergstrom — GIS that makes the overlooked undeniable.">
+<meta property="og:url" content="https://bergstromgis.com/work/us-disease-surveillance-map.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Reportable Disease Cases Since RFK Jr. Took Over HHS — Brian Bergstrom">
+<meta name="twitter:description" content="A national map of real, state-by-state case counts for every CDC-notifiable disease, tracked against the actual dated timeline of federal vaccine policy changes since RFK Jr. took over HHS.">
+<meta name="twitter:image" content="https://bergstromgis.com/images/og-image.png">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="alternate icon" href="../favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../css/brand.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <nav class="site-nav container" aria-label="Primary">
+    <a class="wordmark" href="../index.html">Brian Bergstrom</a>
+    <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks">Menu</button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../work-civic.html">Work</a></li>
+      <li><a href="../about.html">About</a></li>
+      <li><a href="../../resume/resume.html">Resume</a></li>
+      <li><a href="../contact.html">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main id="main">
+  <div class="container">
+    <a class="breadcrumb" href="../work-civic.html">&larr; Back to civic work</a>
+
+    <header class="project-header">
+      <span class="tag tag-civic">Civic — Independent Study</span>
+      <h1>Reportable Disease Cases Since RFK Jr. Took Over HHS</h1>
+      <p class="subtitle">Real, state-by-state case counts for every disease the CDC requires states to report, tracked against the actual dated timeline of federal vaccine policy changes.</p>
+      <div class="meta-row">
+        <span class="stat">139 CDC-notifiable diseases</span>
+        <span class="stat">All 50 states + D.C., 2022&ndash;2026</span>
+      </div>
+    </header>
+  </div>
+
+  <div class="project-hero-media">
+    <div class="media-inner">
+      <img src="../images/us-disease-surveillance-map.jpg" alt="Screenshot of the Reportable Disease Cases map, showing a national choropleth of measles rates by state alongside disease, year, and metric selectors, with Alaska and Hawaii inset maps in the bottom-left corner.">
+    </div>
+  </div>
+
+  <div class="container project-body">
+    <p>
+      Robert F. Kennedy Jr. became Secretary of Health and Human Services in
+      February 2025 and has since removed the CDC's entire vaccine advisory
+      committee, bypassed it to change the childhood immunization schedule
+      directly, and rewritten the committee's own charter. That's a real,
+      dated, verifiable set of actions, not a claim. What isn't settled is
+      what it means for actual case counts on the ground, state by state, so
+      I built the map that puts both in front of a reader at once instead of
+      asserting a conclusion for them.
+    </p>
+
+    <h2>Every notifiable disease, not just the convenient ones</h2>
+    <p>
+      It would have been easy to cherry-pick a handful of vaccine-preventable
+      diseases likely to show a dramatic post-2025 spike and leave it there.
+      Instead the map pulls all 139 diseases and conditions CDC's National
+      Notifiable Diseases Surveillance System currently tracks, for every
+      state, every year 2022 through the most recently reported week of
+      2026. Seven vaccine-preventable diseases most directly relevant to the
+      recent policy changes are highlighted at the top of the picker;
+      everything else NNDSS tracks, from Lyme disease to legionellosis, is
+      still there below them, not filtered out because it doesn't fit the
+      narrative.
+    </p>
+
+    <h2>Rate, raw count, and percent change, honestly</h2>
+    <p>
+      A per-100,000 rate and a raw case count are both available for every
+      selection, since a public-health audience and a general audience read
+      those numbers differently. A percent-change view compares each state's
+      current count against its own 2022&ndash;24 baseline &mdash; but a
+      state averaging under 1 case a year in that baseline can turn one new
+      case into a mathematically valid, practically meaningless five-digit
+      percentage. Those states are labeled "new" instead, the same
+      small-count-honesty rule used on my <a href="illinois-mental-health-map.html">Illinois Mental
+      Health Map</a>, rather than let a stray outlier dominate the map's
+      color scale.
+    </p>
+
+    <h2>Alaska and Hawaii, actually shown</h2>
+    <p>
+      Both states get real cartographic inset maps in the bottom-left
+      corner, fully interactive and colored by the same live selection as
+      the main map, rather than being cropped out of frame the way a plain
+      Mercator view usually drops them. Alaska's true shape crosses the
+      antimeridian &mdash; the westernmost Aleutian tip sits at positive
+      longitude in Census data &mdash; which breaks a naive auto-fit and
+      quietly zooms out to fit almost the entire globe, so the inset uses a
+      manually corrected bounding box instead.
+    </p>
+
+    <div class="callout">
+      <span class="callout-label">Worth knowing</span>
+      <p>
+        NNDSS publishes provisional weekly counts that run a bit under
+        CDC's later, reviewed totals: this map's 2025 measles count sums to
+        about 2,026 cases against the widely reported confirmed figure of
+        2,289, an expected gap from revision timing, not an error. 2026 is a
+        partial year, shown as of the most recent reported week. A state's
+        case count is shaped by its own vaccination rates, outbreak
+        exposure, and reporting completeness, not federal policy alone, so
+        the map and the policy timeline below it are two real, related
+        facts meant to be weighed together, not a single proven cause and
+        effect. The timeline itself is upfront about the one major 2025
+        schedule change a federal court actually blocked, not just the ones
+        that took effect.
+      </p>
+    </div>
+
+    <div class="evidence-panel">
+      <p>Pick a disease, a year, or a metric, and read it against the timeline.</p>
+      <a class="btn btn-primary" href="../us-disease-surveillance-map/" target="_blank" rel="noopener">
+        View the map <span class="visually-hidden">(opens in a new tab)</span>
+      </a>
+      <a class="btn btn-outline" href="https://github.com/dulcetberg/us-disease-surveillance-map" target="_blank" rel="noopener">
+        View the code <span class="visually-hidden">(opens in a new tab)</span>
+      </a>
+    </div>
+  </div>
+
+  <section id="contact" class="contact-cta container">
+    <h2>Let's talk about a job, a project, or both.</h2>
+    <p>I'm open to full-time GIS Analyst roles and freelance/consulting work.</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="mailto:brian@bergstromgis.com">Email me</a>
+      <a class="btn btn-outline" href="https://www.linkedin.com/in/brianbergstrom86/" target="_blank" rel="noopener">LinkedIn <span class="visually-hidden">(opens in a new tab)</span></a>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-contact">
+      <a class="btn btn-outline" href="mailto:brian@bergstromgis.com">brian@bergstromgis.com</a>
+      <a class="btn btn-outline" href="https://www.linkedin.com/in/brianbergstrom86/" target="_blank" rel="noopener">LinkedIn</a>
+      <a class="btn btn-outline" href="../../resume/resume.html">Resume</a>
+    </div>
+    <p class="footer-note">&copy; Brian Bergstrom. Built by hand, hosted on GitHub Pages.</p>
+  </div>
+</footer>
+
+<script>
+  document.documentElement.classList.add('js-ready');
+  var toggle = document.getElementById('navToggle');
+  var links = document.getElementById('navLinks');
+  toggle.addEventListener('click', function () {
+    var open = links.classList.toggle('is-open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+</script>
+</body>
+</html>

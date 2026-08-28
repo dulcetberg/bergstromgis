@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reportable Disease Cases Since RFK Jr. Took Over HHS</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #F7F4EE;
+    --bg-raised: #FFFFFF;
+    --text: #2B2A26;
+    --text-muted: #6b6a63;
+    --primary: #2F5233;
+    --primary-dark: #223D26;
+    --accent: #753918;
+    --rule: #DAD4C6;
+    --font-heading: 'Fraunces', Georgia, serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); line-height: 1.6; }
+  main { max-width: 1000px; margin: 0 auto; padding: 3rem 1.5rem 6rem; }
+  h1, h2 { font-family: var(--font-heading); font-weight: 600; color: var(--primary); line-height: 1.15; }
+  h1 { font-size: clamp(1.7rem, 3.6vw, 2.3rem); margin: 0 0 0.75rem; text-wrap: balance; }
+  h2 { font-size: 1.4rem; margin: 0 0 0.5rem; }
+  p { margin: 0 0 1.1rem; color: var(--text); }
+  .eyebrow { font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); font-weight: 600; margin-bottom: 0.75rem; display: block; }
+  header.page { border-bottom: 1px solid var(--rule); padding-bottom: 2rem; margin-bottom: 2rem; }
+  section { margin-top: 3rem; }
+
+  .map-panel { background: var(--bg-raised); border: 1px solid var(--rule); border-radius: 14px; overflow: hidden; }
+  .control-row { display: flex; align-items: center; gap: 0.9rem; padding: 1.1rem 1.25rem; border-bottom: 1px solid var(--rule); flex-wrap: wrap; }
+  .control-row label { font-size: 0.85rem; color: var(--text-muted); }
+  select { font: inherit; font-size: 0.95rem; padding: 0.5rem 0.8rem; border-radius: 6px; border: 1px solid var(--rule); background: var(--bg); color: var(--text); }
+  #disease-select { flex: 1; min-width: 240px; }
+  .metric-toggle { display: inline-flex; border: 1px solid var(--rule); border-radius: 999px; padding: 0.2rem; background: var(--bg); }
+  .metric-toggle button { font: inherit; font-size: 0.85rem; font-weight: 600; padding: 0.4rem 0.9rem; border-radius: 999px; border: none; background: none; color: var(--text-muted); cursor: pointer; }
+  .metric-toggle button.active { background: var(--primary); color: #fff; }
+
+  .map-wrap { position: relative; }
+  #map { height: 560px; width: 100%; }
+  .ytd-banner { position: absolute; top: 0.75rem; left: 50%; transform: translateX(-50%); z-index: 1000; background: rgba(255,255,255,0.95); border: 1px solid var(--accent); border-radius: 999px; padding: 0.35rem 1rem; font-size: 0.78rem; font-weight: 600; color: var(--accent); display: none; }
+  .ytd-banner.visible { display: block; }
+
+  /* Alaska and Hawaii sit far off the edge of a continental-US view, so
+     they get the standard US-map treatment: small inset panels in the
+     bottom-left corner instead of true geographic position. */
+  .inset-map { position: absolute; bottom: 0.75rem; left: 0.75rem; width: 108px; height: 84px; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; z-index: 900; box-shadow: 0 1px 4px rgba(0,0,0,0.15); cursor: pointer; }
+  .inset-map.hawaii { left: 192px; }
+  .inset-map .leaflet-control-container { display: none; }
+  .inset-map::after { content: attr(data-abbr); position: absolute; top: 2px; left: 5px; font-family: "Inter", sans-serif; font-size: 0.62rem; font-weight: 600; color: var(--text-muted); background: rgba(255,255,255,0.75); padding: 0 2px; border-radius: 3px; pointer-events: none; z-index: 950; }
+
+  /* Leaflet popups are clipped by the inset boxes' overflow:hidden (needed
+     to keep the tile corners rounded), so inset clicks use this custom
+     popup instead, anchored in the map-wrap (which isn't clipped). */
+  .inset-popup { position: absolute; bottom: 6.25rem; left: 0.75rem; z-index: 1100; background: var(--bg-raised); border: 1px solid var(--rule); border-radius: 8px; padding: 0.65rem 0.8rem; font-size: 0.78rem; max-width: 230px; box-shadow: 0 2px 12px rgba(0,0,0,0.2); display: none; }
+  .inset-popup.visible { display: block; }
+
+  .legend-panel { padding: 1rem 1.25rem; border-top: 1px solid var(--rule); }
+  .legend-panel .legend-title { font-weight: 600; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text); margin-bottom: 0.6rem; }
+  .legend-row { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; font-size: 0.8rem; color: var(--text-muted); }
+  .swatch { width: 16px; height: 16px; border-radius: 3px; display: inline-block; border: 1px solid var(--rule); }
+  .nodata { background: repeating-linear-gradient(45deg, #d8d6cf, #d8d6cf 3px, transparent 3px, transparent 6px); }
+
+  .callout { background: var(--bg-raised); border: 1px solid var(--rule); border-left: 4px solid var(--accent); border-radius: 8px; padding: 1.1rem 1.4rem; margin: 1.5rem 0; }
+  .callout .label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); font-weight: 700; display: block; margin-bottom: 0.4rem; }
+  .callout p { margin: 0; }
+
+  .timeline { border-left: 3px solid var(--rule); padding-left: 1.4rem; margin-left: 0.4rem; }
+  .timeline-item { position: relative; margin-bottom: 1.6rem; }
+  .timeline-item::before { content: ""; position: absolute; left: -1.86rem; top: 0.3rem; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+  .timeline-date { font-size: 0.78rem; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.04em; }
+  .timeline-title { font-family: var(--font-heading); font-weight: 600; font-size: 1.1rem; margin: 0.2rem 0 0.3rem; color: var(--text); }
+  .timeline-desc { color: var(--text-muted); margin: 0; }
+  .timeline-status { display: inline-block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; padding: 0.15rem 0.55rem; border-radius: 999px; margin-top: 0.4rem; }
+  .timeline-status.blocked { background: #f0e6d8; color: #8a5a1e; }
+  .timeline-status.in-effect { background: #e3ede0; color: var(--primary-dark); }
+
+  .references p { padding-left: 2em; text-indent: -2em; margin: 0 0 0.9rem; font-size: 0.85rem; }
+  .references a { word-break: break-word; }
+  footer { border-top: 1px solid var(--rule); padding-top: 1.5rem; margin-top: 3rem; font-size: 0.85rem; color: var(--text-muted); }
+  a { color: var(--accent); }
+  .popup-name { font-family: var(--font-heading); font-weight: 600; font-size: 1rem; }
+  .popup-stats { margin: 0.4rem 0 0; padding: 0; list-style: none; font-size: 0.85rem; }
+  .popup-stats li { margin-bottom: 0.15rem; }
+  .popup-trend { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.4rem; }
+
+  @media (max-width: 640px) {
+    main { padding: 1.75rem 1rem 4rem; }
+    #map { height: 420px; }
+    .control-row { flex-direction: column; align-items: stretch; padding: 0.9rem 1rem; gap: 0.5rem; }
+    .control-row label { margin-top: 0.3rem; }
+    #disease-select, #year-select { width: 100%; }
+    .metric-toggle { width: 100%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.35rem; background: none; border: none; padding: 0; margin-top: 0.2rem; }
+    .metric-toggle button { white-space: normal; font-size: 0.74rem; line-height: 1.25; padding: 0.5rem 0.4rem; border: 1px solid var(--rule); border-radius: 8px; text-align: center; }
+    .metric-toggle button.active { border-color: var(--primary); }
+  }
+</style>
+</head>
+<body>
+<main>
+
+  <header class="page">
+    <span class="eyebrow">CDC NNDSS &middot; 2022&ndash;2026 &middot; All 50 States + D.C.</span>
+    <h1>Reportable Disease Cases Since RFK Jr. Took Over HHS</h1>
+    <p>Robert F. Kennedy Jr. became Secretary of Health and Human Services on February 13, 2025, and has since removed the CDC's vaccine advisory committee, bypassed it entirely to change the childhood immunization schedule, and rewritten its charter. This map tracks real, state-by-state case counts for every disease the CDC requires states to report, before and after his tenure, so you can see the actual numbers next to the actual policy timeline.</p>
+  </header>
+
+  <div class="map-panel">
+    <div class="control-row">
+      <label for="disease-select">Disease:</label>
+      <select id="disease-select"></select>
+      <label for="year-select">Year:</label>
+      <select id="year-select"></select>
+      <div class="metric-toggle" id="metric-toggle">
+        <button data-metric="rate" class="active">Per 100,000</button>
+        <button data-metric="count">Raw count</button>
+        <button data-metric="change">% change vs. 2022&ndash;24</button>
+      </div>
+    </div>
+    <div class="map-wrap">
+      <div id="map"></div>
+      <div class="ytd-banner" id="ytd-banner">2026 is year-to-date, not a complete year</div>
+      <div class="inset-map alaska" id="ak-inset" data-abbr="AK"></div>
+      <div class="inset-map hawaii" id="hi-inset" data-abbr="HI"></div>
+      <div class="inset-popup" id="inset-popup"></div>
+    </div>
+    <div class="legend-panel">
+      <div class="legend-title" id="legend-title">Cases per 100,000 residents</div>
+      <div class="legend-row" id="legend"></div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <span class="label">Worth knowing</span>
+    <p>NNDSS publishes provisional weekly counts that can run a bit under CDC's later-reviewed confirmed totals; for 2025 measles, this map's CDC-sourced state data sums to about 2,026 cases against the widely reported confirmed figure of 2,289, an expected gap from revision timing, not an error. 2026 is a partial year, shown as of the most recent reported week, not a final annual total. A state's case count is also shaped by its own vaccination rates, outbreak exposure, and reporting completeness, not federal policy alone, so read the map and the policy timeline below as two real, related facts to weigh together, not a single proven cause and effect.</p>
+  </div>
+
+  <section id="policy-timeline">
+    <h2>What actually changed</h2>
+    <p>Every item below is a real, dated action, with a source.</p>
+    <div class="timeline" id="timeline"></div>
+  </section>
+
+  <section id="methodology">
+    <h2>Methodology</h2>
+    <p><strong>Case data:</strong> CDC's National Notifiable Diseases Surveillance System (NNDSS) weekly tables, which collect provisional case counts for every nationally notifiable disease from all 50 states, D.C., and U.S. territories. Each state's annual total is that state's cumulative year-to-date count at the year's final reported week, not a sum of weekly counts (which would double-count, since the cumulative field already accumulates). New York City, which NNDSS reports separately from New York State, is merged into the state total.</p>
+    <p><strong>Rates:</strong> per-100,000 rates use real 2024 Census ACS 1-year state population estimates, fetched live, not hardcoded.</p>
+    <p><strong>Disease scope:</strong> all 139 nationally notifiable diseases and conditions in the live NNDSS data are included. Seven vaccine-preventable diseases most directly relevant to recent federal vaccine policy changes are marked "Featured" at the top of the list; everything else NNDSS tracks is still there below them, not hidden.</p>
+    <p>Data pulled August 2026.</p>
+  </section>
+
+  <section id="references" class="references">
+    <h2>References</h2>
+    <p>Centers for Disease Control and Prevention. (2026). <em>NNDSS weekly data</em> [Data set]. U.S. Department of Health and Human Services. <a href="https://data.cdc.gov/NNDSS/NNDSS-Weekly-Data/x9gk-5huc" target="_blank" rel="noopener">https://data.cdc.gov/NNDSS/NNDSS-Weekly-Data/x9gk-5huc</a></p>
+    <p>Congressional Research Service. (2026). <em>Changes to CDC vaccine recommendations in 2025 and 2026</em> (IN12684). Library of Congress. <a href="https://www.congress.gov/crs-product/IN12684" target="_blank" rel="noopener">https://www.congress.gov/crs-product/IN12684</a></p>
+    <p>U.S. Census Bureau. (2024). <em>American Community Survey 1-year estimates</em> [Data set]. U.S. Department of Commerce. <a href="https://www.census.gov/programs-surveys/acs" target="_blank" rel="noopener">https://www.census.gov/programs-surveys/acs</a></p>
+    <p>U.S. Census Bureau. (2020). <em>TIGER/Line shapefiles</em> [Data set]. U.S. Department of Commerce. <a href="https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html" target="_blank" rel="noopener">https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html</a></p>
+  </section>
+
+  <footer>
+    By <a href="https://bergstromgis.com">Brian Bergstrom</a>.
+  </footer>
+
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="timeline.js"></script>
+<script>
+const YEAR_LABELS = { 2022: "2022", 2023: "2023", 2024: "2024", 2025: "2025", 2026: "2026 (YTD)" };
+const RATE_RAMP = ["#eef6ea", "#c7e3bb", "#98cb85", "#63ac52", "#337a2e"];
+const COUNT_RAMP = ["#f5e9de", "#e8bd97", "#d68f52", "#b5622a", "#7a3d17"];
+const NODATA_COLOR = "#c9c7bd";
+
+// Fixed categories, not quantiles: percent change is meaningless to bucket
+// by quantile when most states sit at 0 cases in the 2022-24 baseline, and
+// "went from 0 to any cases" isn't a percentage at all, so it gets its own
+// honest category instead of a fake infinite value.
+const CHANGE_CATEGORIES = [
+  { key: "decreased", label: "Decreased or flat", color: "#4f8ab0", test: v => v <= 0 },
+  { key: "up_2x", label: "Up, less than 2x", color: "#f0b96e", test: v => v > 0 && v <= 100 },
+  { key: "up_5x", label: "Up 2x–5x", color: "#dd7a3e", test: v => v > 100 && v <= 400 },
+  { key: "up_5x_plus", label: "Up more than 5x", color: "#a8331e", test: v => v > 400 },
+];
+const CHANGE_NEW_COLOR = "#5c1710";
+const BASELINE_YEARS = ["2022", "2023", "2024"];
+
+let diseaseData, statesGeo, map, currentLayer;
+let insets = {};
+let activeIsChange, activeBreaks, activeRamp;
+let currentDisease, currentYear = "2025", currentMetric = "rate";
+
+function buildTimeline() {
+  const el = document.getElementById("timeline");
+  el.innerHTML = POLICY_TIMELINE.map(item => `
+    <div class="timeline-item">
+      <div class="timeline-date">${item.date}</div>
+      <div class="timeline-title">${item.title}</div>
+      <p class="timeline-desc">${item.desc}</p>
+      <span class="timeline-status ${item.status}">${item.status === "blocked" ? "Blocked by court" : "In effect"}</span>
+    </div>
+  `).join("");
+}
+
+function quantileBreaks(values, n) {
+  const sorted = [...values].sort((a, b) => a - b);
+  const breaks = [];
+  for (let i = 1; i < n; i++) breaks.push(sorted[Math.floor((sorted.length * i) / n)]);
+  breaks.push(Infinity);
+  return breaks;
+}
+
+function classify(value, breaks) {
+  if (value === null || value === undefined) return -1;
+  for (let i = 0; i < breaks.length; i++) if (value <= breaks[i]) return i;
+  return breaks.length - 1;
+}
+
+function colorFor(value, breaks, ramp) {
+  const idx = classify(value, breaks);
+  return idx === -1 ? NODATA_COLOR : ramp[Math.min(idx, ramp.length - 1)];
+}
+
+Promise.all([
+  fetch("web_disease_data.json").then(r => r.json()),
+  fetch("web_states.geojson").then(r => r.json()),
+]).then(([disease, states]) => {
+  diseaseData = disease;
+  statesGeo = states;
+
+  const select = document.getElementById("disease-select");
+  const featured = disease.featured_diseases;
+  const others = Object.keys(disease.diseases).filter(d => !featured.includes(d)).sort();
+  select.innerHTML =
+    `<optgroup label="Featured — vaccine-preventable">` +
+    featured.map(d => `<option value="${d}">${d}</option>`).join("") +
+    `</optgroup><optgroup label="All reportable diseases">` +
+    others.map(d => `<option value="${d}">${d}</option>`).join("") +
+    `</optgroup>`;
+  currentDisease = featured[0];
+  select.value = currentDisease;
+
+  const yearSelect = document.getElementById("year-select");
+  yearSelect.innerHTML = disease.years.map(y => `<option value="${y}">${YEAR_LABELS[y]}</option>`).join("");
+  yearSelect.value = currentYear;
+
+  select.addEventListener("change", () => { currentDisease = select.value; redraw(); });
+  yearSelect.addEventListener("change", () => { currentYear = yearSelect.value; redraw(); });
+  document.querySelectorAll(".metric-toggle button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".metric-toggle button").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentMetric = btn.dataset.metric;
+      redraw();
+    });
+  });
+
+  buildTimeline();
+  initMap();
+});
+
+function initMap() {
+  map = L.map("map", { scrollWheelZoom: false }).setView([39.5, -98.5], 4);
+  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
+    attribution: '&copy; OpenStreetMap contributors &copy; Esri', maxZoom: 10,
+  }).addTo(map);
+  map.createPane("labels");
+  map.getPane("labels").style.zIndex = 650;
+  map.getPane("labels").style.pointerEvents = "none";
+  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}", {
+    pane: "labels", maxZoom: 10,
+  }).addTo(map);
+  redraw();
+
+  insets.ak = initInsetMap("ak-inset", "ALASKA");
+  insets.hi = initInsetMap("hi-inset", "HAWAII", [20.5, -157], 5);
+}
+
+// Alaska and Hawaii each get their own tiny static Leaflet map rather than
+// appearing (or not) in the main map's viewport -- the standard US-map
+// convention. Alaska's real extent crosses the antimeridian (the western
+// Aleutian tip sits at positive longitude in this data), which makes a
+// plain fitBounds() on the raw geometry take the min/max of -179 and +179
+// literally and zoom out to fit almost the whole globe, so Alaska instead
+// gets fitBounds() with hand-built, "unwrapped" bounds (the western edge
+// expressed as -187.65 instead of +172.35) that span its true ~58deg width
+// through the dateline. Hawaii doesn't cross the dateline, so a fixed
+// center/zoom framing its island chain is enough.
+function initInsetMap(elId, stateName, center, zoom) {
+  const feature = statesGeo.features.find(f => f.properties.state_name === stateName);
+  const m = L.map(elId, {
+    zoomControl: false, attributionControl: false, dragging: false,
+    scrollWheelZoom: false, doubleClickZoom: false, boxZoom: false,
+    keyboard: false, touchZoom: false, tap: false,
+  });
+  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
+    maxZoom: 10,
+  }).addTo(m);
+  const layer = L.geoJSON(feature, { style: () => styleForState(stateName) }).addTo(m);
+  layer.eachLayer(l => l.on("click", () => showInsetPopup(stateName)));
+  if (stateName === "ALASKA") {
+    m.fitBounds(L.latLngBounds([50.7, -188.1], [71.9, -129.5]), { padding: [1, 1] });
+  } else {
+    m.setView(center, zoom);
+  }
+  return { map: m, layer };
+}
+
+function refreshInset(key, stateName) {
+  const inset = insets[key];
+  if (!inset) return;
+  inset.layer.eachLayer(l => l.setStyle(styleForState(stateName)));
+}
+
+function showInsetPopup(stateName) {
+  const el = document.getElementById("inset-popup");
+  el.innerHTML = popupHtmlFor(stateName);
+  el.classList.add("visible");
+}
+
+document.addEventListener("click", e => {
+  const el = document.getElementById("inset-popup");
+  if (!el.classList.contains("visible")) return;
+  if (el.contains(e.target) || e.target.closest(".inset-map")) return;
+  el.classList.remove("visible");
+});
+
+function valueFor(stateName, year, metric) {
+  const rec = diseaseData.diseases[currentDisease]?.[year]?.[stateName];
+  if (!rec) return null;
+  return metric === "rate" ? rec.rate_per_100k : rec.count;
+}
+
+// Baseline is always computed from raw counts, not rates -- since state
+// population barely moves year to year, percent change comes out the same
+// either way, but counts avoid any rounding noise from the rate field.
+function baselineFor(stateName) {
+  const disease = diseaseData.diseases[currentDisease];
+  const vals = BASELINE_YEARS.map(y => disease[y]?.[stateName]?.count).filter(v => v !== undefined);
+  if (!vals.length) return 0;
+  return vals.reduce((a, b) => a + b, 0) / vals.length;
+}
+
+// Returns {type:"value", pct} | {type:"new"} (near-zero baseline, some now)
+// | {type:"nodata"} (near-zero baseline, ~0 now -- nothing to report).
+// The baseline threshold is 1, not 0: a state averaging 0.3 cases/year
+// across 2022-24 can produce a mathematically "valid" percent change in the
+// hundreds of thousands from one new case, which is technically correct
+// but not a meaningful, stable statistic -- same small-count-instability
+// problem as the suppression handling on the mental health map.
+function changeFor(stateName, year) {
+  const baseline = baselineFor(stateName);
+  const current = diseaseData.diseases[currentDisease]?.[year]?.[stateName]?.count ?? 0;
+  if (baseline < 1) return current > 0 ? { type: "new" } : { type: "nodata" };
+  return { type: "value", pct: Math.round(((current - baseline) / baseline) * 100) };
+}
+
+function colorForChange(result) {
+  if (result.type === "nodata") return NODATA_COLOR;
+  if (result.type === "new") return CHANGE_NEW_COLOR;
+  const cat = CHANGE_CATEGORIES.find(c => c.test(result.pct));
+  return cat ? cat.color : NODATA_COLOR;
+}
+
+function changeText(result) {
+  if (result.type === "nodata") return "no cases in this period or the 2022–24 baseline";
+  if (result.type === "new") return "new: fewer than 1 case/year on average in the 2022–24 baseline";
+  const sign = result.pct > 0 ? "+" : "";
+  return `${sign}${result.pct}% vs. 2022–24 average`;
+}
+
+function updateYearOptions() {
+  const yearSelect = document.getElementById("year-select");
+  const inChangeMode = currentMetric === "change";
+  [...yearSelect.options].forEach(opt => {
+    opt.disabled = inChangeMode && BASELINE_YEARS.includes(opt.value);
+  });
+  if (inChangeMode && BASELINE_YEARS.includes(currentYear)) {
+    currentYear = "2025";
+    yearSelect.value = currentYear;
+  }
+}
+
+function styleForState(name) {
+  const fillColor = activeIsChange
+    ? colorForChange(changeFor(name, currentYear))
+    : colorFor(valueFor(name, currentYear, currentMetric), activeBreaks, activeRamp);
+  return { fillColor, weight: 0.8, color: "#ffffff", fillOpacity: 0.85 };
+}
+
+function popupHtmlFor(name) {
+  const disease = diseaseData.diseases[currentDisease];
+  const rows = diseaseData.years.map(y => {
+    const rec = disease[String(y)]?.[name];
+    const label = YEAR_LABELS[y];
+    if (!rec) return `<li>${label}: no cases reported</li>`;
+    return `<li>${label}: <strong>${rec.count}</strong> cases (${rec.rate_per_100k ?? "?"} per 100k)</li>`;
+  }).join("");
+  const change2025 = changeText(changeFor(name, "2025"));
+  const change2026 = changeText(changeFor(name, "2026"));
+  return `<div class="popup-name">${titleCase(name)}</div><div class="popup-trend">${currentDisease}</div>` +
+    `<ul class="popup-stats">${rows}</ul>` +
+    `<div class="popup-trend">2025 vs. 2022–24 baseline: <strong>${change2025}</strong></div>` +
+    `<div class="popup-trend">2026 YTD vs. 2022–24 baseline: <strong>${change2026}</strong></div>`;
+}
+
+function redraw() {
+  document.getElementById("ytd-banner").classList.toggle("visible", currentYear === "2026");
+  document.getElementById("inset-popup").classList.remove("visible");
+  updateYearOptions();
+
+  activeIsChange = currentMetric === "change";
+  activeRamp = currentMetric === "rate" ? RATE_RAMP : COUNT_RAMP;
+  activeBreaks = activeIsChange ? null : quantileBreaks(
+    statesGeo.features
+      .map(f => valueFor(f.properties.state_name, currentYear, currentMetric))
+      .filter(v => v !== null && v !== undefined),
+    5
+  );
+
+  if (currentLayer) map.removeLayer(currentLayer);
+  currentLayer = L.geoJSON(statesGeo, {
+    style: f => styleForState(f.properties.state_name),
+    onEachFeature: (f, lyr) => lyr.bindPopup(popupHtmlFor(f.properties.state_name), { autoPan: false }),
+  }).addTo(map);
+
+  refreshInset("ak", "ALASKA");
+  refreshInset("hi", "HAWAII");
+
+  if (activeIsChange) {
+    document.getElementById("legend-title").textContent = `Change vs. 2022–24 average (${YEAR_LABELS[currentYear]})`;
+    buildChangeLegend();
+  } else {
+    document.getElementById("legend-title").textContent =
+      currentMetric === "rate" ? "Cases per 100,000 residents" : "Raw case count";
+    buildLegend(activeBreaks, activeRamp);
+  }
+}
+
+function titleCase(s) {
+  return s.replace(/\w\S*/g, t => t.charAt(0) + t.slice(1).toLowerCase());
+}
+
+function buildLegend(breaks, ramp) {
+  const el = document.getElementById("legend");
+  el.innerHTML = "";
+  const fmt = n => n === Infinity ? "+" : (Number.isInteger(n) ? n : n.toFixed(1));
+  let prev = 0;
+  ramp.forEach((color, i) => {
+    const span = document.createElement("span");
+    const label = i === ramp.length - 1 ? `${fmt(prev)}+` : `${fmt(prev)}–${fmt(breaks[i])}`;
+    span.innerHTML = `<span class="swatch" style="background:${color}"></span> ${label}`;
+    el.appendChild(span);
+    prev = breaks[i];
+  });
+  const nd = document.createElement("span");
+  nd.innerHTML = `<span class="swatch nodata"></span> no cases reported`;
+  el.appendChild(nd);
+}
+
+function buildChangeLegend() {
+  const el = document.getElementById("legend");
+  el.innerHTML = "";
+  CHANGE_CATEGORIES.forEach(cat => {
+    const span = document.createElement("span");
+    span.innerHTML = `<span class="swatch" style="background:${cat.color}"></span> ${cat.label}`;
+    el.appendChild(span);
+  });
+  const newSpan = document.createElement("span");
+  newSpan.innerHTML = `<span class="swatch" style="background:${CHANGE_NEW_COLOR}"></span> New (baseline under 1/year)`;
+  el.appendChild(newSpan);
+  const nd = document.createElement("span");
+  nd.innerHTML = `<span class="swatch nodata"></span> No cases, either period`;
+  el.appendChild(nd);
+}
+</script>
+</body>
+</html>
