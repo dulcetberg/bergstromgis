@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Illinois Mental Health Map — Brian Bergstrom</title>
+<meta name="description" content="County-level suicide rates, mental distress, and uninsured rates swiped directly against mental health facility locations across all 102 Illinois counties.">
+<link rel="canonical" href="https://bergstromgis.com/work/illinois-mental-health-map.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Brian Bergstrom">
+<meta property="og:title" content="Illinois Mental Health Map — Brian Bergstrom">
+<meta property="og:description" content="County-level suicide rates, mental distress, and uninsured rates swiped directly against mental health facility locations across all 102 Illinois counties.">
+<meta property="og:image" content="https://bergstromgis.com/images/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Brian Bergstrom — GIS that makes the overlooked undeniable.">
+<meta property="og:url" content="https://bergstromgis.com/work/illinois-mental-health-map.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Illinois Mental Health Map — Brian Bergstrom">
+<meta name="twitter:description" content="County-level suicide rates, mental distress, and uninsured rates swiped directly against mental health facility locations across all 102 Illinois counties.">
+<meta name="twitter:image" content="https://bergstromgis.com/images/og-image.png">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="alternate icon" href="../favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../css/brand.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <nav class="site-nav container" aria-label="Primary">
+    <a class="wordmark" href="../index.html">Brian Bergstrom</a>
+    <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks">Menu</button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../work-civic.html">Work</a></li>
+      <li><a href="../about.html">About</a></li>
+      <li><a href="../../resume/resume.html">Resume</a></li>
+      <li><a href="../contact.html">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main id="main">
+  <div class="container">
+    <a class="breadcrumb" href="../work-civic.html">&larr; Back to civic work</a>
+
+    <header class="project-header">
+      <span class="tag tag-civic">Civic — Independent Study</span>
+      <h1>Illinois Mental Health Map</h1>
+      <p class="subtitle">County-level need swiped directly against where mental health facilities actually are, across all 102 Illinois counties.</p>
+      <div class="meta-row">
+        <span class="stat">NCHS &middot; BRFSS &middot; SAHIE &middot; SAMHSA data</span>
+        <span class="stat">All 102 Illinois counties</span>
+      </div>
+    </header>
+  </div>
+
+  <div class="project-hero-media">
+    <div class="media-inner">
+      <img src="../images/illinois-mental-health-map.jpg" alt="Screenshot of the Illinois Mental Health Map, a swipe comparison showing county suicide rates in purple on the left against mental health facility locations in green on the right.">
+    </div>
+  </div>
+
+  <div class="container project-body">
+    <p>
+      I volunteer with NAMI DuPage, and mental health access is personal to
+      me. Kaiser Family Foundation publishes excellent state-level mental
+      health data, but state averages hide exactly the gaps that matter most.
+      So I pulled the same federal data KFF draws from, at the county level,
+      and built a way to see need and access at the same time instead of one
+      at a time.
+    </p>
+
+    <h2>Need on one side, supply on the other</h2>
+    <p>
+      One map, one swipe divider. Drag it and the left side shows suicide
+      rate, frequent mental distress, or uninsured rate, ranked into
+      quantiles across all 102 counties. The right side shows how many
+      SAMHSA-listed mental health facilities serve each county. Facility
+      icons stay visible on both sides, so a cluster of hospital and clinic
+      icons can be read directly against whichever need metric is showing,
+      not just against the facility map alone.
+    </p>
+
+    <h2>All 11 facility types, not folded into three</h2>
+    <p>
+      SAMHSA's own facility-type field has 11 distinct categories in
+      Illinois. Rather than collapsing them into a handful of colors, each
+      marker's icon encodes level of care, a real clinical hierarchy from
+      outpatient through day treatment, residential, and hospital care, and
+      color distinguishes the specific subtype within it. A colorblind viewer
+      can still place any facility in its level of care from the icon alone.
+    </p>
+
+    <div class="callout">
+      <span class="callout-label">A real, if uncomfortable, finding</span>
+      <p>
+        25 of Illinois's 102 counties have zero SAMHSA-listed mental health
+        facility within their borders. Menard County has the highest pooled
+        suicide rate in the state and no listed facility of its own, though
+        its confidence interval is wide enough that it isn't statistically
+        distinguishable from several other counties. That uncertainty is
+        part of the finding, not a footnote: every estimate on the map
+        carries its 95% confidence interval, and the page is upfront about
+        exactly what SAMHSA's directory does and doesn't capture.
+      </p>
+    </div>
+
+    <p>
+      Since this touches suicide data directly, a 988 Suicide &amp; Crisis
+      Lifeline note sits at the top of the page, not buried at the bottom.
+    </p>
+
+    <div class="evidence-panel">
+      <p>Drag the divider, pick a need metric, or search your own ZIP code.</p>
+      <a class="btn btn-primary" href="../illinois-mental-health-map/" target="_blank" rel="noopener">
+        View the map <span class="visually-hidden">(opens in a new tab)</span>
+      </a>
+      <a class="btn btn-outline" href="https://github.com/dulcetberg/illinois-mental-health-map" target="_blank" rel="noopener">
+        View the code <span class="visually-hidden">(opens in a new tab)</span>
+      </a>
+    </div>
+  </div>
+
+  <section id="contact" class="contact-cta container">
+    <h2>Let's talk about a job, a project, or both.</h2>
+    <p>I'm open to full-time GIS Analyst roles and freelance/consulting work.</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="mailto:brian@bergstromgis.com">Email me</a>
+      <a class="btn btn-outline" href="https://www.linkedin.com/in/brianbergstrom86/" target="_blank" rel="noopener">LinkedIn <span class="visually-hidden">(opens in a new tab)</span></a>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-contact">
+      <a class="btn btn-outline" href="mailto:brian@bergstromgis.com">brian@bergstromgis.com</a>
+      <a class="btn btn-outline" href="https://www.linkedin.com/in/brianbergstrom86/" target="_blank" rel="noopener">LinkedIn</a>
+      <a class="btn btn-outline" href="../../resume/resume.html">Resume</a>
+    </div>
+    <p class="footer-note">&copy; Brian Bergstrom. Built by hand, hosted on GitHub Pages.</p>
+  </div>
+</footer>
+
+<script>
+  document.documentElement.classList.add('js-ready');
+  var toggle = document.getElementById('navToggle');
+  var links = document.getElementById('navLinks');
+  toggle.addEventListener('click', function () {
+    var open = links.classList.toggle('is-open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+</script>
+</body>
+</html>

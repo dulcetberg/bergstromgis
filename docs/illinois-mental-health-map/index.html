@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Illinois Mental Health Map</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* Matches the bergstromgis.com "Fieldwork" brand system (see css/brand.css)
+     -- the site commits to one warm, cream palette with no dark-mode toggle,
+     so this page does the same rather than inventing a variant that exists
+     nowhere else on the site. */
+  :root {
+    color-scheme: light;
+    --bg: #F7F4EE;
+    --bg-raised: #FFFFFF;
+    --text: #2B2A26;
+    --text-muted: #6b6a63;
+    --primary: #2F5233;
+    --primary-dark: #223D26;
+    --accent: #753918;
+    --rule: #DAD4C6;
+    --font-heading: 'Fraunces', Georgia, serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); line-height: 1.6; }
+  main { max-width: 1000px; margin: 0 auto; padding: 3rem 1.5rem 6rem; }
+  h1, h2 { font-family: var(--font-heading); font-weight: 600; color: var(--primary); line-height: 1.15; }
+  h1 { font-size: clamp(1.7rem, 3.6vw, 2.3rem); margin: 0 0 0.75rem; text-wrap: balance; }
+  h2 { font-size: 1.4rem; margin: 0 0 0.5rem; }
+  p { margin: 0 0 1.1rem; color: var(--text); }
+  .eyebrow { font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); font-weight: 600; margin-bottom: 0.75rem; display: block; }
+  header.page { border-bottom: 1px solid var(--rule); padding-bottom: 2rem; margin-bottom: 2rem; }
+  section { margin-bottom: 3.5rem; }
+
+  .crisis-note { display: flex; gap: 0.9rem; align-items: flex-start; background: var(--bg-raised); border: 1px solid var(--rule); border-left: 4px solid var(--primary); border-radius: 8px; padding: 1.1rem 1.4rem; margin-bottom: 2.5rem; }
+  .crisis-note .icon { font-size: 1.3rem; line-height: 1.4; color: var(--primary); }
+  .crisis-note p { margin: 0; max-width: none; }
+  .crisis-note strong { color: var(--text); }
+
+  .map-panel { background: var(--bg-raised); border: 1px solid var(--rule); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; }
+  .control-row { display: flex; align-items: center; gap: 0.75rem; padding: 1rem 1.25rem; border-bottom: 1px solid var(--rule); flex-wrap: wrap; min-height: 3.4rem; }
+  .control-row label { font-size: 0.85rem; color: var(--text-muted); }
+  #metric-select { font: inherit; font-size: 0.95rem; padding: 0.5rem 0.8rem; border-radius: 6px; border: 1px solid var(--rule); background: var(--bg); color: var(--text); }
+  .zip-label { margin-left: 0.5rem; }
+  #zip-input { font: inherit; font-size: 0.95rem; width: 7rem; padding: 0.5rem 0.8rem; border-radius: 6px; border: 1px solid var(--rule); background: var(--bg); color: var(--text); }
+  #zip-search-btn { font: inherit; font-weight: 600; font-size: 0.9rem; padding: 0.5rem 1.1rem; border-radius: 999px; border: 2px solid var(--primary); background: var(--primary); color: #fff; cursor: pointer; }
+  #zip-search-btn:hover, #zip-search-btn:focus-visible { background: var(--primary-dark); border-color: var(--primary-dark); }
+  #zip-message { font-size: 0.85rem; color: var(--text-muted); }
+  #zip-message.error { color: var(--accent); }
+
+  .map-wrap { position: relative; }
+  #map { height: 600px; width: 100%; }
+
+  .side-label { position: absolute; top: 0.75rem; z-index: 1000; background: rgba(255,255,255,0.92); border: 1px solid var(--rule); border-radius: 999px; padding: 0.3rem 0.8rem; font-size: 0.78rem; font-weight: 600; color: var(--text); pointer-events: none; }
+  .side-label.left { left: 0.75rem; }
+  .side-label.right { right: 0.75rem; }
+
+  /* Leaflet's default zoom control sits top-left too, right under the side label pill */
+  .map-wrap .leaflet-top.leaflet-left .leaflet-control-zoom { margin-top: 3.4rem; }
+
+  .swipe-handle { position: absolute; top: 0; bottom: 0; width: 0; z-index: 1000; cursor: ew-resize; touch-action: none; }
+  .swipe-handle::before { content: ""; position: absolute; top: 0; bottom: 0; left: -1px; width: 2px; background: #ffffff; box-shadow: 0 0 0 1px rgba(0,0,0,0.25); }
+  .swipe-handle::after { content: "⇔"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 32px; height: 32px; line-height: 32px; text-align: center; border-radius: 50%; background: #ffffff; color: var(--primary); box-shadow: 0 1px 4px rgba(0,0,0,0.35); font-size: 0.95rem; }
+
+  .legend-row { display: grid; grid-template-columns: 1fr 1px 1fr; gap: 1.25rem; padding: 1rem 1.25rem; border-top: 1px solid var(--rule); align-items: start; }
+  .legend-row .legend-divider { background: var(--rule); align-self: stretch; }
+  @media (max-width: 640px) { .legend-row { grid-template-columns: 1fr; } .legend-row .legend-divider { display: none; } }
+  .legend { display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.8rem; color: var(--text-muted); }
+  .legend .legend-title { font-weight: 600; color: var(--text); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .legend .swatch-row { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; }
+  .legend .swatch { width: 16px; height: 16px; border-radius: 3px; display: inline-block; border: 1px solid var(--rule); }
+  .legend .nodata { background: repeating-linear-gradient(45deg, #d8d6cf, #d8d6cf 3px, transparent 3px, transparent 6px); }
+
+  .type-legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1rem 1.5rem; padding: 0.9rem 1.25rem; border-top: 1px solid var(--rule); }
+  .type-legend .group-title { font-weight: 600; color: var(--text); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.15rem; }
+  .type-legend .group-desc { font-size: 0.72rem; font-style: italic; color: var(--text-muted); margin-bottom: 0.4rem; }
+  .type-legend .group-items { display: flex; flex-direction: column; gap: 0.35rem; }
+  .type-legend .item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: var(--text-muted); }
+  .type-legend .item svg { flex-shrink: 0; }
+  .facility-shape-icon { background: none; border: none; }
+
+  .callout { background: var(--bg-raised); border: 1px solid var(--rule); border-left: 4px solid var(--accent); border-radius: 8px; padding: 1.1rem 1.4rem; margin: 1.5rem 0; }
+  .callout p { margin: 0; max-width: none; }
+  .callout .label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); font-weight: 700; display: block; margin-bottom: 0.4rem; }
+
+  .references p { max-width: none; font-size: 0.85rem; padding-left: 2em; text-indent: -2em; margin: 0 0 0.9rem; }
+  .references a { word-break: break-word; }
+
+  footer { border-top: 1px solid var(--rule); padding-top: 1.5rem; margin-top: 3rem; font-size: 0.85rem; color: var(--text-muted); }
+  a { color: var(--accent); }
+  .popup-stats { margin: 0.4rem 0 0; padding: 0; list-style: none; font-size: 0.85rem; }
+  .popup-stats li { margin-bottom: 0.2rem; }
+</style>
+</head>
+<body>
+<main>
+
+  <header class="page">
+    <span class="eyebrow">Illinois &middot; 102 Counties &middot; NCHS &middot; BRFSS &middot; SAHIE &middot; SAMHSA</span>
+    <h1>Illinois Mental Health Map</h1>
+    <p>This map swipes county-level need, suicide rates, frequent mental distress, and uninsured rates, directly against where mental health facilities actually are, drawn from the same federal surveillance data behind most state and national mental health dashboards. Pick a need metric, then drag the handle to compare. Click any county for its full picture.</p>
+  </header>
+
+  <div class="crisis-note">
+    <span class="icon" aria-hidden="true">☎</span>
+    <p><strong>If you or someone you know is struggling, help is available.</strong> Call or text <strong>988</strong> to reach the Suicide &amp; Crisis Lifeline, free and confidential, 24 hours a day. You can also chat at <a href="https://988lifeline.org" target="_blank" rel="noopener">988lifeline.org</a>.</p>
+  </div>
+
+  <section id="map-section">
+    <h2>Need versus supply, county by county</h2>
+    <p>Drag the handle: the left side shows the selected need metric, ranked into quantiles; the right side shows how many SAMHSA-listed mental health facilities serve each county. Facility icons stay visible on both sides, so you can read them directly against whichever need metric is showing. Click any county or facility for its full picture.</p>
+
+    <div class="map-panel">
+      <div class="control-row">
+        <label for="metric-select">Need metric (left side):</label>
+        <select id="metric-select"></select>
+        <label for="zip-input" class="zip-label">Jump to a ZIP code:</label>
+        <input type="text" id="zip-input" placeholder="e.g. 60187" inputmode="numeric" maxlength="5">
+        <button id="zip-search-btn" type="button">Go</button>
+        <span id="zip-message"></span>
+      </div>
+      <div class="map-wrap">
+        <div id="map"></div>
+        <span class="side-label left" id="label-left"></span>
+        <span class="side-label right">Mental health facilities</span>
+        <div class="swipe-handle" id="swipe-handle"></div>
+      </div>
+      <div class="legend-row">
+        <div class="legend" id="legend-need"></div>
+        <div class="legend-divider"></div>
+        <div class="legend" id="legend-supply"></div>
+      </div>
+      <div class="type-legend" id="type-legend"></div>
+    </div>
+  </section>
+
+  <div class="callout">
+    <span class="label">Worth knowing</span>
+    <p>Suicide rates are pooled across 2018&ndash;2022 to smooth out year-to-year noise in smaller counties, and the National Center for Health Statistics still suppresses any county with too few deaths in that window to report reliably (shown here as "data suppressed"). That is a privacy safeguard, not a sign those counties are doing better. It just means the count was small enough that publishing it could risk identifying individuals.</p>
+  </div>
+
+  <div class="callout">
+    <span class="label">A real gap worth naming</span>
+    <p>25 of Illinois's 102 counties have zero SAMHSA-listed mental health facilities within their borders. Menard County has the highest pooled point estimate for suicide rate in the state, 27.3 per 100,000, and no listed facility of its own. With only 18 deaths behind that estimate, though, its 95% confidence interval runs from 15.6 to 44.3, wide enough that Menard isn't statistically distinguishable from several other counties. That zero, unlike the rate, isn't an estimate. It is, however, an undercount by design: a facility only appears here if it is both licensed by its state's Substance Use Agency and responded to that year's national services survey, so a real, operating facility can be absent simply because it skipped the survey, or because it's licensed on a track this directory doesn't cover. Solo private-practice therapists are never eligible at all. Spot-checking DuPage County's own listings turns up the providers you'd expect: Central DuPage Hospital, AdventHealth, Endeavor Health, Rogers Behavioral Health, and Compass Health Center. So the major institutional providers do seem to come through; smaller and solo practices are the likelier gap. One wrinkle worth flagging: SAMHSA often lists a facility under its parent health system's name rather than the name people actually know. Linden Oaks Hospital in Naperville, for instance, is filed under "Endeavor Health," so a name search would miss it; the map above shows both names together for exactly this reason.</p>
+  </div>
+
+  <div class="callout">
+    <span class="label">A statistical honesty check</span>
+    <p>The naive correlation between suicide rate and facilities-per-100,000 across all counties is actually slightly positive (Pearson r = 0.28), which looks backwards at first glance. That's a denominator artifact, not a hidden silver lining: in a county of a few thousand people, one small clinic already produces a large per-capita rate, so a tiny rural county with a single facility can outscore Cook County on this measure without anything close to Cook's real capacity. A cleaner comparison avoids per-capita rates in small counties altogether: the 16 counties with zero listed facilities and a reportable suicide rate average 17.7 per 100,000, versus 15.6 in counties with at least one facility. That's a real, if modest, gap between presence and absence of any care infrastructure at all.</p>
+  </div>
+
+  <div class="callout">
+    <span class="label">DuPage County, for reference</span>
+    <p>Suicide rate 10.0 per 100,000 (95% CI: 9.1&ndash;10.9), the lowest frequent-mental-distress rate of any Illinois county at 13.7%, and an uninsured rate of 7.1%, all better than the state as a whole. DuPage also has 32 listed mental health facilities, the third most of any county. On a per-capita basis that only ranks 52nd of 102, squarely middle of the pack. That's the same small-county denominator effect described above, working in the opposite direction here: a large, well-served county's real capacity doesn't show up as an extreme rate the way a rural county's one clinic does.</p>
+  </div>
+
+  <section id="methodology">
+    <h2>Methodology</h2>
+    <p><strong>Suicide rate:</strong> age-adjusted deaths per 100,000 population, pooled 2018&ndash;2022, National Center for Health Statistics Mortality Files. Counties with too few deaths to report reliably are suppressed.</p>
+    <p><strong>Frequent mental distress:</strong> percentage of adults reporting 14 or more days of poor mental health per month, age-adjusted, 2022 Behavioral Risk Factor Surveillance System.</p>
+    <p><strong>Uninsured rate:</strong> percentage of adults under 65 without health insurance, 2022 Small Area Health Insurance Estimates.</p>
+    <p>The three need measures above are compiled at the county level by <a href="https://www.countyhealthrankings.org" target="_blank" rel="noopener">County Health Rankings &amp; Roadmaps</a>, a program of the University of Wisconsin Population Health Institute, from the underlying federal sources above. This is the same NCHS/BRFSS/SAHIE data that state- and national-level dashboards, including Kaiser Family Foundation's, are built from, just at the county level instead of the state level. Click any county for its 95% confidence interval alongside each point estimate; smaller counties carry wider intervals, and that uncertainty is part of the finding, not a footnote to ignore.</p>
+    <p><strong>Mental health facilities:</strong> every Illinois facility listed in SAMHSA's <a href="https://findtreatment.gov" target="_blank" rel="noopener">FindTreatment.gov</a> directory under mental health services, geocoded and assigned to a county. Listing requires a facility to be both licensed by its state's Substance Use Agency and a respondent to that year's National Substance Use and Mental Health Services Survey; solo private-practice therapists are not eligible for this directory at all, and a facility that skipped the annual survey can be absent even if it's real, licensed, and operating. Facility rate is per 100,000 residents; for small counties, one facility can swing that rate a lot, so the raw count and the presence or absence of any facility at all are the more reliable reads.</p>
+    <p><strong>Facility type:</strong> SAMHSA tags each facility with its own facility-type field, which has 11 distinct raw values in Illinois, plus facilities SAMHSA didn't tag with a type at all. All 12 are shown exactly as SAMHSA labels them, not folded together. Each marker's icon encodes level of care, a real clinical hierarchy from outpatient through day treatment, residential, and hospital/inpatient, and color distinguishes the specific subtype within that icon. That split matters for accessibility: 12 separate colors would exceed what stays reliably distinguishable, including for colorblind viewers, once any two dots can land right next to each other in a cluster. The icon alone is enough to place a facility in its level of care regardless of color vision, and the exact type is always named in its popup.</p>
+    <p>Geography: all 102 Illinois counties. Data pulled August 2026.</p>
+  </section>
+
+  <section id="references" class="references">
+    <h2>References</h2>
+    <p>Centers for Disease Control and Prevention. (2022). <em>Behavioral Risk Factor Surveillance System</em> [Data set]. U.S. Department of Health and Human Services. <a href="https://www.cdc.gov/brfss/" target="_blank" rel="noopener">https://www.cdc.gov/brfss/</a></p>
+    <p>National Center for Health Statistics. (2018&ndash;2022). <em>Mortality multiple cause files</em> [Data set]. Centers for Disease Control and Prevention. <a href="https://www.cdc.gov/nchs/nvss/deaths.htm" target="_blank" rel="noopener">https://www.cdc.gov/nchs/nvss/deaths.htm</a></p>
+    <p>Substance Abuse and Mental Health Services Administration. (n.d.). <em>FindTreatment.gov: Behavioral health treatment services locator</em>. U.S. Department of Health and Human Services. Retrieved August 2026, from <a href="https://findtreatment.gov" target="_blank" rel="noopener">https://findtreatment.gov</a></p>
+    <p>U.S. Census Bureau. (2020). <em>TIGER/Line shapefiles</em> [Data set]. U.S. Department of Commerce. <a href="https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html" target="_blank" rel="noopener">https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html</a></p>
+    <p>U.S. Census Bureau. (2022). <em>Small Area Health Insurance Estimates (SAHIE) program</em> [Data set]. U.S. Department of Commerce. <a href="https://www.census.gov/programs-surveys/sahie.html" target="_blank" rel="noopener">https://www.census.gov/programs-surveys/sahie.html</a></p>
+    <p>University of Wisconsin Population Health Institute. (2025). <em>County Health Rankings &amp; Roadmaps: 2025 Illinois data</em>. <a href="https://www.countyhealthrankings.org" target="_blank" rel="noopener">https://www.countyhealthrankings.org</a></p>
+  </section>
+
+  <footer>
+    By <a href="https://bergstromgis.com">Brian Bergstrom</a>.
+  </footer>
+
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const METRICS = {
+  suicide_rate: {
+    label: "Suicide rate (per 100,000, 2018–22)",
+    ramp: ["#eef0f7", "#c9cce6", "#9ea3d1", "#7178b8", "#4a5098"],
+    fmt: v => v.toFixed(1),
+    noDataLabel: "data suppressed",
+  },
+  frequent_mental_distress_pct: {
+    label: "Frequent mental distress (% of adults, 2022)",
+    ramp: ["#fdf1de", "#f8d9a8", "#f0b96e", "#dd943e", "#b56f24"],
+    fmt: v => v.toFixed(1) + "%",
+    noDataLabel: "no data",
+  },
+  uninsured_pct: {
+    label: "Uninsured rate (% of adults under 65, 2022)",
+    ramp: ["#e2f2f0", "#b7ded8", "#84c2ba", "#4f9d92", "#2c7369"],
+    fmt: v => v.toFixed(1) + "%",
+    noDataLabel: "no data",
+  },
+};
+const SUPPLY_RAMP = ["#eef6ea", "#c7e3bb", "#98cb85", "#63ac52", "#337a2e"];
+const SUPPLY_BREAKS = [0, 2, 5, 14, Infinity]; // 0, 1–2, 3–5, 6–14, 15+
+// SAMHSA's own facility-type field has 11 raw values in Illinois. Rather than
+// folding them into a handful of colors, each marker's icon encodes level of
+// care -- a real clinical hierarchy (outpatient -> day treatment ->
+// residential -> hospital/inpatient), not an arbitrary grouping -- and color
+// distinguishes the specific subtype within it, using a validated
+// colorblind-safe categorical set (dataviz skill reference palette).
+// Identity never depends on hue alone: the icon alone is enough to place a
+// facility in its level of care even for a colorblind viewer, and the exact
+// type is always in the popup text regardless.
+const FACILITY_TYPES = {
+  "Outpatient mental health facility": { icon: "chat", color: "#2a78d6", group: "Outpatient" },
+  "Community mental health center": { icon: "chat", color: "#eb6834", group: "Outpatient" },
+  "Partial hospitalization/day treatment": { icon: "sun", color: "#2a78d6", group: "Day treatment / multi-setting" },
+  "Multi-setting mental health facility": { icon: "sun", color: "#eb6834", group: "Day treatment / multi-setting" },
+  "Residential treatment center (RTC) for adults": { icon: "house", color: "#2a78d6", group: "Residential" },
+  "Residential treatment center (RTC) for children": { icon: "house", color: "#eb6834", group: "Residential" },
+  "Other residential treatment facility": { icon: "house", color: "#1baf7a", group: "Residential" },
+  "Separate inpatient psychiatric unit of a general hospital": { icon: "cross", color: "#2a78d6", group: "Hospital / inpatient" },
+  "Psychiatric hospital": { icon: "cross", color: "#eb6834", group: "Hospital / inpatient" },
+  "State hospital": { icon: "cross", color: "#1baf7a", group: "Hospital / inpatient" },
+  "Veterans Affairs Medical Center or other VA healthcare facility": { icon: "cross", color: "#4a3aa7", group: "Hospital / inpatient" },
+  "Type not specified": { icon: "question", color: "#8a8880", group: "Not specified" },
+};
+const TYPE_GROUP_ORDER = ["Outpatient", "Day treatment / multi-setting", "Residential", "Hospital / inpatient", "Not specified"];
+const GROUP_DESCRIPTIONS = {
+  "Outpatient": "speech-bubble icon: talk-therapy visits, no overnight stay",
+  "Day treatment / multi-setting": "sun icon: structured daytime programming",
+  "Residential": "house icon: live-in treatment",
+  "Hospital / inpatient": "medical-cross icon: hospital-based care, which can include overnight stays",
+  "Not specified": "question-mark icon: SAMHSA didn't tag a level of care",
+};
+const NODATA_COLOR = "#c9c7bd";
+
+// Icon glyphs are plain white pictograms (recognizable at a glance, no legend
+// memorization required) drawn in a 24x24 box, over a colored circle badge --
+// the badge color is the only thing distinguishing exact subtypes within the
+// same level of care (e.g. two different "cross" hospital icons).
+function familyGlyph(icon) {
+  switch (icon) {
+    case "chat":
+      return '<path d="M6.5 6.5h11a1.5 1.5 0 0 1 1.5 1.5v5a1.5 1.5 0 0 1-1.5 1.5H12l-3.3 2.4V14.5H6.5A1.5 1.5 0 0 1 5 13V8a1.5 1.5 0 0 1 1.5-1.5z" fill="#fff"/>';
+    case "sun":
+      return '<circle cx="12" cy="12" r="3.1" fill="#fff"/>' +
+        '<g stroke="#fff" stroke-width="1.6" stroke-linecap="round">' +
+        '<line x1="12" y1="5.3" x2="12" y2="7.1"/><line x1="12" y1="16.9" x2="12" y2="18.7"/>' +
+        '<line x1="5.3" y1="12" x2="7.1" y2="12"/><line x1="16.9" y1="12" x2="18.7" y2="12"/>' +
+        '<line x1="7.4" y1="7.4" x2="8.6" y2="8.6"/><line x1="15.4" y1="15.4" x2="16.6" y2="16.6"/>' +
+        '<line x1="16.6" y1="7.4" x2="15.4" y2="8.6"/><line x1="8.6" y1="15.4" x2="7.4" y2="16.6"/></g>';
+    case "house":
+      return '<polygon points="12,6 5.2,12.3 8,12.3 8,18 16,18 16,12.3 18.8,12.3" fill="#fff"/>';
+    case "cross":
+      return '<rect x="10" y="5.5" width="4" height="13" rx="1" fill="#fff"/><rect x="5.5" y="10" width="13" height="4" rx="1" fill="#fff"/>';
+    case "question":
+      return '<text x="12" y="16.3" font-size="12" font-weight="700" text-anchor="middle" font-family="system-ui,sans-serif" fill="#fff">?</text>';
+  }
+}
+
+function badgeSvg(icon, color, size) {
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24">` +
+    `<circle cx="12" cy="12" r="10.5" fill="${color}" stroke="#fff" stroke-width="1.4"/>` +
+    familyGlyph(icon) + `</svg>`;
+}
+
+function facilityIcon(type) {
+  const spec = FACILITY_TYPES[type] || FACILITY_TYPES["Type not specified"];
+  // Visual badge is 20px for legibility in dense clusters, but the actual
+  // click target is enlarged and centered around it -- the same fix an
+  // earlier project on this site needed for small map markers generally.
+  return L.divIcon({
+    className: "facility-shape-icon",
+    html: `<div style="width:26px;height:26px;display:flex;align-items:center;justify-content:center;">${badgeSvg(spec.icon, spec.color, 20)}</div>`,
+    iconSize: [26, 26],
+    iconAnchor: [13, 13],
+  });
+}
+let geoData, facilityPoints, map, needLayer, currentMetric, zipLookup = {};
+
+function quantileBreaks(values, n) {
+  const sorted = [...values].sort((a, b) => a - b);
+  const breaks = [];
+  for (let i = 1; i < n; i++) {
+    breaks.push(sorted[Math.floor((sorted.length * i) / n)]);
+  }
+  breaks.push(Infinity);
+  return breaks;
+}
+
+function classify(value, breaks) {
+  if (value === null || value === undefined) return -1;
+  for (let i = 0; i < breaks.length; i++) if (value <= breaks[i]) return i;
+  return breaks.length - 1;
+}
+
+function colorFor(value, breaks, ramp) {
+  const idx = classify(value, breaks);
+  return idx === -1 ? NODATA_COLOR : ramp[Math.min(idx, ramp.length - 1)];
+}
+
+fetch("zip_lookup.json").then(r => r.json()).then(data => { zipLookup = data; })
+  .catch(err => console.error("ZIP LOOKUP FAILED:", err));
+
+Promise.all([
+  fetch("web_mental_health_data.geojson").then(r => r.json()),
+  fetch("web_facilities_points.geojson").then(r => r.json()),
+]).then(([needData, points]) => {
+  geoData = needData;
+  facilityPoints = points;
+
+  const select = document.getElementById("metric-select");
+  select.innerHTML = Object.entries(METRICS)
+    .map(([key, m]) => `<option value="${key}">${m.label}</option>`).join("");
+  select.value = "suicide_rate";
+  currentMetric = "suicide_rate";
+
+  initMap();
+  initSwipeHandle();
+
+  select.addEventListener("change", () => {
+    currentMetric = select.value;
+    redrawNeed();
+  });
+
+  document.getElementById("zip-search-btn").addEventListener("click", searchZip);
+  document.getElementById("zip-input").addEventListener("keydown", e => { if (e.key === "Enter") searchZip(); });
+});
+
+function searchZip() {
+  const msg = document.getElementById("zip-message");
+  const zip = document.getElementById("zip-input").value.trim();
+
+  if (!/^\d{5}$/.test(zip)) {
+    msg.textContent = "Enter a 5-digit ZIP code.";
+    msg.className = "error";
+    return;
+  }
+  const coords = zipLookup[zip];
+  if (!coords) {
+    msg.textContent = "That ZIP isn't in Illinois.";
+    msg.className = "error";
+    return;
+  }
+  map.flyTo([coords[0], coords[1]], 12, { duration: 1.2 });
+  msg.textContent = "";
+  msg.className = "";
+}
+
+function initMap() {
+  map = L.map("map", { scrollWheelZoom: false }).setView([40.0, -89.2], 7);
+
+  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
+    attribution: '&copy; OpenStreetMap contributors &copy; Esri', maxZoom: 16,
+  }).addTo(map);
+
+  L.control.scale({ position: "bottomleft", imperial: true, metric: true }).addTo(map);
+
+  // "labels" sits above both data panes so place names stay readable on both
+  // sides of the swipe divider; "supply" sits above "need" and gets clipped
+  // by the swipe handle to reveal "need" underneath on the left.
+  map.createPane("labels");
+  map.getPane("labels").style.zIndex = 650;
+  map.getPane("labels").style.pointerEvents = "none";
+  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}", {
+    pane: "labels", maxZoom: 16,
+  }).addTo(map);
+
+  map.createPane("supply");
+  map.getPane("supply").style.zIndex = 500;
+
+  // Facility markers get their own pane, stacked above the county polygons'
+  // pane by z-index rather than sharing one pane with them. Leaflet
+  // periodically re-appends a pane's SVG root on pan/zoom (viewreset), which
+  // would silently re-order same-pane DOM siblings and could put the
+  // polygon fill back on top of markers added earlier -- a real, reproduced
+  // bug (it showed up specifically after interacting with the map, not on
+  // first load). Cross-pane z-index ordering doesn't have that failure mode.
+  map.createPane("supplyMarkers");
+  map.getPane("supplyMarkers").style.zIndex = 550;
+
+  redrawNeed();
+  initSupplyLayer();
+}
+
+function initSwipeHandle() {
+  const wrap = document.querySelector(".map-wrap");
+  const handle = document.getElementById("swipe-handle");
+  const supplyPane = map.getPane("supply");
+  // supplyMarkers is deliberately left unclipped below -- facility icons stay
+  // visible on both sides of the handle so they can be read directly against
+  // whichever need metric is showing on the left, not just against the
+  // facility-count choropleth on the right.
+  let dragging = false;
+
+  // Deliberately uses the legacy `clip` property, not `clip-path`: clip-path
+  // establishes a new stacking context, which in testing caused this pane's
+  // z-index to stop being respected against its sibling pane, so clicks on
+  // the visually-topmost (supply) layer were silently swallowed by the layer
+  // underneath. `clip` has no such effect.
+  //
+  // The clip rect is expressed in the pane's own local coordinate space, and
+  // panning moves the whole pane (content and clip together) via Leaflet's
+  // shared map-pane transform. Left as a fixed local x, the clip boundary
+  // would drag along with the map content instead of staying pinned to the
+  // on-screen handle. containerPointToLayerPoint() converts the handle's
+  // fixed screen position into whatever local x currently lines up with it,
+  // compensating for the pan offset -- recomputed on every "move" below.
+  function setDivider(pct) {
+    pct = Math.max(0, Math.min(100, pct));
+    handle.style.left = pct + "%";
+    const size = map.getSize();
+    const localX = map.containerPointToLayerPoint([(pct / 100) * size.x, 0]).x;
+    supplyPane.style.clip = `rect(-9999px, 99999px, 99999px, ${localX}px)`;
+  }
+
+  function pointerX(e) {
+    const rect = wrap.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    return ((clientX - rect.left) / rect.width) * 100;
+  }
+
+  let currentPct = 50;
+  handle.addEventListener("mousedown", () => { dragging = true; map.dragging.disable(); });
+  handle.addEventListener("touchstart", () => { dragging = true; map.dragging.disable(); }, { passive: true });
+  window.addEventListener("mouseup", () => { dragging = false; map.dragging.enable(); });
+  window.addEventListener("touchend", () => { dragging = false; map.dragging.enable(); });
+  window.addEventListener("mousemove", e => { if (dragging) { currentPct = pointerX(e); setDivider(currentPct); } });
+  window.addEventListener("touchmove", e => { if (dragging) { currentPct = pointerX(e); setDivider(currentPct); } }, { passive: true });
+  // The clip rect is defined in the supply pane's own local coordinate space,
+  // and that whole pane translates together with the map during panning --
+  // so without this, panning drags the color boundary along with the map
+  // content while the on-screen handle (outside Leaflet's pane system) stays
+  // put. Recomputing on every move keeps the clip pinned to the handle.
+  map.on("move resize", () => setDivider(currentPct));
+
+  setDivider(50);
+}
+
+function withCI(value, low, high, fmt) {
+  if (value === null || value === undefined) return null;
+  const base = fmt(value);
+  return (low !== null && high !== null) ? `${base} (95% CI: ${fmt(low)}–${fmt(high)})` : base;
+}
+
+function popupRows(p) {
+  const rows = [
+    ["Suicide rate", p.suicide_rate !== null
+      ? withCI(p.suicide_rate, p.suicide_rate_ci_low, p.suicide_rate_ci_high, v => v.toFixed(1)) + " per 100,000"
+      : "data suppressed (fewer than ~10 deaths, 2018–22)"],
+    ["Frequent mental distress", withCI(p.frequent_mental_distress_pct, p.frequent_mental_distress_ci_low, p.frequent_mental_distress_ci_high, v => v.toFixed(1) + "%")],
+    ["Uninsured rate", withCI(p.uninsured_pct, p.uninsured_ci_low, p.uninsured_ci_high, v => v.toFixed(1) + "%")],
+    ["Mental health facilities", p.facility_count === 0 ? "none listed" : `${p.facility_count} (${p.facilities_per_100k} per 100,000)`],
+  ];
+  return rows.map(([label, val]) => `<li><strong>${label}:</strong> ${val}</li>`).join("");
+}
+
+function redrawNeed() {
+  const metric = METRICS[currentMetric];
+  const values = geoData.features.map(f => f.properties[currentMetric]).filter(v => v !== null && v !== undefined);
+  const breaks = quantileBreaks(values, 5);
+
+  if (needLayer) map.removeLayer(needLayer);
+  needLayer = L.geoJSON(geoData, {
+    style: f => ({
+      fillColor: colorFor(f.properties[currentMetric], breaks, metric.ramp),
+      weight: 0.6, color: "#ffffff88", fillOpacity: 0.85,
+    }),
+    onEachFeature: (f, lyr) => {
+      const p = f.properties;
+      lyr.bindPopup(
+        `<strong>${p.NAME} County</strong><ul class="popup-stats">${popupRows(p)}</ul>`,
+        { autoPan: false }
+      );
+    },
+  }).addTo(map);
+
+  document.getElementById("label-left").textContent = metric.label;
+  buildNeedLegend(breaks, metric);
+}
+
+function buildNeedLegend(breaks, metric) {
+  const el = document.getElementById("legend-need");
+  const fmt = n => n === Infinity ? "+" : (Number.isInteger(n) ? n.toLocaleString() : n.toFixed(1));
+  let prev = 0;
+  const swatches = metric.ramp.map((color, i) => {
+    const label = i === metric.ramp.length - 1 ? `${fmt(prev)}+` : `${fmt(prev)}–${fmt(breaks[i])}`;
+    const html = `<span class="swatch" style="background:${color}"></span> ${label}`;
+    prev = breaks[i];
+    return `<span>${html}</span>`;
+  }).join("");
+  const nodata = `<span><span class="swatch nodata"></span> ${metric.noDataLabel}</span>`;
+  el.innerHTML = `<div class="legend-title">${metric.label}</div><div class="swatch-row">${swatches}${nodata}</div>`;
+}
+
+function initSupplyLayer() {
+  L.geoJSON(geoData, {
+    pane: "supply",
+    style: f => ({
+      fillColor: colorFor(f.properties.facility_count, SUPPLY_BREAKS, SUPPLY_RAMP),
+      weight: 0.6, color: "#ffffff88", fillOpacity: 0.85,
+    }),
+    onEachFeature: (f, lyr) => {
+      const p = f.properties;
+      lyr.bindPopup(
+        `<strong>${p.NAME} County</strong><ul class="popup-stats">${popupRows(p)}</ul>`,
+        { autoPan: false }
+      );
+    },
+  }).addTo(map);
+
+  L.geoJSON(facilityPoints, {
+    pane: "supplyMarkers",
+    pointToLayer: (f, latlng) => L.marker(latlng, { pane: "supplyMarkers", icon: facilityIcon(f.properties.facility_type) }),
+    onEachFeature: (f, lyr) => {
+      const p = f.properties;
+      const address = p.street ? `${p.street}, ${p.city}, IL ${p.zip || ""}`.trim() : `${p.city}, IL`;
+      const phone = p.phone ? `<br><a href="tel:${p.phone}">${p.phone}</a>` : "";
+      lyr.bindPopup(
+        `<strong>${p.name}</strong><br><em>${p.facility_type}</em><br>${address}${phone}`,
+        { autoPan: false }
+      );
+    },
+  }).addTo(map);
+
+  buildSupplyLegend();
+  buildTypeLegend();
+}
+
+function buildSupplyLegend() {
+  const el = document.getElementById("legend-supply");
+  const labels = ["0", "1–2", "3–5", "6–14", "15+"];
+  const swatches = SUPPLY_RAMP.map((color, i) =>
+    `<span><span class="swatch" style="background:${color}"></span> ${labels[i]}</span>`
+  ).join("");
+  el.innerHTML = `<div class="legend-title">Facility count per county</div><div class="swatch-row">${swatches}</div>`;
+}
+
+function buildTypeLegend() {
+  const el = document.getElementById("type-legend");
+  el.innerHTML = "";
+  const byGroup = {};
+  Object.entries(FACILITY_TYPES).forEach(([type, spec]) => {
+    (byGroup[spec.group] = byGroup[spec.group] || []).push([type, spec]);
+  });
+  TYPE_GROUP_ORDER.forEach(group => {
+    const items = byGroup[group];
+    if (!items) return;
+    const col = document.createElement("div");
+    const rows = items.map(([type, spec]) =>
+      `<div class="item">${badgeSvg(spec.icon, spec.color, 18)} ${type}</div>`
+    ).join("");
+    col.innerHTML = `<div class="group-title">${group}</div><div class="group-desc">${GROUP_DESCRIPTIONS[group]}</div><div class="group-items">${rows}</div>`;
+    el.appendChild(col);
+  });
+}
+</script>
+</body>
+</html>
