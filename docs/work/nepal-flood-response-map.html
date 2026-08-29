@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mapping the Response: The Rasuwa Flood — Brian Bergstrom</title>
+<meta name="description" content="The real HOT/NAXA volunteer mapping response to the August 2026 Rasuwa flood in Nepal, alongside cloud-masked before/after satellite imagery and the real, still-rising toll.">
+<link rel="canonical" href="https://bergstromgis.com/work/nepal-flood-response-map.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Brian Bergstrom">
+<meta property="og:title" content="Mapping the Response: The Rasuwa Flood — Brian Bergstrom">
+<meta property="og:description" content="The real HOT/NAXA volunteer mapping response to the August 2026 Rasuwa flood in Nepal, alongside cloud-masked before/after satellite imagery and the real, still-rising toll.">
+<meta property="og:image" content="https://bergstromgis.com/images/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Brian Bergstrom — GIS that makes the overlooked undeniable.">
+<meta property="og:url" content="https://bergstromgis.com/work/nepal-flood-response-map.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Mapping the Response: The Rasuwa Flood — Brian Bergstrom">
+<meta name="twitter:description" content="The real HOT/NAXA volunteer mapping response to the August 2026 Rasuwa flood in Nepal, alongside cloud-masked before/after satellite imagery and the real, still-rising toll.">
+<meta name="twitter:image" content="https://bergstromgis.com/images/og-image.png">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="alternate icon" href="../favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../css/brand.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <nav class="site-nav container" aria-label="Primary">
+    <a class="wordmark" href="../index.html">Brian Bergstrom</a>
+    <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks">Menu</button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../work-civic.html">Work</a></li>
+      <li><a href="../about.html">About</a></li>
+      <li><a href="../../resume/resume.html">Resume</a></li>
+      <li><a href="../contact.html">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main id="main">
+  <div class="container">
+    <a class="breadcrumb" href="../work-civic.html">&larr; Back to civic work</a>
+
+    <header class="project-header">
+      <span class="tag tag-civic">Civic — Independent Study</span>
+      <h1>Mapping the Response: The Rasuwa Flood</h1>
+      <p class="subtitle">The real volunteer mapping response to the August 2026 Nepal flood, alongside cloud-masked before/after satellite imagery and the real, still-rising toll it responded to.</p>
+      <div class="meta-row">
+        <span class="stat">HOT / NAXA Tasking Manager, live data</span>
+        <span class="stat">241 volunteer mappers, 848 tasks</span>
+      </div>
+    </header>
+  </div>
+
+  <div class="project-hero-media">
+    <div class="media-inner">
+      <img src="../images/nepal-flood-response-map.jpg" alt="Screenshot of the Mapping the Response map, showing the HOT Tasking Manager task grid along the Trishuli valley, a flow-path line from the glacier collapse origin, and real-time stats on volunteer mappers and the reported toll.">
+    </div>
+  </div>
+
+  <div class="container project-body">
+    <p>
+      On August 26, 2026, a glacier collapse triggered a flash flood down Nepal's
+      Trishuli and Bhote Koshi corridor. Within a day, the Humanitarian OpenStreetMap
+      Team and NAXA had a Tasking Manager campaign live, and volunteers around the
+      world were digitizing buildings and roads from satellite imagery to help
+      responders on the ground. I'd been learning HOT's own mapping infrastructure
+      for weeks by then, so when this happened I wanted to see it working for real,
+      not build another retrospective analysis once the dust settled.
+    </p>
+
+    <h2>The actual task grid, not a mockup of one</h2>
+    <p>
+      The map pulls the real task grids for both live Tasking Manager projects
+      straight from HOT's production API: 648 building tasks, 200 road tasks, each
+      colored by its real current status. Both projects reached 100% mapped within
+      about two days, but validation, the second review pass that checks the work
+      for accuracy, was still well behind on both. Showing that gap honestly, not
+      just the "100% done" headline, is the actual point of the map.
+    </p>
+
+    <h2>Cloud-masked before and after, for real</h2>
+    <p>
+      I wanted a real before/after satellite comparison, not a single cloudy
+      snapshot from whatever day a satellite happened to pass over. The imagery is
+      composited from real Sentinel-2 passes, masked pixel by pixel against actual
+      cloud cover data, so each side shows the clearest real observation available
+      in its time window rather than one lucky (or unlucky) day. It's a real
+      Leaflet map underneath, so you can zoom into a specific village or pan along
+      the valley, not just drag a slider over two flat images.
+    </p>
+
+    <div class="callout">
+      <span class="callout-label">Worth knowing</span>
+      <p>
+        The "after" imagery is genuinely thin in places. The flood had only just
+        happened, so only one or two real satellite passes existed yet to draw
+        from, and wherever every available pass was cloudy, that patch stays
+        transparent rather than being guessed at. It fills in as more passes come
+        in over the following weeks. The reported death toll and missing count are
+        shown the same way: each figure is a real, individually dated and sourced
+        snapshot, not a single smoothed number, because it kept climbing daily
+        while this was being built and no two trackers agreed on it exactly.
+      </p>
+    </div>
+
+    <div class="evidence-panel">
+      <p>Zoom the map, measure a real distance, or drag the imagery slider to compare.</p>
+      <a class="btn btn-primary" href="../nepal-flood-response-map/" target="_blank" rel="noopener">
+        View the map <span class="visually-hidden">(opens in a new tab)</span>
+      </a>
+      <a class="btn btn-outline" href="https://github.com/dulcetberg/nepal-flood-response-map" target="_blank" rel="noopener">
+        View the code <span class="visually-hidden">(opens in a new tab)</span>
+      </a>
+    </div>
+  </div>
+
+  <section id="contact" class="contact-cta container">
+    <h2>Let's talk about a job, a project, or both.</h2>
+    <p>I'm open to full-time GIS Analyst roles and freelance/consulting work.</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="mailto:brian@bergstromgis.com">Email me</a>
+      <a class="btn btn-outline" href="https://www.linkedin.com/in/brianbergstrom86/" target="_blank" rel="noopener">LinkedIn <span class="visually-hidden">(opens in a new tab)</span></a>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-contact">
+      <a class="btn btn-outline" href="mailto:brian@bergstromgis.com">brian@bergstromgis.com</a>
+      <a class="btn btn-outline" href="https://www.linkedin.com/in/brianbergstrom86/" target="_blank" rel="noopener">LinkedIn</a>
+      <a class="btn btn-outline" href="../../resume/resume.html">Resume</a>
+    </div>
+    <p class="footer-note">&copy; Brian Bergstrom. Built by hand, hosted on GitHub Pages.</p>
+  </div>
+</footer>
+
+<script>
+  document.documentElement.classList.add('js-ready');
+  var toggle = document.getElementById('navToggle');
+  var links = document.getElementById('navLinks');
+  toggle.addEventListener('click', function () {
+    var open = links.classList.toggle('is-open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+</script>
+</body>
+</html>

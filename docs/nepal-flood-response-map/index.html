@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mapping the Response: Rasuwa Flood, 2026</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.polylinemeasure@3.0.0/Leaflet.PolylineMeasure.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F4EE; --bg-raised: #FFFFFF; --text: #2B2A26; --text-muted: #6b6a63;
+    --primary: #2F5233; --primary-dark: #223D26; --accent: #753918; --rule: #DAD4C6;
+    --font-heading: 'Fraunces', Georgia, serif; --font-body: 'Inter', sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); line-height: 1.55; }
+  main { max-width: 900px; margin: 0 auto; padding: 2.5rem 1.25rem 5rem; }
+
+  header.page { margin-bottom: 2rem; padding: 0 1.25rem; }
+  .eyebrow { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); display: block; margin-bottom: 0.6rem; }
+  h1 { font-family: var(--font-heading); font-size: clamp(1.7rem, 4vw, 2.3rem); margin: 0 0 0.9rem; line-height: 1.15; }
+  header.page p { color: var(--text); font-size: 1.02rem; }
+
+  .stat-row { display: flex; flex-wrap: wrap; gap: 0.75rem; margin: 1.5rem 0 2rem; }
+  .stat-card { background: var(--bg-raised); border: 1px solid var(--rule); border-radius: 10px; padding: 0.85rem 1.1rem; flex: 1 1 150px; }
+  .stat-card .num { font-family: var(--font-heading); font-size: 1.5rem; font-weight: 600; color: var(--primary-dark); line-height: 1.1; }
+  .stat-card .label { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem; }
+
+  .map-panel { background: var(--bg-raised); border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; margin-bottom: 2rem; }
+  .control-row { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; padding: 1rem 1.25rem; border-bottom: 1px solid var(--rule); }
+  .control-row label { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
+  .layer-toggle { display: inline-flex; background: var(--bg); border-radius: 999px; padding: 0.25rem; border: 1px solid var(--rule); }
+  .layer-toggle button { border: none; background: none; padding: 0.4rem 0.9rem; border-radius: 999px; font-family: var(--font-body); font-size: 0.85rem; font-weight: 600; color: var(--text-muted); cursor: pointer; }
+  .layer-toggle button.active { background: var(--primary); color: #fff; }
+  .path-toggle { display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; color: var(--text-muted); }
+
+  #map { height: 520px; width: 100%; }
+  @media (max-width: 640px) { #map { height: 420px; } }
+
+  .legend-panel { display: flex; flex-wrap: wrap; gap: 1.1rem; padding: 0.9rem 1.25rem; font-size: 0.82rem; color: var(--text-muted); }
+  .measure-help { font-size: 0.82rem; color: var(--text-muted); margin: 0; }
+  .map-panel .measure-help { padding: 0 1.25rem 1rem; }
+  .chart-section .measure-help { margin-top: -0.5rem; margin-bottom: 1.25rem; padding: 0 1.25rem; }
+  .legend-panel span.item { display: inline-flex; align-items: center; gap: 0.4rem; }
+  .swatch { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+
+  .callout { background: var(--bg-raised); border: 1px solid var(--rule); border-left: 3px solid var(--accent); border-radius: 8px; padding: 1rem 1.25rem; margin: 1.5rem 0; }
+  .callout .label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); display: block; margin-bottom: 0.4rem; }
+  .callout p { margin: 0; font-size: 0.94rem; }
+
+  .chart-section { margin: 2.5rem 0; }
+  .chart-section h2 { font-family: var(--font-heading); font-size: 1.3rem; margin: 0 0 0.3rem; padding: 0 1.25rem; }
+  .chart-note { color: var(--text-muted); font-size: 0.85rem; margin: 0 0 1rem; padding: 0 1.25rem; }
+  .chart-box { background: var(--bg-raised); border: 1px solid var(--rule); border-radius: 12px; padding: 1.25rem 1.25rem 0.5rem; }
+  .chart-legend { display: flex; gap: 1.2rem; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.6rem; }
+  svg.chart { width: 100%; height: auto; overflow: visible; }
+  .bar { cursor: pointer; }
+  .bar:hover { opacity: 0.8; }
+  .chart-tick { font-size: 0.72rem; fill: var(--text-muted); font-family: var(--font-body); }
+  .chart-axis-line { stroke: var(--rule); stroke-width: 1; }
+  .bar-label { font-size: 0.68rem; fill: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+
+  section#timeline, section#methodology, section.references { margin: 3rem 0; padding: 0 1.25rem; }
+  section h2 { font-family: var(--font-heading); font-size: 1.4rem; margin: 0 0 0.5rem; }
+  .timeline-item { border-top: 1px solid var(--rule); padding: 1rem 0; }
+  .timeline-item:first-child { border-top: none; }
+  .timeline-date { font-size: 0.78rem; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.04em; }
+  .timeline-title { font-family: var(--font-heading); font-size: 1.1rem; margin: 0.2rem 0 0.35rem; }
+  .timeline-desc { margin: 0 0 0.35rem; font-size: 0.94rem; }
+  .timeline-source { font-size: 0.78rem; color: var(--text-muted); font-style: italic; }
+
+  #methodology p, .references p { font-size: 0.92rem; }
+  .references p { padding-left: 1.5em; text-indent: -1.5em; margin: 0 0 0.8rem; font-size: 0.88rem; color: var(--text-muted); }
+
+  footer { margin-top: 3rem; padding: 1.5rem 1.25rem 0; border-top: 1px solid var(--rule); font-size: 0.85rem; color: var(--text-muted); }
+  footer a { color: var(--accent); }
+
+  .leaflet-popup-content { font-family: var(--font-body); font-size: 0.85rem; }
+  .flood-label { background: rgba(255,255,255,0.9); border: 1px solid var(--rule); color: var(--text); font-family: var(--font-body); font-size: 0.72rem; font-weight: 600; padding: 1px 5px; box-shadow: none; }
+  .flood-label::before { display: none; }
+
+  /* The dashes appear to march downstream, echoing the direction of the
+     actual debris flow -- not just decoration, the motion carries meaning. */
+  .flow-path-main { stroke-dasharray: 11 7; animation: flow-dash 0.9s linear infinite; }
+  @keyframes flow-dash { to { stroke-dashoffset: -18; } }
+  @media (prefers-reduced-motion: reduce) { .flow-path-main { animation: none; } }
+
+  .swipe-box { background: var(--bg-raised); border: 1px solid var(--rule); border-radius: 12px; padding: 1rem; }
+  .swipe-container { position: relative; width: 100%; height: 560px; margin: 0 auto; overflow: hidden; border-radius: 8px; background: #10140f; }
+  #swipe-map { width: 100%; height: 100%; background: #10140f; }
+  @media (max-width: 640px) { .swipe-container { height: 420px; } }
+  .swipe-handle { position: absolute; top: 0; bottom: 0; left: 50%; width: 3px; background: #fff; box-shadow: 0 0 0 1px rgba(0,0,0,0.2); pointer-events: none; transform: translateX(-1.5px); z-index: 650; }
+  .swipe-handle::after { content: '\21d4'; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 34px; height: 34px; background: #fff; border-radius: 50%; box-shadow: 0 1px 4px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; color: var(--text); font-size: 1rem; }
+  /* Centered at top rather than in the corners -- the top-left corner now
+     holds the zoom + measure control stack, and a corner label would sit
+     right behind it. */
+  .swipe-tags { position: absolute; top: 0.6rem; left: 50%; transform: translateX(-50%); display: flex; gap: 0.5rem; z-index: 640; pointer-events: none; }
+  .swipe-tag { background: rgba(0,0,0,0.6); color: #fff; font-size: 0.72rem; font-weight: 600; padding: 0.25rem 0.65rem; border-radius: 999px; white-space: nowrap; }
+  #swipe-slider { width: 100%; margin-top: 0.85rem; accent-color: var(--primary); }
+
+  @media (max-width: 480px) {
+    .control-row { gap: 0.6rem; }
+    .layer-toggle button { font-size: 0.74rem; padding: 0.4rem 0.6rem; white-space: nowrap; }
+    .stat-card { flex-basis: calc(50% - 0.4rem); }
+  }
+</style>
+</head>
+<body>
+<main>
+
+  <header class="page">
+    <span class="eyebrow">HOT / NAXA Tasking Manager &middot; Copernicus EMS &middot; Aug 26&ndash;29, 2026</span>
+    <h1>Mapping the Response: The Rasuwa Flood</h1>
+    <p>On August 26, 2026, a glacier collapse triggered a flash flood down Nepal's Trishuli and Bhote Koshi corridor. Within a day, volunteer mappers around the world were digitizing buildings and roads from satellite imagery to help responders on the ground. This tracks that real response, day by day, alongside the real, still-rising toll it responded to.</p>
+  </header>
+
+  <div class="stat-row" id="stat-row"></div>
+
+  <div class="map-panel">
+    <div class="control-row">
+      <label>Task grid:</label>
+      <div class="layer-toggle" id="layer-toggle">
+        <button data-layer="buildings" class="active">Buildings (648 tasks)</button>
+        <button data-layer="roads">Roads (200 tasks)</button>
+      </div>
+      <label class="path-toggle"><input type="checkbox" id="path-toggle" checked> Show flow path</label>
+    </div>
+    <div id="map"></div>
+    <div class="legend-panel" id="legend"></div>
+    <p class="measure-help">Scale bar in the bottom-left corner. To measure real distance: click the <strong>&#8614;</strong> ruler icon (top-left, below the zoom buttons), then click points along the path you want to measure, the running distance updates as you go. Double-click, or click the last point again, to finish. Shift-click a point to delete it; Ctrl-click the last point later to keep extending the line. Click the ruler icon again to turn it off, or the &times; button to clear your measurements.</p>
+  </div>
+
+  <div class="callout">
+    <span class="label">Worth knowing</span>
+    <p>The flow path drawn on the map connects real, confirmed points (the glacier collapse origin, Timure, Syabru Besi, Trishuli Bazar) in geographic sequence down the valley. It's a straight-line approximation between those points, not a precisely traced flood path. Both task grids show as 100% mapped because that reflects real work already done, not full confidence in it: validation, the second review pass that checks accuracy, is still well behind on both projects. Copernicus's official damage count (240+ buildings destroyed, 32 damaged) covers only the areas its analysts have assessed so far, not the full corridor.</p>
+  </div>
+
+  <section class="chart-section">
+    <h2>The valley itself, before and after</h2>
+    <p class="chart-note">Real Sentinel-2 satellite imagery, cloud-masked and composited from actual clear passes, not a single day's snapshot. Scroll to zoom, drag to pan, and use the slider to compare.</p>
+    <div class="swipe-box">
+      <div class="swipe-container" id="swipe-container">
+        <div id="swipe-map"></div>
+        <div class="swipe-handle" id="swipe-handle"></div>
+        <div class="swipe-tags">
+          <span class="swipe-tag">Before &middot; Aug 10&ndash;25</span>
+          <span class="swipe-tag">After &middot; Aug 26&ndash;30</span>
+        </div>
+      </div>
+      <input type="range" id="swipe-slider" min="0" max="100" value="50" aria-label="Swipe between before and after imagery">
+    </div>
+    <p class="chart-note">Black/transparent areas are real gaps, not missing design: no cloud-free satellite pass covered that spot in the given window yet. The "after" side is thin because the flood only just happened; it fills in as more satellite passes come in over the following days and weeks.</p>
+    <p class="measure-help">This map has the same scale bar and ruler tool as the map above: click the <strong>&#8614;</strong> icon (top-left, below the zoom buttons) to measure a real distance across the imagery, click to place points, double-click to finish.</p>
+  </section>
+
+  <section class="chart-section">
+    <h2>The reported toll, by day</h2>
+    <p class="chart-note">Each bar is exactly what was reported as of that date, not smoothed or backfilled. The toll kept climbing through this entire window as search and rescue continued.</p>
+    <div class="chart-box">
+      <div class="chart-legend">
+        <span class="item"><span class="swatch" style="background:#7a3d17"></span> Confirmed dead</span>
+        <span class="item"><span class="swatch" style="background:#d68f52"></span> Missing</span>
+      </div>
+      <svg class="chart" id="chart-toll" viewBox="0 0 640 220"></svg>
+    </div>
+  </section>
+
+  <section id="timeline">
+    <h2>What actually happened</h2>
+    <div id="timeline-list"></div>
+  </section>
+
+  <section id="methodology">
+    <h2>Methodology</h2>
+    <p><strong>Mapping response:</strong> HOT Tasking Manager projects #63069 (buildings) and #63102 (roads), both live campaigns under the "2026 Nepal Floods" activation. Task grids and completion stats pulled directly from HOT's production API.</p>
+    <p><strong>Toll figures:</strong> each snapshot is cited individually to its own source and timestamp (Kathmandu Post, Nepal Police, Nepal's National Disaster Risk Reduction and Management Authority), not drawn from a single running tracker, since no two trackers agreed exactly and the real number was moving daily.</p>
+    <p><strong>Map context:</strong> named settlements, rivers, and the glacier collapse origin point (Langtang Lirung) geocoded individually against OpenStreetMap and cross-checked against news reporting of the affected corridor.</p>
+    <p>Data pulled August 2026, while search and rescue operations were still active. Figures here will already be out of date by the time you're reading this; check the cited sources directly for anything current.</p>
+  </section>
+
+  <section class="references">
+    <h2>References</h2>
+    <p>Humanitarian OpenStreetMap Team, NAXA, &amp; Open Mapping Hub Asia-Pacific. (2026). <em>Nepal Floods 2026 mapping activation</em> [Tasking Manager campaign]. <a href="https://tasks.hotosm.org/explore?campaign=2026%20Nepal%20Floods" target="_blank" rel="noopener">tasks.hotosm.org</a></p>
+    <p>Copernicus Emergency Management Service. (2026). <em>EMSR927: Flood in Nepal</em> [Rapid mapping activation]. <a href="https://mapping.emergency.copernicus.eu/activations/EMSR927/" target="_blank" rel="noopener">mapping.emergency.copernicus.eu</a></p>
+    <p>Nepal National Disaster Risk Reduction and Management Authority, via ANI News. (2026, August 28). <em>Death toll reaches 538, 977 still missing as rescue teams race against fresh flood threat in Nepal</em>.</p>
+    <p>Kathmandu Post. (2026, August 26). <em>Update: Rasuwa flood death toll climbs to 95 as dozens remain missing</em>.</p>
+    <p>OpenStreetMap contributors. (2026). Settlement, river, and place data for Rasuwa, Nuwakot, and Dhading districts, Nepal.</p>
+  </section>
+
+  <footer>
+    By <a href="https://bergstromgis.com">Brian Bergstrom</a>. If you'd like to help with the actual response, the Tasking Manager campaign is still open for validators: <a href="https://tasks.hotosm.org/explore?campaign=2026%20Nepal%20Floods" target="_blank" rel="noopener">tasks.hotosm.org</a>.
+  </footer>
+
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.polylinemeasure@3.0.0/Leaflet.PolylineMeasure.js"></script>
+<script src="timeline.js"></script>
+<script>
+const STATUS_COLORS = { MAPPED: "#c7e3bb", VALIDATED: "#337a2e", BADIMAGERY: "#c9c7bd" };
+const STATUS_LABELS = { MAPPED: "Mapped, not yet validated", VALIDATED: "Validated", BADIMAGERY: "Imagery too poor to map" };
+
+let tasksGeo, contextGeo, projectMeta, map, taskLayer, pathLine;
+let currentLayer = "buildings";
+
+function buildTimeline() {
+  document.getElementById("timeline-list").innerHTML = RESPONSE_TIMELINE.map(item => `
+    <div class="timeline-item">
+      <div class="timeline-date">${item.date}</div>
+      <div class="timeline-title">${item.title}</div>
+      <p class="timeline-desc">${item.desc}</p>
+      <div class="timeline-source">Source: ${item.source}</div>
+    </div>
+  `).join("");
+}
+
+function buildStatRow() {
+  const b = projectMeta.buildings, r = projectMeta.roads;
+  const latestToll = TOLL_TIMELINE[TOLL_TIMELINE.length - 1];
+  const cards = [
+    { num: b.totalContributors + r.totalContributors, label: "Total volunteer mappers" },
+    { num: "100%", label: "Buildings & roads mapped" },
+    { num: `${b.percentValidated}% / ${r.percentValidated}%`, label: "Validated (buildings / roads)" },
+    { num: latestToll.dead.toLocaleString(), label: `Confirmed dead, ${latestToll.label}` },
+    { num: latestToll.missing.toLocaleString(), label: `Still missing, ${latestToll.label}` },
+  ];
+  document.getElementById("stat-row").innerHTML = cards.map(c => `
+    <div class="stat-card"><div class="num">${c.num}</div><div class="label">${c.label}</div></div>
+  `).join("");
+}
+
+function buildLegend() {
+  document.getElementById("legend").innerHTML = Object.keys(STATUS_COLORS).map(s => `
+    <span class="item"><span class="swatch" style="background:${STATUS_COLORS[s]}"></span> ${STATUS_LABELS[s]}</span>
+  `).join("");
+}
+
+function redrawTasks() {
+  if (taskLayer) map.removeLayer(taskLayer);
+  const features = tasksGeo.features.filter(f => f.properties.layer === currentLayer);
+  taskLayer = L.geoJSON({ type: "FeatureCollection", features }, {
+    style: f => ({
+      fillColor: STATUS_COLORS[f.properties.status] || "#c9c7bd",
+      weight: 0.5, color: "#ffffff", fillOpacity: 0.75,
+    }),
+    onEachFeature: (f, lyr) => {
+      lyr.bindPopup(`Task #${f.properties.taskId}<br>${STATUS_LABELS[f.properties.status] || f.properties.status}`);
+    },
+  }).addTo(map);
+}
+
+function buildContextLayers() {
+  const rivers = contextGeo.features.filter(f => f.properties.kind === "river");
+  L.geoJSON({ type: "FeatureCollection", features: rivers }, {
+    style: { color: "#4f8ab0", weight: 1.5, opacity: 0.6 },
+  }).addTo(map);
+
+  const keyPoints = contextGeo.features.filter(f => f.properties.kind === "key_settlement" || f.properties.kind === "origin");
+  keyPoints.forEach(f => {
+    const [lon, lat] = f.geometry.coordinates;
+    const isOrigin = f.properties.kind === "origin";
+    const marker = L.circleMarker([lat, lon], {
+      radius: isOrigin ? 7 : 6,
+      fillColor: isOrigin ? "#a8331e" : "#753918",
+      color: "#fff", weight: 1.5, fillOpacity: 0.95,
+    }).addTo(map).bindTooltip(f.properties.name, {
+      permanent: true,
+      direction: isOrigin ? "right" : "top",
+      className: "flood-label",
+      offset: isOrigin ? [8, 0] : [0, -8],
+    });
+    if (isOrigin) marker.bindPopup("Langtang Lirung: source of the ice/rock collapse that triggered the flood.");
+  });
+
+  const pathCoords = ["origin", "Timure", "Syabru Besi", "Trishuli Bazar (Bidur)"].map(key => {
+    const f = keyPoints.find(p => p.properties.name === key || (key === "origin" && p.properties.kind === "origin"));
+    return f ? [f.geometry.coordinates[1], f.geometry.coordinates[0]] : null;
+  }).filter(Boolean);
+
+  // Glow + animated dash on top -- two strokes on the same real coordinates,
+  // not two different lines, so the "striking" look never implies more
+  // precision than the straight-line approximation actually has.
+  const pathGlow = L.polyline(pathCoords, { color: "#a8331e", weight: 9, opacity: 0.22, className: "flow-path-glow" });
+  const pathMain = L.polyline(pathCoords, { color: "#d4451f", weight: 3, opacity: 0.95, className: "flow-path-main" });
+  pathLine = L.layerGroup([pathGlow, pathMain]).addTo(map);
+}
+
+function barChart(elId, series, opts) {
+  const el = document.getElementById(elId);
+  const W = 640, H = 220, padL = 34, padB = 28, padT = 10, padR = 10;
+  const n = opts.labels.length;
+  const groupW = (W - padL - padR) / n;
+  const maxVal = Math.max(1, ...series.flatMap(s => s.values));
+  const barsPerGroup = series.length;
+  const barW = (groupW * 0.62) / barsPerGroup;
+  let svg = `<g class="chart-axis-line"><line x1="${padL}" y1="${H-padB}" x2="${W-padR}" y2="${H-padB}" /></g>`;
+  opts.labels.forEach((label, i) => {
+    const gx = padL + i * groupW + groupW / 2;
+    svg += `<text class="chart-tick" x="${gx}" y="${H-padB+16}" text-anchor="middle">${label}</text>`;
+    series.forEach((s, si) => {
+      const v = s.values[i];
+      const h = (v / maxVal) * (H - padT - padB);
+      const x = gx - (barsPerGroup * barW) / 2 + si * barW;
+      const y = H - padB - h;
+      svg += `<rect class="bar" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${(barW-2).toFixed(1)}" height="${h.toFixed(1)}" fill="${s.color}"><title>${label}: ${s.name} = ${v.toLocaleString()}</title></rect>`;
+      if (v > 0) svg += `<text class="bar-label" x="${(x + barW/2 - 1).toFixed(1)}" y="${(y-3).toFixed(1)}" text-anchor="middle">${v.toLocaleString()}</text>`;
+    });
+  });
+  el.innerHTML = svg;
+}
+
+function buildCharts() {
+  barChart("chart-toll", [
+    { name: "Confirmed dead", values: TOLL_TIMELINE.map(t => t.dead), color: "#7a3d17" },
+    { name: "Missing", values: TOLL_TIMELINE.map(t => t.missing || 0), color: "#d68f52" },
+  ], { labels: TOLL_TIMELINE.map(t => t.label.replace(" (end of day)", "").replace(" (evening)", "").replace(" (3pm NPT)", "")) });
+}
+
+function addMeasureTools(targetMap) {
+  L.control.scale({ position: "bottomleft", metric: true, imperial: true }).addTo(targetMap);
+  L.control.polylineMeasure({
+    position: "topleft",
+    unit: "metres",
+    showBearings: false,
+    clearMeasurementsOnStop: false,
+    showClearControl: true,
+    showUnitControl: true,
+  }).addTo(targetMap);
+}
+
+// The AOI both PNGs were rendered against (see build_imagery.py's BBOX) --
+// south, west, north, east.
+const IMAGERY_BOUNDS = [[27.843973, 85.05814], [28.287426, 85.387889]];
+
+function initSwipe() {
+  const container = document.getElementById("swipe-container");
+  const handle = document.getElementById("swipe-handle");
+  const slider = document.getElementById("swipe-slider");
+
+  const swipeMap = L.map("swipe-map", { scrollWheelZoom: true, minZoom: 9, maxZoom: 15 });
+  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}", {
+    attribution: '&copy; Esri', maxZoom: 13,
+  }).addTo(swipeMap);
+
+  const bounds = L.latLngBounds(IMAGERY_BOUNDS);
+  L.imageOverlay("web_imagery_before.png", bounds).addTo(swipeMap);
+  const afterOverlay = L.imageOverlay("web_imagery_after.png", bounds).addTo(swipeMap);
+  swipeMap.fitBounds(bounds);
+  addMeasureTools(swipeMap);
+
+  // The handle is drawn at pct% of the CONTAINER's width, but clip-path
+  // percentages on the after-image are relative to that image's OWN box --
+  // and since the image is usually smaller than the container (we're
+  // zoomed out enough to show surrounding terrain), those two percentages
+  // point at different screen positions. That mismatch is exactly the
+  // "gap" bug from the mental health map's swipe. Fix: always convert the
+  // divider's container-relative pixel position into the image's own
+  // local pixel coordinates, and recompute on every pan/zoom too, since
+  // the image's offset within the container changes as the map moves.
+  let currentPct = 50;
+  function updateClip() {
+    const el = afterOverlay.getElement();
+    if (!el) return;
+    const containerRect = container.getBoundingClientRect();
+    const imgRect = el.getBoundingClientRect();
+    const dividerScreenX = containerRect.left + containerRect.width * (currentPct / 100);
+    const clipPx = dividerScreenX - imgRect.left;
+    el.style.clipPath = `inset(0 0 0 ${clipPx}px)`;
+    handle.style.left = currentPct + "%";
+  }
+  function setPct(pct) {
+    currentPct = Math.max(0, Math.min(100, pct));
+    slider.value = currentPct;
+    updateClip();
+  }
+
+  afterOverlay.on("load", () => setPct(currentPct));
+  swipeMap.on("move zoom", updateClip);
+  setPct(50);
+
+  slider.addEventListener("input", () => setPct(Number(slider.value)));
+
+  // Only the handle itself starts a swipe-drag -- dragging anywhere else on
+  // the map should pan it normally, not move the divider. Map dragging is
+  // paused for the duration of a handle-drag so the two gestures can't
+  // fight each other (the same conflict leaflet-side-by-side guards against).
+  let dragging = false;
+  const onMove = clientX => {
+    const rect = container.getBoundingClientRect();
+    setPct(((clientX - rect.left) / rect.width) * 100);
+  };
+  handle.style.pointerEvents = "auto";
+  handle.style.cursor = "ew-resize";
+  handle.addEventListener("pointerdown", e => {
+    dragging = true;
+    swipeMap.dragging.disable();
+    onMove(e.clientX);
+    e.preventDefault();
+  });
+  window.addEventListener("pointermove", e => { if (dragging) onMove(e.clientX); });
+  window.addEventListener("pointerup", () => {
+    if (dragging) { dragging = false; swipeMap.dragging.enable(); }
+  });
+}
+
+function initMap() {
+  map = L.map("map", { scrollWheelZoom: true, minZoom: 9, maxZoom: 13 }).setView([28.05, 85.28], 10);
+  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}", {
+    attribution: '&copy; Esri', maxZoom: 13,
+  }).addTo(map);
+  map.createPane("labels");
+  map.getPane("labels").style.zIndex = 650;
+  map.getPane("labels").style.pointerEvents = "none";
+  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}", {
+    pane: "labels", maxZoom: 13,
+  }).addTo(map);
+
+  buildContextLayers();
+  redrawTasks();
+  addMeasureTools(map);
+
+  document.getElementById("path-toggle").addEventListener("change", e => {
+    if (e.target.checked) pathLine.addTo(map); else map.removeLayer(pathLine);
+  });
+}
+
+Promise.all([
+  fetch("web_tasks.geojson").then(r => r.json()),
+  fetch("web_context.geojson").then(r => r.json()),
+  fetch("web_project_meta.json").then(r => r.json()),
+]).then(([tasks, context, meta]) => {
+  tasksGeo = tasks; contextGeo = context; projectMeta = meta;
+
+  buildStatRow();
+  buildLegend();
+  buildTimeline();
+  buildCharts();
+  initMap();
+  initSwipe();
+
+  document.querySelectorAll(".layer-toggle button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".layer-toggle button").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentLayer = btn.dataset.layer;
+      redrawTasks();
+    });
+  });
+});
+</script>
+</body>
+</html>

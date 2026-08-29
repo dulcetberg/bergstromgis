@@ -1,0 +1,22 @@
+{
+  "buildings": {
+    "projectId": 63069,
+    "name": "Nepal Flood 2026 Response - Upper Trishuli and Bhote Koshi Corridor [BUILDING]",
+    "organisationName": "MapBuds",
+    "percentMapped": 100,
+    "percentValidated": 18,
+    "totalContributors": 126,
+    "created": "2026-08-27T09:52:23.754000Z",
+    "lastUpdated": "2026-08-28T22:47:17.979000Z"
+  },
+  "roads": {
+    "projectId": 63102,
+    "name": "Nepal Flood 2026 Response - Upper Trishuli and Bhote Koshi Corridor [ROAD]",
+    "organisationName": "MapBuds",
+    "percentMapped": 100,
+    "percentValidated": 8,
+    "totalContributors": 115,
+    "created": "2026-08-27T10:05:13.518000Z",
+    "lastUpdated": "2026-08-29T00:39:07.566000Z"
+  }
+}
