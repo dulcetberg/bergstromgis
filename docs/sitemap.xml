@@ -2,27 +2,67 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://bergstromgis.com/</loc>
-    <lastmod>2026-07-05</lastmod>
+    <lastmod>2026-08-30</lastmod>
+  </url>
+  <url>
+    <loc>https://bergstromgis.com/blog.html</loc>
+    <lastmod>2026-08-30</lastmod>
   </url>
   <url>
     <loc>https://bergstromgis.com/about.html</loc>
-    <lastmod>2026-07-05</lastmod>
+    <lastmod>2026-08-30</lastmod>
   </url>
   <url>
     <loc>https://bergstromgis.com/work-civic.html</loc>
-    <lastmod>2026-07-05</lastmod>
+    <lastmod>2026-08-30</lastmod>
   </url>
   <url>
     <loc>https://bergstromgis.com/work-personal.html</loc>
-    <lastmod>2026-07-05</lastmod>
+    <lastmod>2026-08-30</lastmod>
   </url>
   <url>
     <loc>https://bergstromgis.com/contact.html</loc>
-    <lastmod>2026-07-05</lastmod>
+    <lastmod>2026-08-30</lastmod>
   </url>
   <url>
     <loc>https://bergstromgis.com/resume/resume.html</loc>
     <lastmod>2026-07-05</lastmod>
+  </url>
+  <url>
+    <loc>https://bergstromgis.com/work/nepal-flood-response-map.html</loc>
+    <lastmod>2026-08-28</lastmod>
+  </url>
+  <url>
+    <loc>https://bergstromgis.com/work/us-disease-surveillance-map.html</loc>
+    <lastmod>2026-08-28</lastmod>
+  </url>
+  <url>
+    <loc>https://bergstromgis.com/work/us-territorial-timelapse.html</loc>
+    <lastmod>2026-08-28</lastmod>
+  </url>
+  <url>
+    <loc>https://bergstromgis.com/work/chicagoland-activity-space-divide.html</loc>
+    <lastmod>2026-08-27</lastmod>
+  </url>
+  <url>
+    <loc>https://bergstromgis.com/work/chicagoland-third-places.html</loc>
+    <lastmod>2026-08-27</lastmod>
+  </url>
+  <url>
+    <loc>https://bergstromgis.com/work/illinois-mental-health-map.html</loc>
+    <lastmod>2026-08-27</lastmod>
+  </url>
+  <url>
+    <loc>https://bergstromgis.com/work/illinois-turning-wood-map.html</loc>
+    <lastmod>2026-08-27</lastmod>
+  </url>
+  <url>
+    <loc>https://bergstromgis.com/work/food-pantry-transit-map.html</loc>
+    <lastmod>2026-07-22</lastmod>
+  </url>
+  <url>
+    <loc>https://bergstromgis.com/work/wildfire-smoke-dashboard.html</loc>
+    <lastmod>2026-07-21</lastmod>
   </url>
   <url>
     <loc>https://bergstromgis.com/work/nami-storymap.html</loc>
