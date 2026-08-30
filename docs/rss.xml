@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+<channel>
+  <title>Brian Bergstrom — Blog</title>
+  <link>https://bergstromgis.com/blog.html</link>
+  <description>Weekly and biweekly GIS projects and write-ups from Brian Bergstrom: civic data journalism, humanitarian mapping, and personal-interest builds.</description>
+  <language>en-us</language>
+  <lastBuildDate>Sun, 30 Aug 2026 09:45:06 GMT</lastBuildDate>
+    <item>
+      <title>Mapping the Response: The Rasuwa Flood</title>
+      <link>https://bergstromgis.com/work/nepal-flood-response-map.html</link>
+      <guid isPermaLink="true">https://bergstromgis.com/work/nepal-flood-response-map.html</guid>
+      <pubDate>Fri, 28 Aug 2026 12:00:00 GMT</pubDate>
+      <description>The real HOT/NAXA volunteer mapping response to the August 2026 Rasuwa flood in Nepal, alongside cloud-masked before/after satellite imagery and the real, still-rising toll.</description>
+    </item>
+    <item>
+      <title>Reportable Disease Cases Since RFK Jr. Took Over HHS</title>
+      <link>https://bergstromgis.com/work/us-disease-surveillance-map.html</link>
+      <guid isPermaLink="true">https://bergstromgis.com/work/us-disease-surveillance-map.html</guid>
+      <pubDate>Fri, 28 Aug 2026 12:00:00 GMT</pubDate>
+      <description>A national map of real, state-by-state case counts for every CDC-notifiable disease, tracked against the actual dated timeline of federal vaccine policy changes since RFK Jr. took over HHS.</description>
+    </item>
+    <item>
+      <title>How the United States Took Shape</title>
+      <link>https://bergstromgis.com/work/us-territorial-timelapse.html</link>
+      <guid isPermaLink="true">https://bergstromgis.com/work/us-territorial-timelapse.html</guid>
+      <pubDate>Fri, 28 Aug 2026 12:00:00 GMT</pubDate>
+      <description>A timelapse map of who actually controlled North American territory, 1492 to today: Indigenous nations, colonial powers, and the United States.</description>
+    </item>
+    <item>
+      <title>Chicagoland's Activity Space Divide</title>
+      <link>https://bergstromgis.com/work/chicagoland-activity-space-divide.html</link>
+      <guid isPermaLink="true">https://bergstromgis.com/work/chicagoland-activity-space-divide.html</guid>
+      <pubDate>Thu, 27 Aug 2026 12:00:00 GMT</pubDate>
+      <description>Testing a 2026 Demography paper's finding about shared activity space and segregation, at the Chicagoland municipality level.</description>
+    </item>
+    <item>
+      <title>Chicagoland Third Places</title>
+      <link>https://bergstromgis.com/work/chicagoland-third-places.html</link>
+      <guid isPermaLink="true">https://bergstromgis.com/work/chicagoland-third-places.html</guid>
+      <pubDate>Thu, 27 Aug 2026 12:00:00 GMT</pubDate>
+      <description>Every cafe, library, community center, and social facility across 319 Chicagoland municipalities, mapped per capita so towns of any size can be compared fairly.</description>
+    </item>
+    <item>
+      <title>Illinois Mental Health Map</title>
+      <link>https://bergstromgis.com/work/illinois-mental-health-map.html</link>
+      <guid isPermaLink="true">https://bergstromgis.com/work/illinois-mental-health-map.html</guid>
+      <pubDate>Thu, 27 Aug 2026 12:00:00 GMT</pubDate>
+      <description>County-level suicide rates, mental distress, and uninsured rates swiped directly against mental health facility locations across all 102 Illinois counties.</description>
+    </item>
+    <item>
+      <title>Illinois Turning Wood Map</title>
+      <link>https://bergstromgis.com/work/illinois-turning-wood-map.html</link>
+      <guid isPermaLink="true">https://bergstromgis.com/work/illinois-turning-wood-map.html</guid>
+      <pubDate>Thu, 27 Aug 2026 12:00:00 GMT</pubDate>
+      <description>Where 16 prized wood-turning species actually grow across Illinois, based on real USDA Forest Service survey data. Built for my uncle, a wood turner in the Chicago area.</description>
+    </item>
+    <item>
+      <title>Chicagoland Food Pantries &amp; Transit Access</title>
+      <link>https://bergstromgis.com/work/food-pantry-transit-map.html</link>
+      <guid isPermaLink="true">https://bergstromgis.com/work/food-pantry-transit-map.html</guid>
+      <pubDate>Wed, 22 Jul 2026 12:00:00 GMT</pubDate>
+      <description>An interactive map of 285+ Chicago-area food pantries cross-referenced against real CTA, Metra, and Pace transit lines.</description>
+    </item>
+    <item>
+      <title>Canadian Wildfire Smoke Dashboard</title>
+      <link>https://bergstromgis.com/work/wildfire-smoke-dashboard.html</link>
+      <guid isPermaLink="true">https://bergstromgis.com/work/wildfire-smoke-dashboard.html</guid>
+      <pubDate>Tue, 21 Jul 2026 12:00:00 GMT</pubDate>
+      <description>A live, auto-updating dashboard tracking Canadian wildfire smoke and its impact on Chicago-area air quality.</description>
+    </item>
+    <item>
+      <title>Food Insecurity in DuPage County</title>
+      <link>https://bergstromgis.com/work/food-desert.html</link>
+      <guid isPermaLink="true">https://bergstromgis.com/work/food-desert.html</guid>
+      <pubDate>Sun, 05 Jul 2026 12:00:00 GMT</pubDate>
+      <description>A 2023 GIS capstone proving real food insecurity in one of the wealthiest counties in the country, now being rebuilt open-source at a 90-mile Chicago radius.</description>
+    </item>
+    <item>
+      <title>Hospital Accessibility Analysis</title>
+      <link>https://bergstromgis.com/work/hospitals-accessibility.html</link>
+      <guid isPermaLink="true">https://bergstromgis.com/work/hospitals-accessibility.html</guid>
+      <pubDate>Sun, 05 Jul 2026 12:00:00 GMT</pubDate>
+      <description>A live dashboard analyzing healthcare accessibility across Illinois, streaming cloud-native geospatial data in real time.</description>
+    </item>
+    <item>
+      <title>ICE Detention Facility Map</title>
+      <link>https://bergstromgis.com/work/ice-detention-map.html</link>
+      <guid isPermaLink="true">https://bergstromgis.com/work/ice-detention-map.html</guid>
+      <pubDate>Sun, 05 Jul 2026 12:00:00 GMT</pubDate>
+      <description>A dashboard mapping every U.S. Immigration and Customs Enforcement detention facility and its reported population.</description>
+    </item>
+    <item>
+      <title>Illinois Weather Dashboard</title>
+      <link>https://bergstromgis.com/work/illinois-weather-dashboard.html</link>
+      <guid isPermaLink="true">https://bergstromgis.com/work/illinois-weather-dashboard.html</guid>
+      <pubDate>Sun, 05 Jul 2026 12:00:00 GMT</pubDate>
+      <description>Live precipitation and humidity across Illinois weather stations.</description>
+    </item>
+    <item>
+      <title>You Are Not Alone — NAMI DuPage StoryMap</title>
+      <link>https://bergstromgis.com/work/nami-storymap.html</link>
+      <guid isPermaLink="true">https://bergstromgis.com/work/nami-storymap.html</guid>
+      <pubDate>Sun, 05 Jul 2026 12:00:00 GMT</pubDate>
+      <description>A StoryMap built from 31 in-person community interviews, mapping mental health resources across DuPage County.</description>
+    </item>
+    <item>
+      <title>Chicagoland Transit Heat Vulnerability</title>
+      <link>https://bergstromgis.com/work/transit-heat-vulnerability.html</link>
+      <guid isPermaLink="true">https://bergstromgis.com/work/transit-heat-vulnerability.html</guid>
+      <pubDate>Sun, 05 Jul 2026 12:00:00 GMT</pubDate>
+      <description>A dashboard rating CTA stations by heat vulnerability in walkable zones, layering climate and demographic data.</description>
+    </item>
+    <item>
+      <title>DuPage Forest Preserve Trail &amp; Tree Canopy Analyzer</title>
+      <link>https://bergstromgis.com/work/tree-cover-analyzer.html</link>
+      <guid isPermaLink="true">https://bergstromgis.com/work/tree-cover-analyzer.html</guid>
+      <pubDate>Sun, 05 Jul 2026 12:00:00 GMT</pubDate>
+      <description>Analyzes canopy cover and trail elevation across DuPage County Forest Preserves to find the shadiest walking routes.</description>
+    </item>
+    <item>
+      <title>Vampire Film Atlas</title>
+      <link>https://bergstromgis.com/work/vampire-film-atlas.html</link>
+      <guid isPermaLink="true">https://bergstromgis.com/work/vampire-film-atlas.html</guid>
+      <pubDate>Sun, 05 Jul 2026 12:00:00 GMT</pubDate>
+      <description>A temporal heat map of roughly 500 vampire and horror film locations across the U.S., 1960-2026.</description>
+    </item>
+    <item>
+      <title>World Religions Dashboard</title>
+      <link>https://bergstromgis.com/work/world-religions-dashboard.html</link>
+      <guid isPermaLink="true">https://bergstromgis.com/work/world-religions-dashboard.html</guid>
+      <pubDate>Sun, 05 Jul 2026 12:00:00 GMT</pubDate>
+      <description>A map of global religious distribution, with particular methodological care on Norse/Neopagan Ásatrú data.</description>
+    </item>
+    <item>
+      <title>World Cup Fatigue Dashboard</title>
+      <link>https://bergstromgis.com/work/worldcup-fatigue-dashboard.html</link>
+      <guid isPermaLink="true">https://bergstromgis.com/work/worldcup-fatigue-dashboard.html</guid>
+      <pubDate>Sun, 05 Jul 2026 12:00:00 GMT</pubDate>
+      <description>Tracks player and team fatigue across the 2026 World Cup, combining travel distance with days of rest between matches.</description>
+    </item>
+</channel>
+</rss>
