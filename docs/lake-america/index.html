@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lake Ontario, or Lake America? — Brian Bergstrom</title>
+<meta name="description" content="A real map of Lake Ontario, and a real toggle showing exactly what changes (and what doesn't) when a government renames a body of water.">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<style>
+  :root {
+    --bg: #0b0f14;
+    --bg-raised: #131a22;
+    --ink: #eef2f6;
+    --muted: #9fb0bf;
+    --us: #b5313f;
+    --osm: #2f7a4f;
+    --rule: #24313d;
+    --accent: #e8b23d;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+  #map { position: absolute; inset: 0; }
+
+  .lbl-pane { pointer-events: none; }
+  .lake-label {
+    pointer-events: none;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.85), 0 0 2px rgba(0,0,0,0.9);
+    transition: color 0.35s ease;
+  }
+
+  .topbar {
+    position: absolute; top: 0; left: 0; right: 0; z-index: 1000;
+    padding: 0.9rem 1.1rem;
+    background: linear-gradient(180deg, rgba(11,15,20,0.95) 0%, rgba(11,15,20,0.0) 100%);
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .topbar a { color: var(--muted); font-size: 0.82rem; text-decoration: none; }
+  .topbar a:hover { color: var(--ink); }
+  .title { font-weight: 700; font-size: 0.95rem; }
+
+  .toggle-wrap {
+    position: absolute; left: 1.1rem; bottom: 1.1rem; z-index: 1000;
+    background: var(--bg-raised); border: 1px solid var(--rule); border-radius: 14px;
+    padding: 1rem 1.1rem 1.1rem; width: min(360px, calc(100vw - 2.2rem));
+    max-height: calc(100vh - 5.6rem); overflow-y: auto;
+    box-shadow: 0 12px 34px rgba(0,0,0,0.5);
+  }
+  .toggle-wrap h2 { margin: 0 0 0.5rem; font-size: 0.98rem; }
+  .toggle-row { display: flex; background: var(--bg); border: 1px solid var(--rule); border-radius: 999px; padding: 3px; gap: 3px; }
+  .toggle-row button {
+    flex: 1; border: none; background: none; color: var(--muted); font-weight: 700;
+    font-size: 0.82rem; padding: 0.55rem 0.5rem; border-radius: 999px; cursor: pointer;
+  }
+  .toggle-row button.active.us { background: var(--us); color: #fff; }
+  .toggle-row button.active.osm { background: var(--osm); color: #fff; }
+  .toggle-caption { margin: 0.65rem 0 0; font-size: 0.78rem; color: var(--muted); line-height: 1.45; }
+  .toggle-caption b { color: var(--ink); }
+
+  .info-panel {
+    position: absolute; top: 4.2rem; right: 1.1rem; z-index: 1000;
+    background: var(--bg-raised); border: 1px solid var(--rule); border-radius: 14px;
+    width: min(340px, calc(100vw - 2.2rem));
+    max-height: calc(100vh - 5.6rem); overflow-y: auto;
+    box-shadow: 0 12px 34px rgba(0,0,0,0.5);
+  }
+  .info-panel .inner { padding: 1.1rem 1.2rem; }
+  .info-panel h1 { font-size: 1.15rem; margin: 0 0 0.6rem; line-height: 1.3; }
+  .info-panel p { font-size: 0.86rem; color: var(--muted); line-height: 1.55; margin: 0 0 0.85rem; }
+  .info-panel p:last-child { margin-bottom: 0; }
+  .info-panel b { color: var(--ink); }
+  .quote {
+    border-left: 3px solid var(--accent);
+    padding-left: 0.7rem;
+    font-style: italic;
+    color: var(--ink);
+    font-size: 0.85rem;
+  }
+  .quote cite { display: block; margin-top: 0.3rem; font-style: normal; font-size: 0.74rem; color: var(--muted); }
+  .names-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; margin: 0.3rem 0 0.9rem; }
+  .names-table td { padding: 0.3rem 0; border-bottom: 1px solid var(--rule); }
+  .names-table td:first-child { color: var(--muted); width: 40%; }
+  .names-table td:last-child { text-align: right; color: var(--ink); font-weight: 600; }
+  .divider { height: 1px; background: var(--rule); margin: 1rem 0; }
+  .sources { font-size: 0.72rem; color: var(--muted); line-height: 1.7; }
+  .sources a { color: var(--muted); }
+  .collapse-btn {
+    display: none;
+  }
+
+  .switch-cta {
+    margin-top: 0.9rem;
+    padding-top: 0.9rem;
+    border-top: 1px solid var(--rule);
+  }
+  .switch-cta p { margin: 0 0 0.7rem; font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+  .switch-apps { display: flex; gap: 0.6rem; }
+  .switch-apps a {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    text-decoration: none;
+    background: var(--osm);
+    color: #fff;
+    border-radius: 10px;
+    padding: 0.6rem 0.7rem;
+    transition: filter 0.15s ease;
+  }
+  .switch-apps a:hover { filter: brightness(1.1); }
+  .switch-apps .app-name { font-weight: 800; font-size: 0.86rem; }
+  .switch-apps .app-sub { font-size: 0.68rem; opacity: 0.9; }
+  @media (max-width: 720px) {
+    .info-panel { top: auto; bottom: 1.1rem; right: 1.1rem; left: 1.1rem; width: auto; max-height: 45vh; }
+    .toggle-wrap { bottom: auto; top: 4.2rem; left: 1.1rem; right: 1.1rem; width: auto; max-height: 33vh; }
+  }
+</style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<div class="topbar">
+  <span class="title">Lake Ontario, or Lake America?</span>
+  <a href="../work/lake-america-rename.html">&larr; Back to the write-up on bergstromgis.com</a>
+</div>
+
+<div class="info-panel">
+  <div class="inner">
+    <h1>What actually changed here</h1>
+    <p>
+      On <b>August 28, 2026</b> President Trump signed an executive order directing the
+      U.S. Geographic Names Information System (GNIS), the federal government's own
+      authoritative names database, to rename Lake Ontario to <b>"Lake America."</b>
+      Google Maps updated for U.S. users two days later, on <b>August 30</b>, because
+      Google's policy is to mirror whatever GNIS says for U.S. territory.
+    </p>
+    <blockquote class="quote">
+      "These updates follow our long-standing policy for bodies of water with names
+      that vary from country to country."
+      <cite>— Google, official Maps blog post</cite>
+    </blockquote>
+    <p style="margin-top:0.85rem;">
+      Canadian users still see <b>"Lake Ontario."</b> Everyone else sees both names.
+      Apple Maps and MapQuest simply declined to change anything at all &mdash;
+      MapQuest posted a screenshot captioned <b>"we're not changing it."</b>
+    </p>
+    <div class="divider"></div>
+    <p><b>The lake's real names, already in OpenStreetMap:</b></p>
+    <table class="names-table">
+      <tr><td>English</td><td>Lake Ontario</td></tr>
+      <tr><td>Mohawk</td><td>Oniatarí:io</td></tr>
+      <tr><td>Cayuga</td><td>Ganyadáiyoˀ</td></tr>
+      <tr><td>Ojibwe</td><td>Niigani-gichigami</td></tr>
+      <tr><td>French</td><td>Lac Ontario</td></tr>
+    </table>
+    <p>
+      "Ontario" itself comes from a Haudenosaunee word for "great lake." New York
+      governor Kathy Hochul called the renaming "patently absurd," pointing out it
+      writes over a name that already honors the region's Indigenous peoples.
+      OpenStreetMap has carried all of these names simultaneously for years &mdash;
+      it doesn't have to pick one, because no single government gets to overwrite
+      the record for everyone.
+    </p>
+    <div class="divider"></div>
+    <p><b>This isn't the first time.</b> In 2025 the same mechanism renamed the Gulf
+      of Mexico to the "Gulf of America" for U.S. users, which triggered enough
+      review-bombing that Google had to disable reviews on the location entirely.
+      One executive order, one government database, one company that mirrors it
+      by policy &mdash; twice now, on two different bodies of water that border
+      other countries.</p>
+    <div class="divider"></div>
+    <p class="sources">
+      Sources:
+      <a href="https://blog.google/products-and-platforms/products/maps/gnis-lake-ontario-lake-america-name-change/" target="_blank" rel="noopener">Google's official Maps blog</a> &middot;
+      <a href="https://www.404media.co/google-maps-lake-america-lake-ontario-name-change/" target="_blank" rel="noopener">404 Media</a> &middot;
+      <a href="https://www.cp24.com/news/world/2026/08/30/google-maps-changes-lake-ontario-to-lake-america-for-us-users/" target="_blank" rel="noopener">CP24</a> &middot;
+      <a href="https://www.newsweek.com/will-google-rename-lake-ontario-mapquest-refuses-to-adopt-trump-order-12383058" target="_blank" rel="noopener">Newsweek</a>.
+      Lake geometry and names via <a href="https://www.openstreetmap.org/relation/1206310" target="_blank" rel="noopener">OpenStreetMap relation 1206310</a>, ODbL.
+    </p>
+  </div>
+</div>
+
+<div class="toggle-wrap">
+  <h2>How the lake is labeled right now</h2>
+  <div class="toggle-row">
+    <button id="btnUs" class="active us">US Google Maps</button>
+    <button id="btnOsm" class="osm">OpenStreetMap</button>
+  </div>
+  <p class="toggle-caption" id="toggleCaption">
+    <b>Google Maps, opened in the United States, today:</b> the lake reads
+    "Lake America." This is what the majority of this lake's own U.S. shoreline
+    residents will now see by default.
+  </p>
+  <div class="switch-cta">
+    <p>
+      This map runs entirely on OpenStreetMap data, the same data these apps use.
+      No single government gets to rename anything in it for you. If you want
+      your everyday map to work like this too, both are free, open source, and
+      support real turn-by-turn navigation:
+    </p>
+    <div class="switch-apps">
+      <a href="https://osmand.net/" target="_blank" rel="noopener">
+        <span class="app-name">OsmAnd</span>
+        <span class="app-sub">Offline maps &amp; nav, built on OSM</span>
+      </a>
+      <a href="https://organicmaps.app/" target="_blank" rel="noopener">
+        <span class="app-name">Organic Maps</span>
+        <span class="app-sub">No tracking, built on OSM</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+  const map = L.map('map', { zoomControl: false, attributionControl: true }).setView([43.7, -77.9], 7);
+  L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 12,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(map);
+
+  fetch('lake_ontario.geojson')
+    .then(r => r.json())
+    .then(gj => {
+      const layer = L.geoJSON(gj, {
+        style: { color: '#e8b23d', weight: 2, fillColor: '#2f6fa8', fillOpacity: 0.55 }
+      }).addTo(map);
+
+      const bounds = layer.getBounds();
+      map.fitBounds(bounds, { padding: [30, 30] });
+
+      const center = bounds.getCenter();
+      const label = L.marker(center, {
+        icon: L.divIcon({
+          className: 'lbl-pane',
+          html: '<div class="lake-label" id="lakeLabel" style="font-size:22px;color:#b5313f;">LAKE AMERICA</div>',
+          iconSize: [260, 30],
+          iconAnchor: [130, 15]
+        }),
+        interactive: false
+      }).addTo(map);
+
+      const labelEl = () => document.getElementById('lakeLabel');
+      function setLabel(mode) {
+        const el = labelEl();
+        if (!el) return;
+        if (mode === 'us') {
+          el.textContent = 'LAKE AMERICA';
+          el.style.color = '#e0596a';
+        } else {
+          el.textContent = 'LAKE ONTARIO';
+          el.style.color = '#5fd68e';
+        }
+      }
+
+      const btnUs = document.getElementById('btnUs');
+      const btnOsm = document.getElementById('btnOsm');
+      const caption = document.getElementById('toggleCaption');
+
+      const captions = {
+        us: '<b>Google Maps, opened in the United States, today:</b> the lake reads "Lake America." This is what the majority of this lake\'s own U.S. shoreline residents will now see by default.',
+        osm: '<b>OpenStreetMap, everywhere, unaffected:</b> the lake reads "Lake Ontario," the same name it has carried for years, in English and in the Mohawk, Cayuga, and Ojibwe names above &mdash; because no single country\'s executive order can rewrite a record every mapper worldwide maintains together.'
+      };
+
+      function activate(mode) {
+        btnUs.classList.toggle('active', mode === 'us');
+        btnOsm.classList.toggle('active', mode === 'osm');
+        setLabel(mode);
+        caption.innerHTML = captions[mode];
+      }
+
+      btnUs.addEventListener('click', () => activate('us'));
+      btnOsm.addEventListener('click', () => activate('osm'));
+      activate('us');
+    });
+</script>
+</body>
+</html>

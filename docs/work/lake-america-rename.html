@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lake Ontario, or Lake America? — Brian Bergstrom</title>
+<meta name="description" content="A real map of Lake Ontario and a real toggle showing exactly what changed (and what didn't) when an executive order renamed it, and why OpenStreetMap doesn't work that way.">
+<link rel="canonical" href="https://bergstromgis.com/work/lake-america-rename.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Brian Bergstrom">
+<meta property="og:title" content="Lake Ontario, or Lake America? — Brian Bergstrom">
+<meta property="og:description" content="A real map of Lake Ontario and a real toggle showing exactly what changed (and what didn't) when an executive order renamed it, and why OpenStreetMap doesn't work that way.">
+<meta property="og:image" content="https://bergstromgis.com/images/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Brian Bergstrom — GIS that makes the overlooked undeniable.">
+<meta property="og:url" content="https://bergstromgis.com/work/lake-america-rename.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Lake Ontario, or Lake America? — Brian Bergstrom">
+<meta name="twitter:description" content="A real map of Lake Ontario and a real toggle showing exactly what changed (and what didn't) when an executive order renamed it, and why OpenStreetMap doesn't work that way.">
+<meta name="twitter:image" content="https://bergstromgis.com/images/og-image.png">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="alternate icon" href="../favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../css/brand.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <nav class="site-nav container" aria-label="Primary">
+    <a class="wordmark" href="../index.html">Brian Bergstrom</a>
+    <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks">Menu</button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../work-civic.html">Work</a></li>
+      <li><a href="../blog.html">Blog</a></li>
+      <li><a href="../about.html">About</a></li>
+      <li><a href="../../resume/resume.html">Resume</a></li>
+      <li><a href="../contact.html">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="redmap" color-interpolation-filters="sRGB">
+    <feColorMatrix type="matrix" values="0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0 0 0 1 0" result="gray"/>
+    <feComponentTransfer in="gray" result="normalized">
+      <feFuncR type="linear" slope="11.087" intercept="-3.348"/>
+      <feFuncG type="linear" slope="11.087" intercept="-3.348"/>
+      <feFuncB type="linear" slope="11.087" intercept="-3.348"/>
+    </feComponentTransfer>
+    <feComponentTransfer in="normalized">
+      <feFuncR type="table" tableValues="0.02 0.18 0.45 0.75 1.0"/>
+      <feFuncG type="table" tableValues="0.00 0.015 0.04 0.10 0.30"/>
+      <feFuncB type="table" tableValues="0.00 0.015 0.03 0.07 0.22"/>
+    </feComponentTransfer>
+  </filter>
+</svg>
+
+<main id="main">
+  <section class="site-hero">
+    <div class="hero-base"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-lines"></div>
+    <div class="hero-vignette"></div>
+    <svg class="hero-sparkles">
+      <defs>
+        <radialGradient id="sparkGrad">
+          <stop offset="0%" stop-color="#FFEFD6" stop-opacity="1"/>
+          <stop offset="35%" stop-color="#FFB199" stop-opacity="0.9"/>
+          <stop offset="100%" stop-color="#C0392B" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <circle class="sparkle" data-sx="211" data-sy="414" r="3.4" fill="url(#sparkGrad)" style="animation-delay:-0.2s; animation-duration:2.3s;"/>
+      <circle class="sparkle" data-sx="988" data-sy="388" r="3.0" fill="url(#sparkGrad)" style="animation-delay:-1.4s; animation-duration:2.9s;"/>
+      <circle class="sparkle" data-sx="634" data-sy="539" r="3.6" fill="url(#sparkGrad)" style="animation-delay:-0.8s; animation-duration:2.5s;"/>
+      <circle class="sparkle" data-sx="849" data-sy="449" r="3.1" fill="url(#sparkGrad)" style="animation-delay:-2.1s; animation-duration:3.1s;"/>
+      <circle class="sparkle" data-sx="1077" data-sy="463" r="3.5" fill="url(#sparkGrad)" style="animation-delay:-0.5s; animation-duration:2.4s;"/>
+      <circle class="sparkle" data-sx="1260" data-sy="552" r="3.0" fill="url(#sparkGrad)" style="animation-delay:-1.8s; animation-duration:2.8s;"/>
+      <circle class="sparkle" data-sx="1745" data-sy="527" r="4.0" fill="url(#sparkGrad)" style="animation-delay:-1.0s; animation-duration:2.6s;"/>
+      <circle class="sparkle" data-sx="965" data-sy="561" r="3.2" fill="url(#sparkGrad)" style="animation-delay:-2.4s; animation-duration:3.0s;"/>
+      <circle class="sparkle" data-sx="1169" data-sy="592" r="3.3" fill="url(#sparkGrad)" style="animation-delay:-0.1s; animation-duration:2.7s;"/>
+      <circle class="sparkle" data-sx="1262" data-sy="617" r="3.6" fill="url(#sparkGrad)" style="animation-delay:-1.6s; animation-duration:2.5s;"/>
+      <circle class="sparkle" data-sx="1060" data-sy="835" r="3.1" fill="url(#sparkGrad)" style="animation-delay:-0.9s; animation-duration:2.9s;"/>
+      <circle class="sparkle" data-sx="1135" data-sy="816" r="3.4" fill="url(#sparkGrad)" style="animation-delay:-2.0s; animation-duration:2.6s;"/>
+    </svg>
+    <svg class="hero-corner" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="46" fill="none" stroke="#FF6A52" stroke-width="5" stroke-linecap="round" stroke-dasharray="255 40" transform="rotate(-58 60 60)" /></svg>
+    <div class="hero-content">
+      <span class="eyebrow">GIS Analyst &middot; Chicago</span>
+      <p class="hero-title">GIS that makes the overlooked undeniable.</p>
+      <p class="lede">Real maps, real data, real people who needed someone to notice. New ones posted here roughly every week.</p>
+    </div>
+  </section>
+
+  <div class="blog-layout container">
+  <div class="blog-main">
+    <div class="container">
+    <a class="breadcrumb" href="../work-civic.html">&larr; Back to civic work</a>
+
+    <header class="project-header">
+      <span class="tag tag-civic">Civic — Independent Study</span>
+      <h1>Lake Ontario, or Lake America?</h1>
+      <p class="subtitle">A single executive order renamed a Great Lake for U.S. Google Maps users. Here's a real map of what actually changed, and why OpenStreetMap doesn't work that way.</p>
+      <div class="meta-row">
+        <span class="stat">Renamed by executive order, August 28, 2026</span>
+        <span class="stat">19,011 km&sup2; unaffected on OpenStreetMap</span>
+      </div>
+    </header>
+  </div>
+
+  <div class="project-hero-media">
+    <div class="media-inner">
+      <img src="../images/lake-america-rename.jpg" alt="Real outline of Lake Ontario's shoreline, labeled LAKE AMERICA with 'was Lake Ontario' underneath.">
+    </div>
+  </div>
+
+  <div class="project-body">
+    <p>
+      On August 28, 2026, President Trump signed an executive order directing the
+      U.S. Geographic Names Information System, GNIS, the federal government's own
+      authoritative names database, to rename Lake Ontario to "Lake America." Two
+      days later Google Maps updated for U.S. users, because Google's stated policy
+      is to mirror whatever GNIS says for U.S. territory. Canadian users still see
+      "Lake Ontario." Everyone else sees both names. I built a real map of the lake
+      with a toggle showing exactly that contrast, because it's a cleaner
+      demonstration of something I've believed for a while than any argument I
+      could write: "authoritative" map data isn't neutral, it's just downstream of
+      whoever controls the database everyone agreed to trust.
+    </p>
+
+    <h2>One executive order, one database, one company that mirrors it</h2>
+    <p>
+      Google was explicit about the mechanism in their own announcement: "these
+      updates follow our long-standing policy for bodies of water with names that
+      vary from country to country," reflecting "official government sources,
+      which is GNIS for the U.S." That's not Google editorializing. It's Google
+      running a lookup against a database one government controls, for every user
+      inside that government's borders, automatically, the same day the database
+      changes. No human at Google decided Lake Ontario should be called anything
+      &mdash; a single office in Washington did, and the world's most-used map
+      followed without a review.
+    </p>
+
+    <h2>The names OpenStreetMap already carries</h2>
+    <p>
+      I pulled the lake's real OpenStreetMap record directly (relation 1206310)
+      rather than assume what it contains. It already carries the lake's name in
+      more than two dozen languages simultaneously, including three that predate
+      "Ontario" as an English word:
+    </p>
+    <div class="callout">
+      <span class="callout-label">Real name tags on OSM relation 1206310</span>
+      <p>
+        Mohawk: <em>Oniatarí:io</em>. Cayuga: <em>Ganyadáiyoˀ</em>. Ojibwe:
+        <em>Niigani-gichigami</em>. English: <em>Lake Ontario</em>, itself an
+        anglicization of a Haudenosaunee word for "great lake." New York governor
+        Kathy Hochul made this same point directly, calling the renaming "patently
+        absurd" for writing over a name that already honors the region's
+        Indigenous peoples. OpenStreetMap didn't need an executive order to notice
+        that &mdash; it's just how the record has looked for years, maintained by
+        an international community instead of one country's database.
+      </p>
+    </div>
+
+    <h2>This isn't the first time</h2>
+    <p>
+      In 2025 the same mechanism renamed the Gulf of Mexico to the "Gulf of
+      America" for U.S. Google Maps users, which triggered enough coordinated
+      review-bombing that Google had to disable reviews on the location entirely.
+      Same executive order, same GNIS database, same company mirroring it by
+      policy &mdash; twice now, on two different bodies of water that both border
+      other countries. That's a pattern, not a one-off.
+    </p>
+
+    <div class="callout">
+      <span class="callout-label">Not everyone followed along</span>
+      <p>
+        Apple Maps hadn't updated the name as of Sunday morning. MapQuest posted a
+        screenshot captioned "we're not changing it" and built a small web toy
+        about the whole situation. Senate Minority Leader Chuck Schumer called the
+        renaming effort "juvenile." None of that reversed anything on Google
+        Maps &mdash; the point is that "authoritative" turned out to mean exactly
+        one company's policy choice, not something every map had to agree with.
+      </p>
+    </div>
+
+    <h2>If you want a map nobody can rename for you</h2>
+    <p>
+      The map above runs entirely on the same OpenStreetMap data these apps use,
+      and the toggle is real: flip it and the label actually changes on the real
+      shoreline, not a mockup. If you want your everyday map to work the same way,
+      <a href="https://osmand.net/" target="_blank" rel="noopener">OsmAnd</a> and
+      <a href="https://organicmaps.app/" target="_blank" rel="noopener">Organic
+      Maps</a> are both free, open source, support real offline turn-by-turn
+      navigation, and read from the exact same community-governed record. No
+      account, no ads, no single government with edit access to what your map
+      calls things.
+    </p>
+
+    <div class="evidence-panel">
+      <p>Flip the toggle yourself and read the real sources below the map.</p>
+      <a class="btn btn-primary" href="../lake-america/" target="_blank" rel="noopener">
+        View the map <span class="visually-hidden">(opens in a new tab)</span>
+      </a>
+      <a class="btn btn-outline" href="https://github.com/dulcetberg/lake-america-map" target="_blank" rel="noopener">
+        View the code <span class="visually-hidden">(opens in a new tab)</span>
+      </a>
+    </div>
+  </div>
+    </div>
+
+    <aside class="blog-sidebar" aria-label="Search and browse by date">
+      <div class="sidebar-panel">
+        <h2>Search posts</h2>
+        <form class="search-field" id="sidebarSearchForm">
+          <label class="visually-hidden" for="blogSearch">Search posts</label>
+          <input type="search" id="blogSearch" name="q" placeholder="Search titles, tags, topics…">
+          <button type="submit" class="search-submit" aria-label="Search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4a6 6 0 104.472 10.03l4.749 4.748 1.414-1.414-4.748-4.749A6 6 0 0010 4zm-4 6a4 4 0 118 0 4 4 0 01-8 0z"/></svg>
+          </button>
+        </form>
+        <p class="search-status" id="searchStatus" hidden></p>
+      </div>
+
+      <div class="sidebar-panel">
+        <h2>Browse by date</h2>
+        <div class="cal-head">
+          <button class="cal-nav" id="calPrev" type="button" aria-label="Previous month">&larr;</button>
+          <span class="cal-label" id="calLabel"></span>
+          <button class="cal-nav" id="calNext" type="button" aria-label="Next month">&rarr;</button>
+        </div>
+        <div class="cal-grid" id="calGrid" role="grid" aria-label="Post dates"></div>
+        <button class="cal-clear" id="calClear" type="button" hidden>Clear date filter</button>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <svg class="footer-mark" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="46" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-dasharray="255 40" transform="rotate(-58 60 60)" /></svg>
+    <p class="footer-note">&copy; <a href="mailto:brian@bergstromgis.com">Brian Bergstrom</a>. Built by Claude, hosted on GitHub Pages.</p>
+  </div>
+</footer>
+
+<script>
+  document.documentElement.classList.add('js-ready');
+  var toggle = document.getElementById('navToggle');
+  var links = document.getElementById('navLinks');
+  toggle.addEventListener('click', function () {
+    var open = links.classList.toggle('is-open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+</script>
+<script src="../js/hero-sparkles.js"></script>
+<script src="../js/blog-post-data.js"></script>
+<script src="../js/blog-sidebar.js"></script>
+</body>
+</html>
