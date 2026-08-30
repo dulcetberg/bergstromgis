@@ -35,12 +35,6 @@
 
   .work-section { padding-bottom: 5rem; }
 
-  .contact-cta {
-    padding: 4rem 0 5rem;
-    border-top: 1px solid var(--rule);
-    text-align: center;
-  }
-  .contact-cta .actions { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; margin-top: 1.5rem; }
 </style>
 </head>
 <body>
@@ -62,8 +56,59 @@
   </nav>
 </header>
 
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="redmap" color-interpolation-filters="sRGB">
+    <feColorMatrix type="matrix" values="0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0 0 0 1 0" result="gray"/>
+    <feComponentTransfer in="gray" result="normalized">
+      <feFuncR type="linear" slope="11.087" intercept="-3.348"/>
+      <feFuncG type="linear" slope="11.087" intercept="-3.348"/>
+      <feFuncB type="linear" slope="11.087" intercept="-3.348"/>
+    </feComponentTransfer>
+    <feComponentTransfer in="normalized">
+      <feFuncR type="table" tableValues="0.02 0.18 0.45 0.75 1.0"/>
+      <feFuncG type="table" tableValues="0.00 0.015 0.04 0.10 0.30"/>
+      <feFuncB type="table" tableValues="0.00 0.015 0.03 0.07 0.22"/>
+    </feComponentTransfer>
+  </filter>
+</svg>
+
 <main id="main">
-  <div class="container">
+  <section class="site-hero">
+    <div class="hero-base"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-lines"></div>
+    <div class="hero-vignette"></div>
+    <svg class="hero-sparkles">
+      <defs>
+        <radialGradient id="sparkGrad">
+          <stop offset="0%" stop-color="#FFEFD6" stop-opacity="1"/>
+          <stop offset="35%" stop-color="#FFB199" stop-opacity="0.9"/>
+          <stop offset="100%" stop-color="#C0392B" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <circle class="sparkle" data-sx="211" data-sy="414" r="3.4" fill="url(#sparkGrad)" style="animation-delay:-0.2s; animation-duration:2.3s;"/>
+      <circle class="sparkle" data-sx="988" data-sy="388" r="3.0" fill="url(#sparkGrad)" style="animation-delay:-1.4s; animation-duration:2.9s;"/>
+      <circle class="sparkle" data-sx="634" data-sy="539" r="3.6" fill="url(#sparkGrad)" style="animation-delay:-0.8s; animation-duration:2.5s;"/>
+      <circle class="sparkle" data-sx="849" data-sy="449" r="3.1" fill="url(#sparkGrad)" style="animation-delay:-2.1s; animation-duration:3.1s;"/>
+      <circle class="sparkle" data-sx="1077" data-sy="463" r="3.5" fill="url(#sparkGrad)" style="animation-delay:-0.5s; animation-duration:2.4s;"/>
+      <circle class="sparkle" data-sx="1260" data-sy="552" r="3.0" fill="url(#sparkGrad)" style="animation-delay:-1.8s; animation-duration:2.8s;"/>
+      <circle class="sparkle" data-sx="1745" data-sy="527" r="4.0" fill="url(#sparkGrad)" style="animation-delay:-1.0s; animation-duration:2.6s;"/>
+      <circle class="sparkle" data-sx="965" data-sy="561" r="3.2" fill="url(#sparkGrad)" style="animation-delay:-2.4s; animation-duration:3.0s;"/>
+      <circle class="sparkle" data-sx="1169" data-sy="592" r="3.3" fill="url(#sparkGrad)" style="animation-delay:-0.1s; animation-duration:2.7s;"/>
+      <circle class="sparkle" data-sx="1262" data-sy="617" r="3.6" fill="url(#sparkGrad)" style="animation-delay:-1.6s; animation-duration:2.5s;"/>
+      <circle class="sparkle" data-sx="1060" data-sy="835" r="3.1" fill="url(#sparkGrad)" style="animation-delay:-0.9s; animation-duration:2.9s;"/>
+      <circle class="sparkle" data-sx="1135" data-sy="816" r="3.4" fill="url(#sparkGrad)" style="animation-delay:-2.0s; animation-duration:2.6s;"/>
+    </svg>
+    <svg class="hero-corner" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="46" fill="none" stroke="#FF6A52" stroke-width="5" stroke-linecap="round" stroke-dasharray="255 40" transform="rotate(-58 60 60)" /></svg>
+    <div class="hero-content">
+      <span class="eyebrow">GIS Analyst &middot; Chicago</span>
+      <p class="hero-title">GIS that makes the overlooked undeniable.</p>
+      <p class="lede">Real maps, real data, real people who needed someone to notice. New ones posted here roughly every week.</p>
+    </div>
+  </section>
+
+  <div class="blog-layout container">
+    <div class="blog-main">
     <div class="page-hero">
       <h1>Civic work</h1>
       <p>
@@ -75,14 +120,13 @@
         <a href="work-personal.html">Personal</a>
       </nav>
     </div>
-  </div>
 
-  <section class="work-section container" aria-label="Civic projects">
+  <section class="work-section" aria-label="Civic projects">
     <div class="project-grid">
 
       <article class="project-card">
         <div class="card-media">
-          <a href="nepal-flood-response-map/" target="_blank" rel="noopener"><img src="images/nepal-flood-response-map.jpg" alt="Screenshot of the Mapping the Response map, showing the HOT Tasking Manager task grid along the Trishuli valley, a flow-path line from the glacier collapse origin, and real-time stats on volunteer mappers and the reported toll."></a>
+          <a href="work/nepal-flood-response-map.html"><img src="images/nepal-flood-response-map.jpg" alt="Screenshot of the Mapping the Response map, showing the HOT Tasking Manager task grid along the Trishuli valley, a flow-path line from the glacier collapse origin, and real-time stats on volunteer mappers and the reported toll."></a>
         </div>
         <div class="card-body">
           <span class="tag tag-civic">Civic — Independent Study</span>
@@ -97,7 +141,7 @@
 
       <article class="project-card">
         <div class="card-media">
-          <a href="us-disease-surveillance-map/" target="_blank" rel="noopener"><img src="images/us-disease-surveillance-map.jpg" alt="Screenshot of the Reportable Disease Cases map, showing a national choropleth of measles rates by state alongside disease, year, and metric selectors, with Alaska and Hawaii inset maps in the bottom-left corner."></a>
+          <a href="work/us-disease-surveillance-map.html"><img src="images/us-disease-surveillance-map.jpg" alt="Screenshot of the Reportable Disease Cases map, showing a national choropleth of measles rates by state alongside disease, year, and metric selectors, with Alaska and Hawaii inset maps in the bottom-left corner."></a>
         </div>
         <div class="card-body">
           <span class="tag tag-civic">Civic — Independent Study</span>
@@ -112,7 +156,7 @@
 
       <article class="project-card">
         <div class="card-media">
-          <a href="illinois-mental-health-map/" target="_blank" rel="noopener"><img src="images/illinois-mental-health-map.jpg" alt="Screenshot of the Illinois Mental Health Map, a swipe comparison showing county suicide rates in purple on the left against mental health facility locations in green on the right."></a>
+          <a href="work/illinois-mental-health-map.html"><img src="images/illinois-mental-health-map.jpg" alt="Screenshot of the Illinois Mental Health Map, a swipe comparison showing county suicide rates in purple on the left against mental health facility locations in green on the right."></a>
         </div>
         <div class="card-body">
           <span class="tag tag-civic">Civic — Independent Study</span>
@@ -127,7 +171,7 @@
 
       <article class="project-card">
         <div class="card-media">
-          <a href="chicagoland-activity-space-divide/" target="_blank" rel="noopener"><img src="images/chicagoland-activity-space-divide.jpg" alt="Screenshot of the Chicagoland Activity Space Divide map, showing a network of bright cyan lines connecting adjacent municipalities on a dark basemap, radiating outward from Chicago."></a>
+          <a href="work/chicagoland-activity-space-divide.html"><img src="images/chicagoland-activity-space-divide.jpg" alt="Screenshot of the Chicagoland Activity Space Divide map, showing a network of bright cyan lines connecting adjacent municipalities on a dark basemap, radiating outward from Chicago."></a>
         </div>
         <div class="card-body">
           <span class="tag tag-civic">Civic — Independent Study</span>
@@ -142,7 +186,7 @@
 
       <article class="project-card">
         <div class="card-media">
-          <a href="chicagoland-third-places/" target="_blank" rel="noopener"><img src="images/chicagoland-third-places.jpg" alt="Screenshot of the Chicagoland Third Places map, showing a choropleth of third places per 10,000 residents across Cook, DuPage, Kane, Lake, McHenry, and Will counties."></a>
+          <a href="work/chicagoland-third-places.html"><img src="images/chicagoland-third-places.jpg" alt="Screenshot of the Chicagoland Third Places map, showing a choropleth of third places per 10,000 residents across Cook, DuPage, Kane, Lake, McHenry, and Will counties."></a>
         </div>
         <div class="card-body">
           <span class="tag tag-civic">Civic — Independent Study</span>
@@ -157,7 +201,7 @@
 
       <article class="project-card">
         <div class="card-media">
-          <a href="foodpantries/" target="_blank" rel="noopener"><img src="images/food-pantry-transit-map.jpg" alt="Screenshot of the Chicagoland Food Pantries and Transit Access map, showing CTA, Metra, and Pace transit lines alongside clustered food pantry markers across the Chicago metro area."></a>
+          <a href="work/food-pantry-transit-map.html"><img src="images/food-pantry-transit-map.jpg" alt="Screenshot of the Chicagoland Food Pantries and Transit Access map, showing CTA, Metra, and Pace transit lines alongside clustered food pantry markers across the Chicago metro area."></a>
         </div>
         <div class="card-body">
           <span class="tag tag-civic">Civic — Independent Study</span>
@@ -172,7 +216,7 @@
 
       <article class="project-card">
         <div class="card-media">
-          <a href="https://dulcetberg.github.io/wildfire-smoke-dashboard/" target="_blank" rel="noopener"><img src="images/wildfire-smoke-dashboard.jpg" alt="Screenshot of the Canadian Wildfire Smoke Dashboard, showing an animated smoke plume extending from Canada across the Midwest to Chicago, satellite fire detection density near the Canada-US border, and Chicago-area PM2.5 monitors color-coded by AQI severity."></a>
+          <a href="work/wildfire-smoke-dashboard.html"><img src="images/wildfire-smoke-dashboard.jpg" alt="Screenshot of the Canadian Wildfire Smoke Dashboard, showing an animated smoke plume extending from Canada across the Midwest to Chicago, satellite fire detection density near the Canada-US border, and Chicago-area PM2.5 monitors color-coded by AQI severity."></a>
         </div>
         <div class="card-body">
           <span class="tag tag-civic">Civic — Independent Study</span>
@@ -187,7 +231,7 @@
 
       <article class="project-card">
         <div class="card-media">
-          <a href="https://storymaps.arcgis.com/stories/2e6e4954e3a348ae9e89a023f4027777" target="_blank" rel="noopener"><img src="images/nami-storymap.jpg" alt="Title screen of the NAMI DuPage StoryMap: 'Stories from Individuals and Families Living with Mental Health Conditions,' created by Brian Bergstrom."></a>
+          <a href="work/nami-storymap.html"><img src="images/nami-storymap.jpg" alt="Title screen of the NAMI DuPage StoryMap: 'Stories from Individuals and Families Living with Mental Health Conditions,' created by Brian Bergstrom."></a>
         </div>
         <div class="card-body">
           <span class="tag tag-civic">Civic — NAMI DuPage, 2023</span>
@@ -202,7 +246,7 @@
 
       <article class="project-card">
         <div class="card-media">
-          <a href="hospitals/" target="_blank" rel="noopener"><img src="images/hospitals-accessibility.jpg" alt="Screenshot of the Hospital Accessibility Analysis dashboard showing clustered hospital counts across Illinois and neighboring states."></a>
+          <a href="work/hospitals-accessibility.html"><img src="images/hospitals-accessibility.jpg" alt="Screenshot of the Hospital Accessibility Analysis dashboard showing clustered hospital counts across Illinois and neighboring states."></a>
         </div>
         <div class="card-body">
           <span class="tag tag-civic">Civic — Independent Study</span>
@@ -217,7 +261,7 @@
 
       <article class="project-card">
         <div class="card-media">
-          <a href="https://elmhurst.maps.arcgis.com/apps/instant/nearby/index.html?appid=8c790b39648c493eadf14dafafc0fc83" target="_blank" rel="noopener"><img src="images/capstone map.jpg" alt="Map comparing food-desert access across DuPage and Cook counties, overlaying SNAP retailers, farmer's markets, and Pace bus routes on 2020 Census demographic data."></a>
+          <a href="work/food-desert.html"><img src="images/capstone map.jpg" alt="Map comparing food-desert access across DuPage and Cook counties, overlaying SNAP retailers, farmer's markets, and Pace bus routes on 2020 Census demographic data."></a>
         </div>
         <div class="card-body">
           <span class="tag tag-civic">Civic — MS-GIS Capstone, 2023 → present</span>
@@ -232,7 +276,7 @@
 
       <article class="project-card">
         <div class="card-media">
-          <a href="transit/" target="_blank" rel="noopener"><img src="images/transit-heat-vulnerability.jpg" alt="Screenshot of the Chicagoland Transit Accessibility dashboard, showing CTA stations color-coded by heat vulnerability risk."></a>
+          <a href="work/transit-heat-vulnerability.html"><img src="images/transit-heat-vulnerability.jpg" alt="Screenshot of the Chicagoland Transit Accessibility dashboard, showing CTA stations color-coded by heat vulnerability risk."></a>
         </div>
         <div class="card-body">
           <span class="tag tag-civic">Civic — Independent Study</span>
@@ -246,7 +290,7 @@
 
       <article class="project-card">
         <div class="card-media">
-          <a href="treecover/" target="_blank" rel="noopener"><img src="images/tree-cover-analyzer.jpg" alt="Screenshot of the DuPage County Forest Preserve Trail and Tree Canopy Analyzer, showing trail segments color-coded by canopy shade density."></a>
+          <a href="work/tree-cover-analyzer.html"><img src="images/tree-cover-analyzer.jpg" alt="Screenshot of the DuPage County Forest Preserve Trail and Tree Canopy Analyzer, showing trail segments color-coded by canopy shade density."></a>
         </div>
         <div class="card-body">
           <span class="tag tag-civic">Civic — Independent Study</span>
@@ -260,7 +304,7 @@
 
       <article class="project-card">
         <div class="card-media">
-          <a href="weather/" target="_blank" rel="noopener"><img src="images/weather-dashboard.jpg" alt="Screenshot of the Illinois Live Weather Map and Spatial Dashboard, showing humidity and precipitation probability bubbles over Illinois cities."></a>
+          <a href="work/illinois-weather-dashboard.html"><img src="images/weather-dashboard.jpg" alt="Screenshot of the Illinois Live Weather Map and Spatial Dashboard, showing humidity and precipitation probability bubbles over Illinois cities."></a>
         </div>
         <div class="card-body">
           <span class="tag tag-civic">Civic — Independent Study</span>
@@ -274,7 +318,7 @@
 
       <article class="project-card">
         <div class="card-media">
-          <a href="ice/" target="_blank" rel="noopener"><img src="images/ice-detention-map.jpg" alt="Screenshot of the Nationwide Dashboard of ICE Detention Facilities, showing facility locations plotted across the United States and Canada."></a>
+          <a href="work/ice-detention-map.html"><img src="images/ice-detention-map.jpg" alt="Screenshot of the Nationwide Dashboard of ICE Detention Facilities, showing facility locations plotted across the United States and Canada."></a>
         </div>
         <div class="card-body">
           <span class="tag tag-civic">Civic — Independent Study</span>
@@ -288,25 +332,39 @@
 
     </div>
   </section>
-
-  <section id="contact" class="contact-cta container">
-    <h2>Let's talk about a job, a project, or both.</h2>
-    <p>I'm open to full-time GIS Analyst roles and freelance/consulting work.</p>
-    <div class="actions">
-      <a class="btn btn-primary" href="mailto:brian@bergstromgis.com">Email me</a>
-      <a class="btn btn-outline" href="https://www.linkedin.com/in/brianbergstrom86/" target="_blank" rel="noopener">LinkedIn <span class="visually-hidden">(opens in a new tab)</span></a>
     </div>
-  </section>
+
+    <aside class="blog-sidebar" aria-label="Search and browse by date">
+      <div class="sidebar-panel">
+        <h2>Search posts</h2>
+        <form class="search-field" id="sidebarSearchForm">
+          <label class="visually-hidden" for="blogSearch">Search posts</label>
+          <input type="search" id="blogSearch" name="q" placeholder="Search titles, tags, topics…">
+          <button type="submit" class="search-submit" aria-label="Search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4a6 6 0 104.472 10.03l4.749 4.748 1.414-1.414-4.748-4.749A6 6 0 0010 4zm-4 6a4 4 0 118 0 4 4 0 01-8 0z"/></svg>
+          </button>
+        </form>
+        <p class="search-status" id="searchStatus" hidden></p>
+      </div>
+
+      <div class="sidebar-panel">
+        <h2>Browse by date</h2>
+        <div class="cal-head">
+          <button class="cal-nav" id="calPrev" type="button" aria-label="Previous month">&larr;</button>
+          <span class="cal-label" id="calLabel"></span>
+          <button class="cal-nav" id="calNext" type="button" aria-label="Next month">&rarr;</button>
+        </div>
+        <div class="cal-grid" id="calGrid" role="grid" aria-label="Post dates"></div>
+        <button class="cal-clear" id="calClear" type="button" hidden>Clear date filter</button>
+      </div>
+    </aside>
+  </div>
 </main>
 
 <footer class="site-footer">
-  <div class="container footer-grid">
-    <div class="footer-contact">
-      <a class="btn btn-outline" href="mailto:brian@bergstromgis.com">brian@bergstromgis.com</a>
-      <a class="btn btn-outline" href="https://www.linkedin.com/in/brianbergstrom86/" target="_blank" rel="noopener">LinkedIn</a>
-      <a class="btn btn-outline" href="../resume/resume.html">Resume</a>
-    </div>
-    <p class="footer-note">&copy; Brian Bergstrom. Built by hand, hosted on GitHub Pages.</p>
+  <div class="container">
+    <svg class="footer-mark" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="46" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-dasharray="255 40" transform="rotate(-58 60 60)" /></svg>
+    <p class="footer-note">&copy; <a href="mailto:brian@bergstromgis.com">Brian Bergstrom</a>. Built by Claude, hosted on GitHub Pages.</p>
   </div>
 </footer>
 
@@ -319,5 +377,8 @@
     toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
   });
 </script>
+<script src="js/hero-sparkles.js"></script>
+<script src="js/blog-post-data.js"></script>
+<script src="js/blog-sidebar.js"></script>
 </body>
 </html>

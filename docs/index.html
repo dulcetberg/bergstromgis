@@ -27,140 +27,67 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="stylesheet" href="css/brand.css">
 <style>
-  /* ===== v1: editorial / scroll-driven storytelling ===== */
+  /* ===== Homepage-only layout: welcome post, feed header =====
+     Brand tokens, nav, footer, hero, sidebar, and card styling all live
+     in brand.css and apply here automatically. This block only covers
+     what's unique to the homepage layout itself. */
 
-  .scroll-progress {
-    position: fixed;
-    top: 0; left: 0;
-    height: 3px;
-    width: 0%;
-    background: var(--accent);
-    z-index: 200;
+  /* ---- welcome post: greets first-time visitors, explains the site ---- */
+  .welcome-post {
+    padding: 3rem 0 0;
   }
-
-  .hero {
-    padding: 7rem 0 6rem;
-    text-align: center;
-  }
-  .hero .eyebrow {
-    display: inline-block;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    font-weight: 600;
-    font-size: 0.85rem;
-    color: var(--accent);
-    margin-bottom: 1rem;
-  }
-  .hero h1 {
-    font-size: clamp(2.1rem, 5vw, 3.6rem);
-    max-width: 18ch;
-    margin: 0 auto 1.25rem;
-  }
-  .hero .lede {
-    max-width: 60ch;
-    margin: 0 auto;
-    font-size: 1.15rem;
-  }
-  .hero .pull-quote {
-    max-width: 52ch;
-    margin: 2.5rem auto 0;
-    font-family: var(--font-heading);
-    font-style: italic;
-    font-size: 1.05rem;
-    color: var(--primary);
-    border-left: 3px solid var(--accent);
-    padding-left: 1.25rem;
-    text-align: left;
-  }
-  .scroll-cue {
-    margin-top: 3rem;
-    font-size: 0.85rem;
-    color: var(--text);
-  }
-  .scroll-cue svg { display: block; margin: 0.4rem auto 0; }
-
-  .story-block {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 2rem;
-    align-items: center;
-    padding: 3.5rem 0;
-    border-top: 1px solid var(--rule);
-  }
-  @media (min-width: 800px) {
-    .story-block { grid-template-columns: 1fr 1fr; gap: 3.5rem; padding: 5rem 0; }
-    .story-block.reverse .story-media { order: 2; }
-  }
-  .story-media {
+  .welcome-post .welcome-inner {
+    background: var(--bg-raised);
+    border: 1px solid var(--rule);
+    border-left: 4px solid var(--accent);
     border-radius: 12px;
-    overflow: hidden;
-    background: var(--rule);
-    min-height: 220px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 14px;
+    padding: 2rem 2.25rem;
+    max-width: 68ch;
   }
-  .story-media img { width: 100%; height: 100%; object-fit: contain; border-radius: 8px; }
-  .story-media svg { width: 70%; height: auto; color: var(--primary); }
-
-  .story-text .tag { margin-bottom: 0.9rem; }
-  .story-text h2 { font-size: 1.6rem; }
-  .story-text .stat {
-    display: inline-block;
-    font-family: var(--font-heading);
-    font-size: 1.05rem;
+  .welcome-post .eyebrow {
+    display: block;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+    font-size: 0.78rem;
     color: var(--accent);
-    font-weight: 600;
-    margin: 0.75rem 0;
+    margin-bottom: 0.6rem;
   }
-  .story-text a.project-link {
-    font-weight: 600;
-    text-decoration: none;
-    border-bottom: 2px solid var(--accent);
-  }
+  .welcome-post h2 { font-size: 1.5rem; margin: 0 0 0.9rem; }
+  .welcome-post p { margin: 0 0 1rem; color: var(--text-muted); }
+  .welcome-post p:last-child { margin-bottom: 0; }
+  .welcome-post a { color: var(--accent); }
 
-  .js-ready .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.7s ease, transform 0.7s ease; }
-  .js-ready .reveal.is-visible { opacity: 1; transform: none; }
-
-  .see-all-work {
-    text-align: center;
-    padding-top: 1.5rem;
-    font-size: 1rem;
-  }
-  .see-all-work .project-link { margin-left: 0.5rem; }
-
-  .about-teaser {
-    padding: 5rem 0;
-    border-top: 1px solid var(--rule);
-    display: grid;
-    gap: 2.5rem;
-    grid-template-columns: 1fr;
-  }
-  @media (min-width: 800px) {
-    .about-teaser { grid-template-columns: 1.1fr 0.9fr; align-items: center; }
-  }
-  .about-teaser img { border-radius: 12px; }
-  .about-teaser h2 { font-size: 1.6rem; }
-
-  .contact-cta {
-    padding: 5rem 0 6rem;
-    border-top: 1px solid var(--rule);
-    text-align: center;
-  }
-  .contact-cta h2 { font-size: 1.8rem; }
-  .contact-cta .actions {
+  /* ---- feed section (not covered by brand.css's generic card grid) ---- */
+  .feed-section { padding: 3rem 0 5rem; }
+  .feed-header {
     display: flex;
     flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
     gap: 1rem;
-    justify-content: center;
-    margin-top: 1.75rem;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--rule);
   }
+  .feed-header h2 { font-size: 1.9rem; margin: 0; }
+  .feed-header .browse-link { font-size: 0.92rem; color: var(--text-muted); }
+  .feed-header .browse-link a { text-decoration: none; border-bottom: 1px solid currentColor; }
+  .post-date {
+    display: block;
+    font-size: 0.76rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.4rem;
+  }
+  .see-all { text-align: center; margin-top: 2.5rem; }
+  .see-all a { color: var(--accent); font-weight: 600; text-decoration: none; border-bottom: 1px solid currentColor; }
 </style>
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
-<div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
 
 <header class="site-header">
   <nav class="site-nav container" aria-label="Primary">
@@ -169,8 +96,8 @@
       Menu
     </button>
     <ul class="nav-links" id="navLinks">
-      <li><a href="work-civic.html">Work</a></li>
       <li><a href="blog.html">Blog</a></li>
+      <li><a href="work-civic.html">Work</a></li>
       <li><a href="about.html">About</a></li>
       <li><a href="../resume/resume.html">Resume</a></li>
       <li><a href="contact.html">Contact</a></li>
@@ -178,185 +105,233 @@
   </nav>
 </header>
 
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="redmap" color-interpolation-filters="sRGB">
+    <!-- Measured the source JPG directly (numpy): lake is a flat dark fill
+         (~35/255), land background sits higher at ~77/255, and only real
+         street pixels rise above that, topping out ~97-109/255 for major
+         streets/highways. The black point below is calibrated to land
+         (not the lake), so only brightness above the land baseline
+         produces any glow, and the lake -- darker than land -- clamps to
+         0 on its own. color-interpolation-filters="sRGB" is load-bearing:
+         SVG filters default to linearRGB, which silently collapses this
+         negative-intercept linear transfer to solid black on photographic
+         content. -->
+    <feColorMatrix type="matrix" values="0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0 0 0 1 0" result="gray"/>
+    <feComponentTransfer in="gray" result="normalized">
+      <feFuncR type="linear" slope="11.087" intercept="-3.348"/>
+      <feFuncG type="linear" slope="11.087" intercept="-3.348"/>
+      <feFuncB type="linear" slope="11.087" intercept="-3.348"/>
+    </feComponentTransfer>
+    <!-- 0 = land/background (no glow), 1 = highways (hottest red). -->
+    <feComponentTransfer in="normalized">
+      <feFuncR type="table" tableValues="0.02 0.18 0.45 0.75 1.0"/>
+      <feFuncG type="table" tableValues="0.00 0.015 0.04 0.10 0.30"/>
+      <feFuncB type="table" tableValues="0.00 0.015 0.03 0.07 0.22"/>
+    </feComponentTransfer>
+  </filter>
+</svg>
+
 <main id="main">
-  <section class="hero container" id="top">
-    <p class="eyebrow">GIS Analyst &middot; Chicago</p>
-    <h1>GIS that makes the overlooked undeniable.</h1>
-    <p class="lede">
-      Some problems don't get solved because no one can see them clearly enough to act
-      on. I build maps and tools that change that — a StoryMap that told 31 people in my
-      community they weren't alone, an analysis that proved real food insecurity exists in
-      one of the wealthiest counties in the country.
-    </p>
-    <blockquote class="pull-quote">
-      "I come from a very underserved mental health community. My projects are for them,
-      even if they will never understand what I am doing 'with computers.'"
-    </blockquote>
-    <div class="scroll-cue">
-      Three things I've built
-      <svg width="16" height="10" viewBox="0 0 16 10" fill="none" aria-hidden="true">
-        <path d="M1 1L8 8L15 1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-      </svg>
+
+  <section class="site-hero" id="top">
+    <div class="hero-base"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-lines"></div>
+    <div class="hero-vignette"></div>
+    <svg class="hero-sparkles">
+      <defs>
+        <radialGradient id="sparkGrad">
+          <stop offset="0%" stop-color="#FFEFD6" stop-opacity="1"/>
+          <stop offset="35%" stop-color="#FFB199" stop-opacity="0.9"/>
+          <stop offset="100%" stop-color="#C0392B" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <!-- data-sx/data-sy are each sparkle's real position in the source
+           image's own pixel space (2200x1300, unscaled), sampled from
+           hero-chi-grid.jpg's brightness data so every one genuinely
+           sits on a real street. cx/cy are computed at runtime (see
+           script below) because background-size:cover scales uniformly
+           to fill whatever width the container actually renders at --
+           a coordinate baked in for one assumed width silently drifts
+           at every other width. -->
+      <circle class="sparkle" data-sx="211" data-sy="414" r="3.4" fill="url(#sparkGrad)" style="animation-delay:-0.2s; animation-duration:2.3s;"/>
+      <circle class="sparkle" data-sx="988" data-sy="388" r="3.0" fill="url(#sparkGrad)" style="animation-delay:-1.4s; animation-duration:2.9s;"/>
+      <circle class="sparkle" data-sx="634" data-sy="539" r="3.6" fill="url(#sparkGrad)" style="animation-delay:-0.8s; animation-duration:2.5s;"/>
+      <circle class="sparkle" data-sx="849" data-sy="449" r="3.1" fill="url(#sparkGrad)" style="animation-delay:-2.1s; animation-duration:3.1s;"/>
+      <circle class="sparkle" data-sx="1077" data-sy="463" r="3.5" fill="url(#sparkGrad)" style="animation-delay:-0.5s; animation-duration:2.4s;"/>
+      <circle class="sparkle" data-sx="1260" data-sy="552" r="3.0" fill="url(#sparkGrad)" style="animation-delay:-1.8s; animation-duration:2.8s;"/>
+      <circle class="sparkle" data-sx="1745" data-sy="527" r="4.0" fill="url(#sparkGrad)" style="animation-delay:-1.0s; animation-duration:2.6s;"/>
+      <circle class="sparkle" data-sx="965" data-sy="561" r="3.2" fill="url(#sparkGrad)" style="animation-delay:-2.4s; animation-duration:3.0s;"/>
+      <circle class="sparkle" data-sx="1169" data-sy="592" r="3.3" fill="url(#sparkGrad)" style="animation-delay:-0.1s; animation-duration:2.7s;"/>
+      <circle class="sparkle" data-sx="1262" data-sy="617" r="3.6" fill="url(#sparkGrad)" style="animation-delay:-1.6s; animation-duration:2.5s;"/>
+      <circle class="sparkle" data-sx="1060" data-sy="835" r="3.1" fill="url(#sparkGrad)" style="animation-delay:-0.9s; animation-duration:2.9s;"/>
+      <circle class="sparkle" data-sx="1135" data-sy="816" r="3.4" fill="url(#sparkGrad)" style="animation-delay:-2.0s; animation-duration:2.6s;"/>
+    </svg>
+    <svg class="hero-corner" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="46" fill="none" stroke="#FF6A52" stroke-width="5" stroke-linecap="round" stroke-dasharray="255 40" transform="rotate(-58 60 60)" /></svg>
+    <div class="hero-content">
+      <span class="eyebrow">GIS Analyst &middot; Chicago</span>
+      <h1 class="hero-title">GIS that makes the overlooked undeniable.</h1>
+      <p class="lede">Real maps, real data, real people who needed someone to notice. New ones posted here roughly every week.</p>
     </div>
   </section>
 
-  <section id="work" aria-label="Featured work">
-    <div class="container">
+  <section class="welcome-post container" aria-label="Welcome">
+    <div class="welcome-inner">
+      <span class="eyebrow">Welcome</span>
+      <h2>Why this site exists</h2>
+      <p>This started as a portfolio for GIS Analyst job applications. That's changed. It's now a running record of real mapping projects, posted here as I finish them, roughly every week or two.</p>
+      <p>Every project uses real data and answers a real question, whether that's where mental health care is hardest to reach in Illinois, how a flood response actually unfolded in Nepal, or how the borders of North America shifted over five centuries. Civic projects tend to be about people who get overlooked. Personal ones are just things I find genuinely interesting.</p>
+      <p>New posts show up here first, with the full archive on the <a href="blog.html">Blog</a> page.</p>
+    </div>
+  </section>
 
-      <article class="story-block reveal">
-        <div class="story-media">
-          <img src="images/nami-storymap.jpg" alt="Title screen of the NAMI DuPage StoryMap: 'Stories from Individuals and Families Living with Mental Health Conditions,' created by Brian Bergstrom.">
-        </div>
-        <div class="story-text">
-          <span class="tag tag-civic">Civic — NAMI DuPage</span>
-          <h2>You Are Not Alone</h2>
-          <p>
-            During my GIS internship at NAMI DuPage, I collected 31 community interviews
-            in person — over bingo days at the community center, not a survey link I
-            emailed out — and turned them into a StoryMap mapping mental health resources
-            across DuPage County.
-          </p>
-          <p class="stat">31 responses, 2 weeks, still live today</p>
-          <p>
-            <a class="project-link" href="work/nami-storymap.html">
-              Read the story <span aria-hidden="true">→</span>
-            </a>
-          </p>
-        </div>
-      </article>
+  <section class="feed-section container" aria-label="Latest posts">
+    <div class="feed-header">
+      <h2>Latest</h2>
+      <p class="browse-link">Or browse by category: <a href="work-civic.html">Civic</a> &middot; <a href="work-personal.html">Personal</a></p>
+    </div>
 
-      <article class="story-block reverse reveal">
-        <div class="story-media">
-          <img src="images/hospitals-accessibility.jpg" alt="Screenshot of the Hospital Accessibility Analysis dashboard showing clustered hospital counts across Illinois and neighboring states.">
+    <div class="blog-layout">
+      <div class="blog-main">
+        <div class="project-grid">
+
+      <article class="project-card">
+        <div class="card-media">
+          <a href="work/nepal-flood-response-map.html"><img src="images/nepal-flood-response-map.jpg" alt="Mapping the Response: The Rasuwa Flood"></a>
         </div>
-        <div class="story-text">
+        <div class="card-body">
+          <span class="post-date">August 28, 2026</span>
           <span class="tag tag-civic">Civic — Independent Study</span>
-          <h2>Hospital Accessibility Analysis</h2>
-          <p>
-            My most technically ambitious build: it streams live Overture Maps GeoParquet
-            data straight from AWS S3 alongside the U.S. Census API to look at healthcare
-            access across Illinois. A GIS data consultant flagged the clustering method as
-            worth borrowing — on LinkedIn, unprompted.
-          </p>
-          <p class="stat">Live cloud-native data, no static extract</p>
-          <p>
-            <a class="project-link" href="work/hospitals-accessibility.html">
-              Read the story <span aria-hidden="true">→</span>
-            </a>
-          </p>
+          <h3>Mapping the Response: The Rasuwa Flood</h3>
+          <p>The real HOT/NAXA volunteer mapping response to the August 2026 Rasuwa flood in Nepal, alongside cloud-masked before/after satellite imagery and the real, still-rising toll.</p>
+          <a class="card-link" href="work/nepal-flood-response-map.html">
+            Read the story <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </article>
+      <article class="project-card">
+        <div class="card-media">
+          <a href="work/us-disease-surveillance-map.html"><img src="images/us-disease-surveillance-map.jpg" alt="Reportable Disease Cases Since RFK Jr. Took Over HHS"></a>
+        </div>
+        <div class="card-body">
+          <span class="post-date">August 28, 2026</span>
+          <span class="tag tag-civic">Civic — Independent Study</span>
+          <h3>Reportable Disease Cases Since RFK Jr. Took Over HHS</h3>
+          <p>A national map of real, state-by-state case counts for every CDC-notifiable disease, tracked against the actual dated timeline of federal vaccine policy changes since RFK Jr. took over HHS.</p>
+          <a class="card-link" href="work/us-disease-surveillance-map.html">
+            Read the story <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </article>
+      <article class="project-card">
+        <div class="card-media">
+          <a href="work/us-territorial-timelapse.html"><img src="images/us-territorial-timelapse.jpg" alt="How the United States Took Shape"></a>
+        </div>
+        <div class="card-body">
+          <span class="post-date">August 28, 2026</span>
+          <span class="tag tag-personal">Personal — pure interest</span>
+          <h3>How the United States Took Shape</h3>
+          <p>A timelapse map of who actually controlled North American territory, 1492 to today: Indigenous nations, colonial powers, and the United States.</p>
+          <a class="card-link" href="work/us-territorial-timelapse.html">
+            Read the story <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </article>
+      <article class="project-card">
+        <div class="card-media">
+          <a href="work/chicagoland-activity-space-divide.html"><img src="images/chicagoland-activity-space-divide.jpg" alt="Chicagoland's Activity Space Divide"></a>
+        </div>
+        <div class="card-body">
+          <span class="post-date">August 27, 2026</span>
+          <span class="tag tag-civic">Civic — Independent Study</span>
+          <h3>Chicagoland's Activity Space Divide</h3>
+          <p>Testing a 2026 Demography paper's finding about shared activity space and segregation, at the Chicagoland municipality level.</p>
+          <a class="card-link" href="work/chicagoland-activity-space-divide.html">
+            Read the story <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </article>
+      <article class="project-card">
+        <div class="card-media">
+          <a href="work/chicagoland-third-places.html"><img src="images/chicagoland-third-places.jpg" alt="Chicagoland Third Places"></a>
+        </div>
+        <div class="card-body">
+          <span class="post-date">August 27, 2026</span>
+          <span class="tag tag-civic">Civic — Independent Study</span>
+          <h3>Chicagoland Third Places</h3>
+          <p>Every cafe, library, community center, and social facility across 319 Chicagoland municipalities, mapped per capita so towns of any size can be compared fairly.</p>
+          <a class="card-link" href="work/chicagoland-third-places.html">
+            Read the story <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </article>
+      <article class="project-card">
+        <div class="card-media">
+          <a href="work/illinois-mental-health-map.html"><img src="images/illinois-mental-health-map.jpg" alt="Illinois Mental Health Map"></a>
+        </div>
+        <div class="card-body">
+          <span class="post-date">August 27, 2026</span>
+          <span class="tag tag-civic">Civic — Independent Study</span>
+          <h3>Illinois Mental Health Map</h3>
+          <p>County-level suicide rates, mental distress, and uninsured rates swiped directly against mental health facility locations across all 102 Illinois counties.</p>
+          <a class="card-link" href="work/illinois-mental-health-map.html">
+            Read the story <span aria-hidden="true">→</span>
+          </a>
         </div>
       </article>
 
-      <article class="story-block reveal">
-        <div class="story-media">
-          <img src="images/capstone map.jpg" alt="Map comparing food-desert access across DuPage and Cook counties, overlaying SNAP retailers, farmer's markets, and Pace bus routes on 2020 Census demographic data.">
         </div>
-        <div class="story-text">
-          <span class="tag tag-civic">Civic — MS-GIS Capstone, 2023</span>
-          <h2>Food Insecurity in DuPage County</h2>
-          <p>
-            I layered Census demographic data against SNAP retailers and Pace bus routes
-            and found only 166 of 523 SNAP-accepting locations were reachable by bus, after
-            more than half of Pace's routes were cut. DuPage is one of the wealthiest
-            counties in the country. The need was real anyway.
-          </p>
-          <p class="stat">166 / 523 locations (31%) bus-accessible</p>
-          <p>
-            <a class="project-link" href="work/food-desert.html">
-              Read the story <span aria-hidden="true">→</span>
-            </a>
-          </p>
+
+        <p class="see-all"><a href="blog.html">See all posts &rarr;</a></p>
+      </div>
+
+      <aside class="blog-sidebar" aria-label="Search and browse by date">
+        <div class="sidebar-panel">
+          <h2>Search posts</h2>
+          <form class="search-field" id="sidebarSearchForm">
+            <label class="visually-hidden" for="blogSearch">Search posts</label>
+            <input type="search" id="blogSearch" name="q" placeholder="Search titles, tags, topics…">
+            <button type="submit" class="search-submit" aria-label="Search">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4a6 6 0 104.472 10.03l4.749 4.748 1.414-1.414-4.748-4.749A6 6 0 0010 4zm-4 6a4 4 0 118 0 4 4 0 01-8 0z"/></svg>
+            </button>
+          </form>
+          <p class="search-status" id="searchStatus" hidden></p>
         </div>
-      </article>
 
-      <p class="see-all-work reveal">
-        These are the three I'd show first — there's more where that came from.
-        <a class="project-link" href="work-civic.html">See all of my work <span aria-hidden="true">→</span></a>
-      </p>
-
-    </div>
-  </section>
-
-  <section id="about" class="about-teaser container reveal">
-    <img src="images/desk.jpg" alt="Brian's desk: an iMac showing Python and DuckDB code running next to a small Buddha statue.">
-    <div>
-      <h2>How I got here</h2>
-      <p>
-        Thirteen years in retail, a self-taught detour through IT, and a GIS master's I
-        found through a friend's recommendation. I don't drive — I've gotten around by bus
-        and train for most of my adult life, which is exactly why I notice what most GIS
-        work quietly assumes everyone has.
-      </p>
-      <p>
-        I also keep a slower, steadier practice running in the background: a weekly Zoom
-        Dharma discussion group that's kept me stable and taught me to sit with hard
-        problems instead of rushing past them.
-      </p>
-    </div>
-  </section>
-
-  <section id="contact" class="contact-cta container">
-    <h2>Let's talk about a job, a project, or both.</h2>
-    <p>I'm open to full-time GIS Analyst roles and freelance/consulting work.</p>
-    <div class="actions">
-      <a class="btn btn-primary" href="mailto:brian@bergstromgis.com">Email me</a>
-      <a class="btn btn-outline" href="https://www.linkedin.com/in/brianbergstrom86/" target="_blank" rel="noopener">LinkedIn <span class="visually-hidden">(opens in a new tab)</span></a>
+        <div class="sidebar-panel">
+          <h2>Browse by date</h2>
+          <div class="cal-head">
+            <button class="cal-nav" id="calPrev" type="button" aria-label="Previous month">&larr;</button>
+            <span class="cal-label" id="calLabel"></span>
+            <button class="cal-nav" id="calNext" type="button" aria-label="Next month">&rarr;</button>
+          </div>
+          <div class="cal-grid" id="calGrid" role="grid" aria-label="Post dates"></div>
+          <button class="cal-clear" id="calClear" type="button" hidden>Clear date filter</button>
+        </div>
+      </aside>
     </div>
   </section>
 </main>
 
 <footer class="site-footer">
-  <div class="container footer-grid">
-    <div class="footer-contact">
-      <a class="btn btn-outline" href="mailto:brian@bergstromgis.com">brian@bergstromgis.com</a>
-      <a class="btn btn-outline" href="https://www.linkedin.com/in/brianbergstrom86/" target="_blank" rel="noopener">LinkedIn</a>
-      <a class="btn btn-outline" href="../resume/resume.html">Resume</a>
-    </div>
-    <p class="footer-note">&copy; Brian Bergstrom. Built by hand, hosted on GitHub Pages.</p>
+  <div class="container">
+    <svg class="footer-mark" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="46" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-dasharray="255 40" transform="rotate(-58 60 60)" /></svg>
+    <p class="footer-note">&copy; <a href="mailto:brian@bergstromgis.com">Brian Bergstrom</a>. Built by Claude, hosted on GitHub Pages.</p>
   </div>
 </footer>
 
 <script>
   document.documentElement.classList.add('js-ready');
-
   var toggle = document.getElementById('navToggle');
   var links = document.getElementById('navLinks');
   toggle.addEventListener('click', function () {
     var open = links.classList.toggle('is-open');
     toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
   });
-
-  var revealEls = document.querySelectorAll('.reveal');
-  if ('IntersectionObserver' in window) {
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('is-visible');
-          io.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.15 });
-    revealEls.forEach(function (el) { io.observe(el); });
-  } else {
-    revealEls.forEach(function (el) { el.classList.add('is-visible'); });
-  }
-
-  var bar = document.getElementById('scrollProgress');
-  var ticking = false;
-  function updateProgress() {
-    var scrollTop = window.scrollY;
-    var docHeight = document.documentElement.scrollHeight - window.innerHeight;
-    var pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-    bar.style.width = pct + '%';
-    ticking = false;
-  }
-  window.addEventListener('scroll', function () {
-    if (!ticking) {
-      window.requestAnimationFrame(updateProgress);
-      ticking = true;
-    }
-  });
-  updateProgress();
 </script>
+<script src="js/hero-sparkles.js"></script>
+<script src="js/blog-post-data.js"></script>
+<script src="js/blog-sidebar.js"></script>
 </body>
 </html>
