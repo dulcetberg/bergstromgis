@@ -85,6 +85,16 @@
   .detail .status-line { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.3rem; }
   .detail h2 { font-size: 1.2rem; margin: 0 0 0.15rem; }
   .detail .sci { font-style: italic; color: var(--muted); font-size: 0.85rem; margin: 0 0 0.8rem; }
+  .detail .photo-wrap { margin: 0 0 0.9rem; }
+  .detail .photo-wrap img {
+    display: block;
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid var(--rule);
+  }
+  .detail .photo-credit { font-size: 0.68rem; color: var(--muted); margin-top: 0.3rem; }
   .headline {
     background: var(--bg-raised);
     border: 1px solid var(--rule);
@@ -279,6 +289,11 @@
       <div class="status-line"><span class="badge ${sp.status}">${sp.status}</span></div>
       <h2>${sp.name}</h2>
       <p class="sci">${sp.scientific}</p>
+      ${sp.photo ? `
+      <div class="photo-wrap">
+        <img src="${sp.photo}" alt="${sp.name} (${sp.scientific})" loading="lazy">
+        ${sp.photoCredit ? `<div class="photo-credit">${sp.photoCredit}</div>` : ''}
+      </div>` : ''}
       <div class="headline">
         <div class="num">${sp.headline}</div>
         <div class="yr">as of ${sp.headlineYear}</div>
