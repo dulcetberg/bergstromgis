@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>10 Endangered Species, Mapped Honestly — Brian Bergstrom</title>
+<meta name="description" content="Ten of the most endangered species in the United States, mapped with each one's real, best-available data: population where it exists, nest counts where that's the real metric, and honest gaps where no clean number exists yet.">
+<link rel="canonical" href="https://bergstromgis.com/work/endangered-species-map.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Brian Bergstrom">
+<meta property="og:title" content="10 Endangered Species, Mapped Honestly — Brian Bergstrom">
+<meta property="og:description" content="Ten of the most endangered species in the United States, mapped with each one's real, best-available data: population where it exists, nest counts where that's the real metric, and honest gaps where no clean number exists yet.">
+<meta property="og:image" content="https://bergstromgis.com/images/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Brian Bergstrom — GIS that makes the overlooked undeniable.">
+<meta property="og:url" content="https://bergstromgis.com/work/endangered-species-map.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="10 Endangered Species, Mapped Honestly — Brian Bergstrom">
+<meta name="twitter:description" content="Ten of the most endangered species in the United States, mapped with each one's real, best-available data: population where it exists, nest counts where that's the real metric, and honest gaps where no clean number exists yet.">
+<meta name="twitter:image" content="https://bergstromgis.com/images/og-image.png">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="alternate icon" href="../favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../css/brand.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <nav class="site-nav container" aria-label="Primary">
+    <a class="wordmark" href="../index.html">Brian Bergstrom</a>
+    <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks">Menu</button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../work-civic.html">Work</a></li>
+      <li><a href="../blog.html">Blog</a></li>
+      <li><a href="../about.html">About</a></li>
+      <li><a href="../../resume/resume.html">Resume</a></li>
+      <li><a href="../contact.html">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="redmap" color-interpolation-filters="sRGB">
+    <feColorMatrix type="matrix" values="0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0 0 0 1 0" result="gray"/>
+    <feComponentTransfer in="gray" result="normalized">
+      <feFuncR type="linear" slope="11.087" intercept="-3.348"/>
+      <feFuncG type="linear" slope="11.087" intercept="-3.348"/>
+      <feFuncB type="linear" slope="11.087" intercept="-3.348"/>
+    </feComponentTransfer>
+    <feComponentTransfer in="normalized">
+      <feFuncR type="table" tableValues="0.02 0.18 0.45 0.75 1.0"/>
+      <feFuncG type="table" tableValues="0.00 0.015 0.04 0.10 0.30"/>
+      <feFuncB type="table" tableValues="0.00 0.015 0.03 0.07 0.22"/>
+    </feComponentTransfer>
+  </filter>
+</svg>
+
+<main id="main">
+  <section class="site-hero">
+    <div class="hero-base"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-lines"></div>
+    <div class="hero-vignette"></div>
+    <svg class="hero-sparkles">
+      <defs>
+        <radialGradient id="sparkGrad">
+          <stop offset="0%" stop-color="#FFEFD6" stop-opacity="1"/>
+          <stop offset="35%" stop-color="#FFB199" stop-opacity="0.9"/>
+          <stop offset="100%" stop-color="#C0392B" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <circle class="sparkle" data-sx="211" data-sy="414" r="3.4" fill="url(#sparkGrad)" style="animation-delay:-0.2s; animation-duration:2.3s;"/>
+      <circle class="sparkle" data-sx="988" data-sy="388" r="3.0" fill="url(#sparkGrad)" style="animation-delay:-1.4s; animation-duration:2.9s;"/>
+      <circle class="sparkle" data-sx="634" data-sy="539" r="3.6" fill="url(#sparkGrad)" style="animation-delay:-0.8s; animation-duration:2.5s;"/>
+      <circle class="sparkle" data-sx="849" data-sy="449" r="3.1" fill="url(#sparkGrad)" style="animation-delay:-2.1s; animation-duration:3.1s;"/>
+      <circle class="sparkle" data-sx="1077" data-sy="463" r="3.5" fill="url(#sparkGrad)" style="animation-delay:-0.5s; animation-duration:2.4s;"/>
+      <circle class="sparkle" data-sx="1260" data-sy="552" r="3.0" fill="url(#sparkGrad)" style="animation-delay:-1.8s; animation-duration:2.8s;"/>
+      <circle class="sparkle" data-sx="1745" data-sy="527" r="4.0" fill="url(#sparkGrad)" style="animation-delay:-1.0s; animation-duration:2.6s;"/>
+      <circle class="sparkle" data-sx="965" data-sy="561" r="3.2" fill="url(#sparkGrad)" style="animation-delay:-2.4s; animation-duration:3.0s;"/>
+      <circle class="sparkle" data-sx="1169" data-sy="592" r="3.3" fill="url(#sparkGrad)" style="animation-delay:-0.1s; animation-duration:2.7s;"/>
+      <circle class="sparkle" data-sx="1262" data-sy="617" r="3.6" fill="url(#sparkGrad)" style="animation-delay:-1.6s; animation-duration:2.5s;"/>
+      <circle class="sparkle" data-sx="1060" data-sy="835" r="3.1" fill="url(#sparkGrad)" style="animation-delay:-0.9s; animation-duration:2.9s;"/>
+      <circle class="sparkle" data-sx="1135" data-sy="816" r="3.4" fill="url(#sparkGrad)" style="animation-delay:-2.0s; animation-duration:2.6s;"/>
+    </svg>
+    <svg class="hero-corner" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="46" fill="none" stroke="#FF6A52" stroke-width="5" stroke-linecap="round" stroke-dasharray="255 40" transform="rotate(-58 60 60)" /></svg>
+    <div class="hero-content">
+      <span class="eyebrow">GIS Analyst &middot; Chicago</span>
+      <p class="hero-title">GIS that makes the overlooked undeniable.</p>
+      <p class="lede">Real maps, real data, real people who needed someone to notice. New ones posted here roughly every week.</p>
+    </div>
+  </section>
+
+  <div class="blog-layout container">
+  <div class="blog-main">
+    <div class="container">
+    <a class="breadcrumb" href="../work-personal.html">&larr; Back to personal work</a>
+
+    <header class="project-header">
+      <span class="tag tag-personal">Personal — pure interest</span>
+      <h1>10 Endangered Species, Mapped Honestly</h1>
+      <p class="subtitle">Ten of the most endangered species in the United States, each mapped with its own real, best-available data, not a single uniform number forced onto all of them.</p>
+      <div class="meta-row">
+        <span class="stat">USFWS, NOAA, and state wildlife agency data</span>
+        <span class="stat">10 species, 10 different real metrics</span>
+      </div>
+    </header>
+  </div>
+
+  <div class="project-hero-media">
+    <div class="media-inner">
+      <img src="../images/endangered-species-map.jpg" alt="Dark map of the continental United States with ten colored markers showing the real locations of ten endangered species, titled '10 Endangered Species.'">
+    </div>
+  </div>
+
+  <div class="project-body">
+    <p>
+      I wanted to map the most endangered species in the country, with each
+      one's population broken down by state. That turned out to be the
+      wrong ask, or at least an incomplete one. Some of these species do
+      have a clean population count you can rank by state. Others are only
+      tracked by nest counts, not living animals. One has no rangewide
+      survey at all, by the federal government's own admission. One hasn't
+      been confirmed alive since 2006. Forcing all ten into the same table
+      would have meant inventing numbers that don't exist. So instead, each
+      species on the map gets whatever its real, best-available metric
+      actually is, labeled honestly as what it is.
+    </p>
+
+    <h2>The list itself is a choice, not a ranking</h2>
+    <p>
+      There's no single official "top 10 most endangered" list. I picked
+      ten well-documented species rather than chasing a strict lowest-population
+      ranking, since a stricter cut would trade real, richly documented
+      stories (the California condor's four tracked regional populations,
+      the manatee's real annual survey) for species with barely any public
+      data at all. That's a real tradeoff, and it's worth naming instead of
+      pretending the list is more rigorous than it is.
+    </p>
+
+    <div class="callout">
+      <span class="callout-label">The most honest number in the set</span>
+      <p>
+        Franklin's bumble bee has the narrowest range of any bumble bee in
+        North America, five counties in the Klamath Mountains of Oregon and
+        California, and despite real, sustained survey effort, it hasn't
+        been confirmed alive since 2006. It was listed as endangered in
+        2021 on the strength of that absence. As far as anyone can
+        currently confirm, its population is zero. That's not a data gap
+        I'm papering over; it's the actual finding.
+      </p>
+    </div>
+
+    <h2>The best real data belongs to the manatee</h2>
+    <p>
+      Florida runs an actual annual winter survey, county by county, when
+      cold weather pushes manatees into warm-water refuges, and FWC
+      publishes the results as real, queryable GIS data. The map shows the
+      2019 survey, the most recent year in their public dataset, aggregated
+      to 5,733 manatees across 24 counties, Lee, Citrus, and Hillsborough
+      counties leading. That's a different vintage than the newer
+      statewide estimate of 9,790 from the 2021&ndash;22 survey, cited
+      separately rather than blended together, since they're not the same
+      count.
+    </p>
+
+    <h2>Some ranges are counties, not states</h2>
+    <p>
+      For species confined to a handful of counties, mapping them at the
+      state level would have flattened away the actual story. The
+      Mississippi gopher frog's entire wild population breeds at one pond
+      in Harrison County. The red wolf exists in the wild only across five
+      counties on North Carolina's Albemarle Peninsula. The San Joaquin kit
+      fox's own 2025 federal status review says plainly that no rangewide
+      population survey has ever been conducted, so the map shows the two
+      real regional monitoring series that do exist instead of a total
+      that would just be invented.
+    </p>
+
+    <div class="evidence-panel">
+      <p>Pick a species and read its own real numbers and sources.</p>
+      <a class="btn btn-primary" href="../endangered-species/" target="_blank" rel="noopener">
+        View the map <span class="visually-hidden">(opens in a new tab)</span>
+      </a>
+      <a class="btn btn-outline" href="https://github.com/dulcetberg/us-endangered-species-map" target="_blank" rel="noopener">
+        View the code <span class="visually-hidden">(opens in a new tab)</span>
+      </a>
+    </div>
+  </div>
+    </div>
+
+    <aside class="blog-sidebar" aria-label="Search and browse by date">
+      <div class="sidebar-panel">
+        <h2>Search posts</h2>
+        <form class="search-field" id="sidebarSearchForm">
+          <label class="visually-hidden" for="blogSearch">Search posts</label>
+          <input type="search" id="blogSearch" name="q" placeholder="Search titles, tags, topics…">
+          <button type="submit" class="search-submit" aria-label="Search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4a6 6 0 104.472 10.03l4.749 4.748 1.414-1.414-4.748-4.749A6 6 0 0010 4zm-4 6a4 4 0 118 0 4 4 0 01-8 0z"/></svg>
+          </button>
+        </form>
+        <p class="search-status" id="searchStatus" hidden></p>
+      </div>
+
+      <div class="sidebar-panel">
+        <h2>Browse by date</h2>
+        <div class="cal-head">
+          <button class="cal-nav" id="calPrev" type="button" aria-label="Previous month">&larr;</button>
+          <span class="cal-label" id="calLabel"></span>
+          <button class="cal-nav" id="calNext" type="button" aria-label="Next month">&rarr;</button>
+        </div>
+        <div class="cal-grid" id="calGrid" role="grid" aria-label="Post dates"></div>
+        <button class="cal-clear" id="calClear" type="button" hidden>Clear date filter</button>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <svg class="footer-mark" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="46" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-dasharray="255 40" transform="rotate(-58 60 60)" /></svg>
+    <p class="footer-note">&copy; <a href="mailto:brian@bergstromgis.com">Brian Bergstrom</a>. Built by Claude, hosted on GitHub Pages.</p>
+  </div>
+</footer>
+
+<script>
+  document.documentElement.classList.add('js-ready');
+  var toggle = document.getElementById('navToggle');
+  var links = document.getElementById('navLinks');
+  toggle.addEventListener('click', function () {
+    var open = links.classList.toggle('is-open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+</script>
+<script src="../js/hero-sparkles.js"></script>
+<script src="../js/blog-post-data.js"></script>
+<script src="../js/blog-sidebar.js"></script>
+</body>
+</html>

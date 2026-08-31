@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>10 Endangered Species, Mapped Honestly — Brian Bergstrom</title>
+<meta name="description" content="Ten of the most endangered species in the United States, mapped with each one's real, best-available data: population where it exists, nest counts where that's the real metric, and honest gaps where no clean number exists yet.">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<style>
+  :root {
+    --bg: #0e1512;
+    --bg-raised: #16201b;
+    --bg-deep: #0a0f0c;
+    --ink: #eef2ee;
+    --muted: #a2b0a6;
+    --green: #4c8c5a;
+    --green-bright: #6fbf7c;
+    --amber: #d9a441;
+    --red: #c1553f;
+    --rule: #253027;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+
+  .topbar {
+    padding: 0.9rem 1.2rem;
+    border-bottom: 1px solid var(--rule);
+    display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+    background: var(--bg-deep);
+  }
+  .topbar h1 { font-size: 1.05rem; margin: 0; font-weight: 800; }
+  .topbar a { color: var(--muted); font-size: 0.82rem; text-decoration: none; }
+  .topbar a:hover { color: var(--ink); }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 260px 1fr 340px;
+    height: calc(100vh - 54px);
+  }
+  @media (max-width: 980px) {
+    .layout { grid-template-columns: 1fr; height: auto; }
+    #map { height: 50vh; }
+  }
+
+  .species-rail {
+    border-right: 1px solid var(--rule);
+    overflow-y: auto;
+    padding: 0.75rem;
+    background: var(--bg-deep);
+  }
+  .species-rail h2 { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0.4rem 0.6rem 0.6rem; }
+  .sp-btn {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    padding: 0.6rem 0.7rem;
+    margin-bottom: 0.3rem;
+    color: var(--ink);
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .sp-btn:hover { background: var(--bg-raised); }
+  .sp-btn.active { background: var(--bg-raised); border-color: var(--green); }
+  .sp-btn .name { font-weight: 700; font-size: 0.9rem; display: block; }
+  .sp-btn .sci { font-size: 0.72rem; font-style: italic; color: var(--muted); display: block; margin-top: 0.1rem; }
+  .sp-btn .badge {
+    display: inline-block; margin-top: 0.35rem;
+    font-size: 0.62rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;
+    padding: 0.12rem 0.45rem; border-radius: 999px;
+  }
+  .badge.Endangered { background: rgba(193,85,63,0.2); color: #e08268; }
+  .badge.Threatened { background: rgba(217,164,65,0.2); color: var(--amber); }
+
+  #map { background: var(--bg-deep); }
+
+  .detail {
+    border-left: 1px solid var(--rule);
+    overflow-y: auto;
+    padding: 1.1rem 1.2rem;
+    background: var(--bg-deep);
+  }
+  .detail .status-line { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.3rem; }
+  .detail h2 { font-size: 1.2rem; margin: 0 0 0.15rem; }
+  .detail .sci { font-style: italic; color: var(--muted); font-size: 0.85rem; margin: 0 0 0.8rem; }
+  .headline {
+    background: var(--bg-raised);
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--green-bright);
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    margin-bottom: 0.9rem;
+  }
+  .headline .num { font-size: 1.3rem; font-weight: 800; line-height: 1.2; }
+  .headline .yr { font-size: 0.72rem; color: var(--muted); margin-top: 0.15rem; }
+  .detail .summary { font-size: 0.87rem; line-height: 1.55; color: var(--muted); margin-bottom: 1rem; }
+  .detail .summary b { color: var(--ink); }
+
+  .region-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; margin-bottom: 1rem; }
+  .region-table tr { border-bottom: 1px solid var(--rule); }
+  .region-table td { padding: 0.45rem 0.3rem; vertical-align: top; }
+  .region-table td.val { text-align: right; font-weight: 700; color: var(--green-bright); white-space: nowrap; }
+  .region-table td.name { color: var(--ink); }
+  .region-table .note { display: block; font-size: 0.72rem; color: var(--muted); margin-top: 0.1rem; }
+  .region-table td.null-val { color: var(--muted); font-style: italic; font-weight: 400; }
+
+  .sources { font-size: 0.72rem; color: var(--muted); line-height: 1.9; border-top: 1px solid var(--rule); padding-top: 0.8rem; }
+  .sources a { color: var(--muted); }
+  .sources .lbl { display: block; text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.65rem; margin-bottom: 0.3rem; color: var(--muted); }
+
+  .leaflet-popup-content-wrapper { background: var(--bg-raised); color: var(--ink); border-radius: 8px; }
+  .leaflet-popup-tip { background: var(--bg-raised); }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>10 Endangered Species, Mapped Honestly</h1>
+  <a href="../work/endangered-species-map.html">&larr; Back to the write-up on bergstromgis.com</a>
+</div>
+
+<div class="layout">
+  <nav class="species-rail" id="speciesRail" aria-label="Choose a species">
+    <h2>Choose a species</h2>
+  </nav>
+  <div id="map"></div>
+  <aside class="detail" id="detail"></aside>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+(async function () {
+  const bundle = await fetch('data/bundle.json').then(r => r.json());
+  const { states, counties, flCounties, manatee2019, species } = bundle;
+
+  const map = L.map('map', { zoomControl: false }).setView([37.8, -96], 4);
+  L.control.zoom({ position: 'topright' }).addTo(map);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
+    maxZoom: 12,
+    attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
+  }).addTo(map);
+
+  const baseStates = L.geoJSON(states, {
+    style: { color: '#253027', weight: 1, fillColor: '#16201b', fillOpacity: 0.6 },
+    interactive: false
+  }).addTo(map);
+
+  let activeLayer = null;
+  function clearActive() {
+    if (activeLayer) { map.removeLayer(activeLayer); activeLayer = null; }
+  }
+
+  const STATE_NAME_TO_POSTAL = {};
+  states.features.forEach(f => { STATE_NAME_TO_POSTAL[f.properties.name] = f.properties.postal; });
+
+  // Some species reference regions that are combinations of states, or a
+  // single real US state under a slightly different label than the
+  // cartographic boundary file uses. Real mapping, not guesswork -- each
+  // entry traces to the species' own region name in data/species.json.
+  const REGION_TO_STATES = {
+    "Southern California": ["California"],
+    "Central California": ["California"],
+    "Arizona / Utah": ["Arizona", "Utah"],
+    "Pacific Northwest (OR/WA)": ["Oregon", "Washington"],
+    "Winter calving grounds (GA / FL / SC coast)": ["Georgia", "Florida", "South Carolina"],
+    "Summer/fall feeding grounds (New England, Cape Cod Bay, Gulf of Maine)": ["Maine", "New Hampshire", "Massachusetts", "Rhode Island", "Connecticut", "New York"],
+  };
+
+  function colorScale(v, max) {
+    if (v == null) return '#3a4a3d';
+    const t = Math.min(1, v / max);
+    // dark green -> bright amber for higher values
+    const r = Math.round(60 + t * (217 - 60));
+    const g = Math.round(90 + t * (164 - 90));
+    const b = Math.round(70 + t * (65 - 70));
+    return `rgb(${r},${g},${b})`;
+  }
+
+  function render(sp) {
+    clearActive();
+    document.querySelectorAll('.sp-btn').forEach(b => b.classList.toggle('active', b.dataset.id === sp.id));
+    renderDetail(sp);
+
+    if (sp.geometryType === 'counties') {
+      const keys = new Set(sp.geometryKeys);
+      const feats = counties.features.filter(f => keys.has(`${f.properties.name}|${f.properties.state}`));
+      const values = sp.regions ? sp.regions.map(r => r.value).filter(v => v != null) : [];
+      const max = values.length ? Math.max(...values) : 1;
+      // Match each county feature to its region entry by name fragment.
+      activeLayer = L.geoJSON({ type: 'FeatureCollection', features: feats }, {
+        style: (f) => {
+          const region = (sp.regions || []).find(r => r.name.includes(f.properties.name));
+          const v = region ? region.value : null;
+          return { color: '#d9a441', weight: 1.5, fillColor: colorScale(v, max), fillOpacity: 0.75 };
+        },
+        onEachFeature: (f, layer) => {
+          const region = (sp.regions || []).find(r => r.name.includes(f.properties.name));
+          const label = region ? region.name : f.properties.name;
+          const note = region && region.note ? `<br><span style="opacity:0.75">${region.note}</span>` : '';
+          layer.bindPopup(`<b>${label}</b>${note}`);
+        }
+      }).addTo(map);
+      if (feats.length) map.fitBounds(activeLayer.getBounds(), { padding: [40, 40], maxZoom: 8 });
+      else map.setView([37.8, -96], 4);
+
+    } else if (sp.geometryType === 'fl-choropleth') {
+      const counts = manatee2019;
+      const max = Math.max(...Object.values(counts));
+      activeLayer = L.geoJSON(flCounties, {
+        style: (f) => {
+          const v = counts[f.properties.name];
+          return { color: '#0e1512', weight: 0.6, fillColor: colorScale(v, max), fillOpacity: v ? 0.85 : 0.25 };
+        },
+        onEachFeature: (f, layer) => {
+          const v = counts[f.properties.name];
+          layer.bindPopup(`<b>${f.properties.name} County</b><br>${v ? v + ' manatees counted, 2019 winter survey' : 'no manatees counted in the 2019 survey'}`);
+        }
+      }).addTo(map);
+      map.fitBounds(activeLayer.getBounds(), { padding: [40, 40] });
+
+    } else if (sp.geometryType === 'states') {
+      const values = (sp.regions || []).map(r => r.value).filter(v => v != null);
+      const max = values.length ? Math.max(...values) : 1;
+      const highlightNames = new Set();
+      const nameToRegion = {};
+      (sp.regions || []).forEach(r => {
+        const mapped = REGION_TO_STATES[r.name] || (states.features.some(f => f.properties.name === r.name) ? [r.name] : []);
+        mapped.forEach(n => {
+          highlightNames.add(n);
+          // More than one region can land on the same state polygon (e.g.
+          // California condor's "Southern California" and "Central
+          // California" are both really California) -- merge rather than
+          // let the second silently overwrite the first and lose real data.
+          if (nameToRegion[n]) {
+            const existing = nameToRegion[n];
+            nameToRegion[n] = {
+              name: `${existing.name} + ${r.name}`,
+              value: (existing.value || 0) + (r.value || 0),
+              note: [existing.note, r.note].filter(Boolean).join('; ')
+            };
+          } else {
+            nameToRegion[n] = r;
+          }
+        });
+      });
+      const feats = states.features.filter(f => highlightNames.has(f.properties.name));
+      activeLayer = L.geoJSON({ type: 'FeatureCollection', features: feats }, {
+        style: (f) => {
+          const region = nameToRegion[f.properties.name];
+          const v = region ? region.value : null;
+          return { color: '#d9a441', weight: 1.5, fillColor: colorScale(v, max), fillOpacity: 0.75 };
+        },
+        onEachFeature: (f, layer) => {
+          const region = nameToRegion[f.properties.name];
+          const note = region && region.note ? `<br><span style="opacity:0.75">${region.note}</span>` : '';
+          const valTxt = region && region.value != null ? `<br>${region.value.toLocaleString()}` : '';
+          layer.bindPopup(`<b>${f.properties.name}</b>${valTxt}${note}`);
+        }
+      }).addTo(map);
+      if (feats.length) map.fitBounds(activeLayer.getBounds(), { padding: [50, 50], maxZoom: 7 });
+      else map.setView([37.8, -96], 4);
+    }
+  }
+
+  function renderDetail(sp) {
+    const el = document.getElementById('detail');
+    const regionRows = (sp.regions || []).map(r => `
+      <tr>
+        <td class="name">${r.name}${r.note ? `<span class="note">${r.note}</span>` : ''}</td>
+        <td class="${r.value == null ? 'null-val' : 'val'}">${r.value == null ? 'no clean count' : r.value.toLocaleString()}</td>
+      </tr>
+    `).join('');
+    const sourceLinks = sp.sources.map(s => `<a href="${s.url}" target="_blank" rel="noopener">${s.label}</a>`).join(' &middot; ');
+
+    el.innerHTML = `
+      <div class="status-line"><span class="badge ${sp.status}">${sp.status}</span></div>
+      <h2>${sp.name}</h2>
+      <p class="sci">${sp.scientific}</p>
+      <div class="headline">
+        <div class="num">${sp.headline}</div>
+        <div class="yr">as of ${sp.headlineYear}</div>
+      </div>
+      <p class="summary">${sp.summary}</p>
+      ${sp.regions ? `<table class="region-table">${regionRows}</table>` : ''}
+      <div class="sources">
+        <span class="lbl">Sources</span>
+        ${sourceLinks}
+      </div>
+    `;
+  }
+
+  const rail = document.getElementById('speciesRail');
+  species.forEach(sp => {
+    const btn = document.createElement('button');
+    btn.className = 'sp-btn';
+    btn.dataset.id = sp.id;
+    btn.innerHTML = `<span class="name">${sp.name}</span><span class="sci">${sp.scientific}</span><span class="badge ${sp.status}">${sp.status}</span>`;
+    btn.addEventListener('click', () => render(sp));
+    rail.appendChild(btn);
+  });
+
+  render(species[0]);
+})();
+</script>
+</body>
+</html>

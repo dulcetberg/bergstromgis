@@ -2,11 +2,11 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://bergstromgis.com/</loc>
-    <lastmod>2026-08-30</lastmod>
+    <lastmod>2026-08-31</lastmod>
   </url>
   <url>
     <loc>https://bergstromgis.com/blog.html</loc>
-    <lastmod>2026-08-30</lastmod>
+    <lastmod>2026-08-31</lastmod>
   </url>
   <url>
     <loc>https://bergstromgis.com/about.html</loc>
@@ -18,7 +18,7 @@
   </url>
   <url>
     <loc>https://bergstromgis.com/work-personal.html</loc>
-    <lastmod>2026-08-30</lastmod>
+    <lastmod>2026-08-31</lastmod>
   </url>
   <url>
     <loc>https://bergstromgis.com/contact.html</loc>
@@ -27,6 +27,10 @@
   <url>
     <loc>https://bergstromgis.com/resume/resume.html</loc>
     <lastmod>2026-07-05</lastmod>
+  </url>
+  <url>
+    <loc>https://bergstromgis.com/work/endangered-species-map.html</loc>
+    <lastmod>2026-08-31</lastmod>
   </url>
   <url>
     <loc>https://bergstromgis.com/work/lake-america-rename.html</loc>
