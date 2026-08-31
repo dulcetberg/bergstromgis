@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chicago's Hidden Access Divide — Brian Bergstrom</title>
+<meta name="description" content="Replicating a April 2026 PLOS ONE study's street-network method to find which Chicago neighborhoods have both real services nearby and a connected street grid, and which have only one or neither.">
+<link rel="canonical" href="https://bergstromgis.com/work/chicago-access-equity.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Brian Bergstrom">
+<meta property="og:title" content="Chicago's Hidden Access Divide — Brian Bergstrom">
+<meta property="og:description" content="Replicating a April 2026 PLOS ONE study's street-network method to find which Chicago neighborhoods have both real services nearby and a connected street grid, and which have only one or neither.">
+<meta property="og:image" content="https://bergstromgis.com/images/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Brian Bergstrom — GIS that makes the overlooked undeniable.">
+<meta property="og:url" content="https://bergstromgis.com/work/chicago-access-equity.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Chicago's Hidden Access Divide — Brian Bergstrom">
+<meta name="twitter:description" content="Replicating a April 2026 PLOS ONE study's street-network method to find which Chicago neighborhoods have both real services nearby and a connected street grid, and which have only one or neither.">
+<meta name="twitter:image" content="https://bergstromgis.com/images/og-image.png">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="alternate icon" href="../favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../css/brand.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <nav class="site-nav container" aria-label="Primary">
+    <a class="wordmark" href="../index.html">Brian Bergstrom</a>
+    <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks">Menu</button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../work-civic.html">Work</a></li>
+      <li><a href="../blog.html">Blog</a></li>
+      <li><a href="../about.html">About</a></li>
+      <li><a href="../../resume/resume.html">Resume</a></li>
+      <li><a href="../contact.html">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="redmap" color-interpolation-filters="sRGB">
+    <feColorMatrix type="matrix" values="0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0 0 0 1 0" result="gray"/>
+    <feComponentTransfer in="gray" result="normalized">
+      <feFuncR type="linear" slope="11.087" intercept="-3.348"/>
+      <feFuncG type="linear" slope="11.087" intercept="-3.348"/>
+      <feFuncB type="linear" slope="11.087" intercept="-3.348"/>
+    </feComponentTransfer>
+    <feComponentTransfer in="normalized">
+      <feFuncR type="table" tableValues="0.02 0.18 0.45 0.75 1.0"/>
+      <feFuncG type="table" tableValues="0.00 0.015 0.04 0.10 0.30"/>
+      <feFuncB type="table" tableValues="0.00 0.015 0.03 0.07 0.22"/>
+    </feComponentTransfer>
+  </filter>
+</svg>
+
+<main id="main">
+  <section class="site-hero">
+    <div class="hero-base"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-lines"></div>
+    <div class="hero-vignette"></div>
+    <svg class="hero-sparkles">
+      <defs>
+        <radialGradient id="sparkGrad">
+          <stop offset="0%" stop-color="#FFEFD6" stop-opacity="1"/>
+          <stop offset="35%" stop-color="#FFB199" stop-opacity="0.9"/>
+          <stop offset="100%" stop-color="#C0392B" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <circle class="sparkle" data-sx="211" data-sy="414" r="3.4" fill="url(#sparkGrad)" style="animation-delay:-0.2s; animation-duration:2.3s;"/>
+      <circle class="sparkle" data-sx="988" data-sy="388" r="3.0" fill="url(#sparkGrad)" style="animation-delay:-1.4s; animation-duration:2.9s;"/>
+      <circle class="sparkle" data-sx="634" data-sy="539" r="3.6" fill="url(#sparkGrad)" style="animation-delay:-0.8s; animation-duration:2.5s;"/>
+      <circle class="sparkle" data-sx="849" data-sy="449" r="3.1" fill="url(#sparkGrad)" style="animation-delay:-2.1s; animation-duration:3.1s;"/>
+      <circle class="sparkle" data-sx="1077" data-sy="463" r="3.5" fill="url(#sparkGrad)" style="animation-delay:-0.5s; animation-duration:2.4s;"/>
+      <circle class="sparkle" data-sx="1260" data-sy="552" r="3.0" fill="url(#sparkGrad)" style="animation-delay:-1.8s; animation-duration:2.8s;"/>
+      <circle class="sparkle" data-sx="1745" data-sy="527" r="4.0" fill="url(#sparkGrad)" style="animation-delay:-1.0s; animation-duration:2.6s;"/>
+      <circle class="sparkle" data-sx="965" data-sy="561" r="3.2" fill="url(#sparkGrad)" style="animation-delay:-2.4s; animation-duration:3.0s;"/>
+      <circle class="sparkle" data-sx="1169" data-sy="592" r="3.3" fill="url(#sparkGrad)" style="animation-delay:-0.1s; animation-duration:2.7s;"/>
+      <circle class="sparkle" data-sx="1262" data-sy="617" r="3.6" fill="url(#sparkGrad)" style="animation-delay:-1.6s; animation-duration:2.5s;"/>
+      <circle class="sparkle" data-sx="1060" data-sy="835" r="3.1" fill="url(#sparkGrad)" style="animation-delay:-0.9s; animation-duration:2.9s;"/>
+      <circle class="sparkle" data-sx="1135" data-sy="816" r="3.4" fill="url(#sparkGrad)" style="animation-delay:-2.0s; animation-duration:2.6s;"/>
+    </svg>
+    <svg class="hero-corner" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="46" fill="none" stroke="#FF6A52" stroke-width="5" stroke-linecap="round" stroke-dasharray="255 40" transform="rotate(-58 60 60)" /></svg>
+    <div class="hero-content">
+      <span class="eyebrow">GIS Analyst &middot; Chicago</span>
+      <p class="hero-title">GIS that makes the overlooked undeniable.</p>
+      <p class="lede">Real maps, real data, real people who needed someone to notice. New ones posted here roughly every week.</p>
+    </div>
+  </section>
+
+  <div class="blog-layout container">
+  <div class="blog-main">
+    <div class="container">
+    <a class="breadcrumb" href="../work-civic.html">&larr; Back to civic work</a>
+
+    <header class="project-header">
+      <span class="tag tag-civic">Civic &mdash; Independent Study</span>
+      <h1>Chicago's Hidden Access Divide</h1>
+      <p class="subtitle">A April 2026 PLOS ONE study found that walkable access to services and a well-connected street network don't always go together, and that the gap between them splits into distinct failure modes. Chicago wasn't one of the 92 cities the study covered, so I ran their method here myself.</p>
+      <div class="meta-row">
+        <span class="stat">OpenStreetMap street network &amp; points of interest</span>
+        <span class="stat">Census ACS 2023 via Chicago Data Portal</span>
+      </div>
+    </header>
+  </div>
+
+  <div class="project-hero-media">
+    <div class="media-inner">
+      <img src="../images/chicago-access-equity.jpg" alt="Interactive map of Chicago's 77 community areas colored by access and connectivity category: well-served, compounding disadvantage, voluntary isolation, dense but disconnected, and connected but underserved.">
+    </div>
+  </div>
+
+  <div class="project-body">
+    <p>
+      A paper published April 1, 2026 in PLOS ONE (Lai et al.) modeled 92 cities
+      worldwide as street-network graphs, then measured two things separately
+      for every neighborhood: how close, dense, and varied the nearby services
+      are (the "15-minute city" idea), and how well-connected the street
+      network itself actually is on foot. Their finding is more interesting
+      than the obvious one. Good access and good connectivity don't always
+      travel together, and where they split apart, they split in two
+      different directions: some lower-income neighborhoods get both poor
+      access and poor connectivity at once, a compounding disadvantage, while
+      some higher-income neighborhoods show what the authors call "voluntary
+      isolation," genuinely poor access and connectivity despite having the
+      money to have neither, essentially low-density, car-oriented form by
+      choice.
+    </p>
+
+    <p>
+      Chicago wasn't in their 92 cities. So I rebuilt their method here:
+      pulled Chicago's actual walkable street network and real points of
+      interest (grocery stores, pharmacies, schools, healthcare, parks,
+      transit) from OpenStreetMap, computed the same three access metrics
+      and a network-connectivity measure along real walking distance, not
+      straight-line distance, and checked the result against real Census
+      income data by community area.
+    </p>
+
+    <h2>The map matches the city I actually know</h2>
+    <p>
+      O'Hare comes back as the single most extreme case of voluntary
+      isolation in the entire city, which makes complete sense: it's mostly
+      airport land, high income by the numbers, and almost nothing to walk
+      to. Right behind it are the neighborhoods every Chicagoan already
+      thinks of as the city's "suburb inside the city limits": Edison Park,
+      Forest Glen, Norwood Park, Mount Greenwood, Beverly. Higher income,
+      lower density, real distance between real destinations. On the other
+      side, Austin, West Garfield Park, Chatham, and Riverdale (one of the
+      poorest community areas in the city, median household income under
+      $36,000 by this data) land in compounding disadvantage: both weaker
+      access and a thinner street network, together.
+    </p>
+
+    <div class="callout">
+      <span class="callout-label">A category the obvious framing misses</span>
+      <p>
+        Ten community areas, including Pilsen (Lower West Side), Little
+        Village (South Lawndale), and Fuller Park, come back "dense but
+        disconnected": real services genuinely nearby, but a fragmented
+        street network limits how far that reach actually extends on foot.
+        Fuller Park in particular is hemmed in by rail yards on multiple
+        sides in real life, which is exactly the kind of barrier this
+        metric is built to catch and a simple "how many stores are nearby"
+        map would miss entirely.
+      </p>
+    </div>
+
+    <h2>Where I deviated from the original paper, and why</h2>
+    <p>
+      The original study used a network community-detection algorithm
+      (Infomap) to find "natural" neighborhoods from the street graph
+      itself. I aggregated to Chicago's own 77 official community areas
+      instead, since they're the geography every Chicagoan already
+      navigates by. Computing true global closeness centrality on a
+      319,517-node graph also isn't practical on a laptop, so I used each
+      node's local network reach, how many intersections are actually
+      reachable on foot within about 15 minutes, as a direct, defensible
+      stand-in for connectivity. And the connectivity estimate for three
+      small community areas (Montclare, Fuller Park, Burnside) rests on
+      fewer than 20 sampled street-network nodes; the map flags those
+      explicitly rather than presenting them with the same confidence as
+      the rest.
+    </p>
+
+    <div class="evidence-panel">
+      <p>Explore all 77 community areas and their real access and connectivity numbers.</p>
+      <a class="btn btn-primary" href="../chicago-access-equity/" target="_blank" rel="noopener">
+        View the map <span class="visually-hidden">(opens in a new tab)</span>
+      </a>
+      <a class="btn btn-outline" href="https://github.com/dulcetberg/chicago-access-equity" target="_blank" rel="noopener">
+        View the code <span class="visually-hidden">(opens in a new tab)</span>
+      </a>
+    </div>
+  </div>
+    </div>
+
+    <aside class="blog-sidebar" aria-label="Search and browse by date">
+      <div class="sidebar-panel">
+        <h2>Search posts</h2>
+        <form class="search-field" id="sidebarSearchForm">
+          <label class="visually-hidden" for="blogSearch">Search posts</label>
+          <input type="search" id="blogSearch" name="q" placeholder="Search titles, tags, topics…">
+          <button type="submit" class="search-submit" aria-label="Search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4a6 6 0 104.472 10.03l4.749 4.748 1.414-1.414-4.748-4.749A6 6 0 0010 4zm-4 6a4 4 0 118 0 4 4 0 01-8 0z"/></svg>
+          </button>
+        </form>
+        <p class="search-status" id="searchStatus" hidden></p>
+      </div>
+
+      <div class="sidebar-panel">
+        <h2>Browse by date</h2>
+        <div class="cal-head">
+          <button class="cal-nav" id="calPrev" type="button" aria-label="Previous month">&larr;</button>
+          <span class="cal-label" id="calLabel"></span>
+          <button class="cal-nav" id="calNext" type="button" aria-label="Next month">&rarr;</button>
+        </div>
+        <div class="cal-grid" id="calGrid" role="grid" aria-label="Post dates"></div>
+        <button class="cal-clear" id="calClear" type="button" hidden>Clear date filter</button>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <svg class="footer-mark" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="46" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-dasharray="255 40" transform="rotate(-58 60 60)" /></svg>
+    <p class="footer-note">&copy; <a href="mailto:brian@bergstromgis.com">Brian Bergstrom</a>. Built by Claude, hosted on GitHub Pages.</p>
+  </div>
+</footer>
+
+<script>
+  document.documentElement.classList.add('js-ready');
+  var toggle = document.getElementById('navToggle');
+  var links = document.getElementById('navLinks');
+  toggle.addEventListener('click', function () {
+    var open = links.classList.toggle('is-open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+</script>
+<script src="../js/hero-sparkles.js"></script>
+<script src="../js/blog-post-data.js"></script>
+<script src="../js/blog-sidebar.js"></script>
+</body>
+</html>

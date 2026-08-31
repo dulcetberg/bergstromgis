@@ -5,7 +5,14 @@
   <link>https://bergstromgis.com/blog.html</link>
   <description>Weekly and biweekly GIS projects and write-ups from Brian Bergstrom: civic data journalism, humanitarian mapping, and personal-interest builds.</description>
   <language>en-us</language>
-  <lastBuildDate>Mon, 31 Aug 2026 18:00:00 GMT</lastBuildDate>
+  <lastBuildDate>Mon, 31 Aug 2026 19:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Chicago's Hidden Access Divide</title>
+      <link>https://bergstromgis.com/work/chicago-access-equity.html</link>
+      <guid isPermaLink="true">https://bergstromgis.com/work/chicago-access-equity.html</guid>
+      <pubDate>Mon, 31 Aug 2026 13:00:00 GMT</pubDate>
+      <description>Replicating a April 2026 PLOS ONE street-network study on Chicago for the first time, to find which neighborhoods have real services nearby AND a connected street grid, and which have only one or neither.</description>
+    </item>
     <item>
       <title>10 Endangered Species, Mapped Honestly</title>
       <link>https://bergstromgis.com/work/endangered-species-map.html</link>

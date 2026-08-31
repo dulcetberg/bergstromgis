@@ -5,6 +5,7 @@
 // alongside blog.html (and rss.xml) whenever a new post goes up.
 window.BLOG_POST_DATES = [
   "2026-08-31",
+  "2026-08-31",
   "2026-08-30",
   "2026-08-28",
   "2026-08-28",
