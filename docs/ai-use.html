@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AI Use — Brian Bergstrom</title>
-<meta name="description" content="Full disclosure on how AI built this site and every project on it, including a cautionary tale about a project that quietly ran on fake data, and honest reflections on the ethics of AI in GIS.">
+<meta name="description" content="Full disclosure on how AI built this site and every project on it, what I actually do versus what the AI does, and honest reflections on the ethics of AI in GIS.">
 <link rel="canonical" href="https://bergstromgis.com/ai-use.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Brian Bergstrom">
 <meta property="og:title" content="AI Use — Brian Bergstrom">
-<meta property="og:description" content="Full disclosure on how AI built this site and every project on it, including a cautionary tale about a project that quietly ran on fake data, and honest reflections on the ethics of AI in GIS.">
+<meta property="og:description" content="Full disclosure on how AI built this site and every project on it, what I actually do versus what the AI does, and honest reflections on the ethics of AI in GIS.">
 <meta property="og:image" content="https://bergstromgis.com/images/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -17,7 +17,7 @@
 <meta property="og:url" content="https://bergstromgis.com/ai-use.html">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="AI Use — Brian Bergstrom">
-<meta name="twitter:description" content="Full disclosure on how AI built this site and every project on it, including a cautionary tale about a project that quietly ran on fake data, and honest reflections on the ethics of AI in GIS.">
+<meta name="twitter:description" content="Full disclosure on how AI built this site and every project on it, what I actually do versus what the AI does, and honest reflections on the ethics of AI in GIS.">
 <meta name="twitter:image" content="https://bergstromgis.com/images/og-image.png">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="alternate icon" href="favicon.ico">
@@ -183,33 +183,6 @@
     </section>
 
     <section class="about-section">
-      <h2>A cautionary tale, on my own site</h2>
-      <div class="section-body">
-        <p>
-          I'm not going to pretend this only ever goes well. The clearest example is my own
-          <a href="work/world-religions-dashboard.html">World Religions dashboard</a>, one of
-          the first things I ever built with AI assistance, back when I was still testing the
-          tools out. Going back to rebuild it, I found the original notebook's own code
-          comments read "Mock Data." Every major world religion had a single hardcoded
-          latitude and longitude. Country borders were four-point rectangles typed by hand,
-          not real geography. The write-up I published at the time claimed "particular
-          methodological care" on data that the code never actually collected.
-        </p>
-        <blockquote class="pull-quote">
-          It ran. It looked like a real map. None of it was real.
-        </blockquote>
-        <p>
-          Nobody flagged it, including me, until I went back and actually read the code
-          months later. That's the risk in one sentence: AI output can be fluent and
-          confident and completely fabricated at the same time, and fluency is not a signal
-          you can trust on its own. I rebuilt it on real Pew Research data, real Natural
-          Earth boundaries, and Iceland's real government-tracked Ásatrú membership figures.
-          The rebuild is live now. The lesson stays on this page.
-        </p>
-      </div>
-    </section>
-
-    <section class="about-section">
       <h2>Where I draw the line</h2>
       <ul class="receipts-list section-body">
         <li>
@@ -254,13 +227,12 @@
           <a href="https://milanjanosov.substack.com/p/what-is-geoai-and-why-does-it-matter" target="_blank" rel="noopener">Read his piece <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
         </p>
         <p>
-          He also makes a point that matches exactly what went wrong with my own religions
-          dashboard: geographic training data is unevenly distributed, models built on
-          well-mapped regions can fail quietly in places with less data, and "human expertise
-          remains irreplaceable" for actually validating what comes out. I'd add my own
-          version of that from direct experience: fabricated data doesn't look different from
-          real data at a glance. It only breaks under someone actually checking it, which is
-          why every project on this site gets tested, not just generated.
+          He also makes a point I take seriously: geographic training data is unevenly
+          distributed, models built on well-mapped regions can fail quietly in places with
+          less data, and "human expertise remains irreplaceable" for actually validating what
+          comes out. Fabricated or biased output doesn't announce itself, it looks like a real
+          result until someone actually checks it, which is why every project on this site
+          gets tested, not just generated.
         </p>
         <p>
           There's a genuine access argument too, and I don't want to skip past it just because
