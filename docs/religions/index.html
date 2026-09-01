@@ -197,13 +197,17 @@
   }).addTo(map);
 
   // --- legend ---
-  const counts2020 = {};
-  countries.features.forEach(f => {
-    const r = f.properties.dominant_religion_2020;
-    counts2020[r] = (counts2020[r] || 0) + 1;
-  });
+  function countsForYear(year) {
+    const counts = {};
+    countries.features.forEach(f => {
+      const r = f.properties[`dominant_religion_${year}`];
+      counts[r] = (counts[r] || 0) + 1;
+    });
+    return counts;
+  }
   const legendList = document.getElementById("legendList");
   let highlighted = null;
+  const legendCountEls = {};
   Object.entries(RELIGIONS).forEach(([name, info]) => {
     const div = document.createElement("div");
     div.className = "legend-item";
@@ -211,7 +215,7 @@
     div.innerHTML = `
       <span class="legend-swatch" style="background:${info.color}"></span>
       <span class="legend-label">${name}</span>
-      <span class="legend-count">${counts2020[name] || 0}</span>
+      <span class="legend-count"></span>
     `;
     div.addEventListener("click", () => {
       highlighted = highlighted === name ? null : name;
@@ -221,7 +225,16 @@
       countryLayer.setStyle(styleForCountry);
     });
     legendList.appendChild(div);
+    legendCountEls[name] = div.querySelector(".legend-count");
   });
+
+  function refreshLegendCounts() {
+    const counts = countsForYear(currentYear);
+    Object.entries(legendCountEls).forEach(([name, el]) => {
+      el.textContent = counts[name] || 0;
+    });
+  }
+  refreshLegendCounts();
 
   function styleForCountry(feature) {
     const r = feature.properties[`dominant_religion_${currentYear}`];
@@ -287,6 +300,7 @@
     btn.addEventListener("click", () => {
       currentYear = btn.dataset.year;
       document.querySelectorAll("#yearToggle button").forEach(b => b.classList.toggle("active", b === btn));
+      refreshLegendCounts();
       applyView();
     });
   });
@@ -326,17 +340,25 @@
 
   document.getElementById("maxChangeLabel").textContent = `+${maxChange.toFixed(1)} pts (Australia)`;
 
+  const yearToggleEl = document.getElementById("yearToggle");
   function applyView() {
     if (viewMode === "dominant") {
       countryLayer.setStyle(styleForCountry);
       document.getElementById("legendHeading").textContent = "Dominant religion";
       document.getElementById("legendList").style.display = "";
       document.getElementById("changeLegend").style.display = "none";
+      yearToggleEl.style.opacity = "";
+      yearToggleEl.style.pointerEvents = "";
     } else {
       countryLayer.setStyle(styleForChange);
       document.getElementById("legendHeading").textContent = "2010 → 2020 change";
       document.getElementById("legendList").style.display = "none";
       document.getElementById("changeLegend").style.display = "";
+      // "Change since 2010" is always a fixed 2010->2020 comparison, so the
+      // Year toggle doesn't apply here -- gray it out rather than leave it
+      // clickable and silently doing nothing.
+      yearToggleEl.style.opacity = "0.4";
+      yearToggleEl.style.pointerEvents = "none";
     }
   }
 
