@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Use — Brian Bergstrom</title>
+<meta name="description" content="Full disclosure on how AI built this site and every project on it, including a cautionary tale about a project that quietly ran on fake data, and honest reflections on the ethics of AI in GIS.">
+<link rel="canonical" href="https://bergstromgis.com/ai-use.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Brian Bergstrom">
+<meta property="og:title" content="AI Use — Brian Bergstrom">
+<meta property="og:description" content="Full disclosure on how AI built this site and every project on it, including a cautionary tale about a project that quietly ran on fake data, and honest reflections on the ethics of AI in GIS.">
+<meta property="og:image" content="https://bergstromgis.com/images/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Brian Bergstrom — GIS that makes the overlooked undeniable.">
+<meta property="og:url" content="https://bergstromgis.com/ai-use.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AI Use — Brian Bergstrom">
+<meta name="twitter:description" content="Full disclosure on how AI built this site and every project on it, including a cautionary tale about a project that quietly ran on fake data, and honest reflections on the ethics of AI in GIS.">
+<meta name="twitter:image" content="https://bergstromgis.com/images/og-image.png">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="alternate icon" href="favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="css/brand.css">
+<style>
+  .page-hero {
+    padding: 4rem 0 3rem;
+    max-width: 68ch;
+  }
+  .page-hero h1 { font-size: clamp(1.9rem, 4vw, 2.6rem); }
+  .page-hero .lede { font-size: 1.08rem; }
+
+  .about-section {
+    padding: 3rem 0;
+    border-top: 1px solid var(--rule);
+  }
+  .about-section h2 { font-size: 1.5rem; }
+  .about-section .section-body {
+    max-width: 68ch;
+  }
+  .about-section .section-body p { margin-bottom: 1rem; }
+
+  blockquote.pull-quote {
+    max-width: 60ch;
+    margin: 1.75rem 0;
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: 1.1rem;
+    color: var(--primary);
+    border-left: 3px solid var(--accent);
+    padding-left: 1.25rem;
+  }
+
+  .receipts-list {
+    max-width: 68ch;
+    padding-left: 1.15rem;
+  }
+  .receipts-list li { margin-bottom: 0.7rem; }
+
+  .credit-card {
+    max-width: 68ch;
+    background: var(--surface, rgba(255,255,255,0.03));
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: 1.1rem 1.3rem;
+    margin: 1rem 0;
+  }
+  .credit-card h3 { margin: 0 0 0.4rem; font-size: 1.05rem; }
+  .credit-card p { margin: 0 0 0.5rem; }
+  .credit-card a { font-size: 0.92rem; }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <nav class="site-nav container" aria-label="Primary">
+    <a class="wordmark" href="index.html">Brian Bergstrom</a>
+    <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks">
+      Menu
+    </button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="work-civic.html">Work</a></li>
+      <li><a href="blog.html">Blog</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="ai-use.html" aria-current="page">AI Use</a></li>
+      <li><a href="../resume/resume.html">Resume</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="redmap" color-interpolation-filters="sRGB">
+    <feColorMatrix type="matrix" values="0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0 0 0 1 0" result="gray"/>
+    <feComponentTransfer in="gray" result="normalized">
+      <feFuncR type="linear" slope="11.087" intercept="-3.348"/>
+      <feFuncG type="linear" slope="11.087" intercept="-3.348"/>
+      <feFuncB type="linear" slope="11.087" intercept="-3.348"/>
+    </feComponentTransfer>
+    <feComponentTransfer in="normalized">
+      <feFuncR type="table" tableValues="0.02 0.18 0.45 0.75 1.0"/>
+      <feFuncG type="table" tableValues="0.00 0.015 0.04 0.10 0.30"/>
+      <feFuncB type="table" tableValues="0.00 0.015 0.03 0.07 0.22"/>
+    </feComponentTransfer>
+  </filter>
+</svg>
+
+<main id="main">
+  <section class="site-hero">
+    <div class="hero-base"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-lines"></div>
+    <div class="hero-vignette"></div>
+    <svg class="hero-sparkles">
+      <defs>
+        <radialGradient id="sparkGrad">
+          <stop offset="0%" stop-color="#FFEFD6" stop-opacity="1"/>
+          <stop offset="35%" stop-color="#FFB199" stop-opacity="0.9"/>
+          <stop offset="100%" stop-color="#C0392B" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <circle class="sparkle" data-sx="211" data-sy="414" r="3.4" fill="url(#sparkGrad)" style="animation-delay:-0.2s; animation-duration:2.3s;"/>
+      <circle class="sparkle" data-sx="988" data-sy="388" r="3.0" fill="url(#sparkGrad)" style="animation-delay:-1.4s; animation-duration:2.9s;"/>
+      <circle class="sparkle" data-sx="634" data-sy="539" r="3.6" fill="url(#sparkGrad)" style="animation-delay:-0.8s; animation-duration:2.5s;"/>
+      <circle class="sparkle" data-sx="849" data-sy="449" r="3.1" fill="url(#sparkGrad)" style="animation-delay:-2.1s; animation-duration:3.1s;"/>
+      <circle class="sparkle" data-sx="1077" data-sy="463" r="3.5" fill="url(#sparkGrad)" style="animation-delay:-0.5s; animation-duration:2.4s;"/>
+      <circle class="sparkle" data-sx="1260" data-sy="552" r="3.0" fill="url(#sparkGrad)" style="animation-delay:-1.8s; animation-duration:2.8s;"/>
+      <circle class="sparkle" data-sx="1745" data-sy="527" r="4.0" fill="url(#sparkGrad)" style="animation-delay:-1.0s; animation-duration:2.6s;"/>
+      <circle class="sparkle" data-sx="965" data-sy="561" r="3.2" fill="url(#sparkGrad)" style="animation-delay:-2.4s; animation-duration:3.0s;"/>
+      <circle class="sparkle" data-sx="1169" data-sy="592" r="3.3" fill="url(#sparkGrad)" style="animation-delay:-0.1s; animation-duration:2.7s;"/>
+      <circle class="sparkle" data-sx="1262" data-sy="617" r="3.6" fill="url(#sparkGrad)" style="animation-delay:-1.6s; animation-duration:2.5s;"/>
+      <circle class="sparkle" data-sx="1060" data-sy="835" r="3.1" fill="url(#sparkGrad)" style="animation-delay:-0.9s; animation-duration:2.9s;"/>
+      <circle class="sparkle" data-sx="1135" data-sy="816" r="3.4" fill="url(#sparkGrad)" style="animation-delay:-2.0s; animation-duration:2.6s;"/>
+    </svg>
+    <svg class="hero-corner" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="46" fill="none" stroke="#FF6A52" stroke-width="5" stroke-linecap="round" stroke-dasharray="255 40" transform="rotate(-58 60 60)" /></svg>
+    <div class="hero-content">
+      <span class="eyebrow">GIS Analyst &middot; Chicago</span>
+      <p class="hero-title">GIS that makes the overlooked undeniable.</p>
+      <p class="lede">Real maps, real data, real people who needed someone to notice. New ones posted here roughly every week.</p>
+    </div>
+  </section>
+
+  <div class="blog-layout container">
+  <div class="blog-main">
+    <section class="page-hero">
+      <h1>AI Use</h1>
+      <p class="lede">
+        Every project on this site was built with AI, specifically Claude, doing the actual
+        coding, data pipelines, and research. That's already in my footer on every page. This
+        is the longer, honest version: what that actually means, where it's gone wrong, and
+        what I think about it.
+      </p>
+    </section>
+
+    <section class="about-section">
+      <h2>What AI actually does here</h2>
+      <div class="section-body">
+        <p>
+          Claude writes the Python, builds the data pipelines, queries the APIs, and writes
+          the first draft of every case study on this site. For a project like the
+          <a href="work/chicago-access-equity.html">Chicago access equity map</a>, that meant
+          pulling a real 319,517-node OpenStreetMap street network, running the actual network
+          analysis, and building the interactive frontend, largely without me touching code
+          directly.
+        </p>
+        <p>
+          What I actually do: pick the subject, say what I want the map to prove or show,
+          judge whether a data source is good enough to use, decide what gets cut when a
+          finding doesn't hold up, and review the result before it goes live. The personal
+          knowledge, for something like knowing my friend's faith well enough to know Iceland's
+          government tracks Ásatrú membership by name, or knowing which Chicago neighborhoods
+          a map result should sanity-check against, is mine. I don't have a CS degree and I'm
+          not a full-time software engineer. What I have is GIS training, domain judgment, and
+          the willingness to check the work instead of just shipping whatever came back.
+        </p>
+      </div>
+    </section>
+
+    <section class="about-section">
+      <h2>A cautionary tale, on my own site</h2>
+      <div class="section-body">
+        <p>
+          I'm not going to pretend this only ever goes well. The clearest example is my own
+          <a href="work/world-religions-dashboard.html">World Religions dashboard</a>, one of
+          the first things I ever built with AI assistance, back when I was still testing the
+          tools out. Going back to rebuild it, I found the original notebook's own code
+          comments read "Mock Data." Every major world religion had a single hardcoded
+          latitude and longitude. Country borders were four-point rectangles typed by hand,
+          not real geography. The write-up I published at the time claimed "particular
+          methodological care" on data that the code never actually collected.
+        </p>
+        <blockquote class="pull-quote">
+          It ran. It looked like a real map. None of it was real.
+        </blockquote>
+        <p>
+          Nobody flagged it, including me, until I went back and actually read the code
+          months later. That's the risk in one sentence: AI output can be fluent and
+          confident and completely fabricated at the same time, and fluency is not a signal
+          you can trust on its own. I rebuilt it on real Pew Research data, real Natural
+          Earth boundaries, and Iceland's real government-tracked Ásatrú membership figures.
+          The rebuild is live now. The lesson stays on this page.
+        </p>
+      </div>
+    </section>
+
+    <section class="about-section">
+      <h2>Where I draw the line</h2>
+      <ul class="receipts-list section-body">
+        <li>
+          Every number on this site is supposed to trace to a real, named source: a federal
+          agency, a peer-reviewed paper, a government statistics office, live OpenStreetMap
+          data. When a source doesn't cover something, the site says so instead of filling
+          the gap with an invented number. The
+          <a href="work/endangered-species-map.html">endangered species map</a> does this
+          explicitly, showing "no clean count exists" for species where that's the honest
+          answer.
+        </li>
+        <li>
+          Claims get tested, not assumed. The
+          <a href="work/chicago-access-equity.html">Chicago access equity map</a> and its
+          "Change since 2010" view exist because a viewer asked a plain question, "I toggle
+          between years and see no difference, is that right?", and the honest answer turned
+          up a real bug (a panel silently hardcoded to one year) sitting next to a real
+          finding the original design was hiding.
+        </li>
+        <li>
+          When I contribute code to other people's projects, specifically the Humanitarian
+          OpenStreetMap Team's open-source tools, I tell the maintainers up front that AI
+          helped write and review it, following HOT's own published policy on the subject,
+          and every change gets run against the project's real test suite before I open a
+          pull request. More on that on my <a href="about.html">About</a> page.
+        </li>
+      </ul>
+    </section>
+
+    <section class="about-section">
+      <h2>On the ethics of AI in GIS</h2>
+      <div class="section-body">
+        <p>
+          GIS work increasingly feeds decisions that affect real people: where disaster
+          response goes, which neighborhoods get infrastructure investment, how a health
+          department tracks an outbreak. Milan Janosov, a geospatial data scientist I follow
+          and cite directly on my <a href="about.html">About</a> page, wrote plainly about the
+          stakes: GeoAI systems "can track human movement at scale, identify vulnerable
+          populations, and make consequential resource allocation decisions," and whether that
+          "serves humanity broadly or reinforces existing inequalities" depends on real
+          oversight, not on the model being fluent.
+          <a href="https://milanjanosov.substack.com/p/what-is-geoai-and-why-does-it-matter" target="_blank" rel="noopener">Read his piece <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
+        </p>
+        <p>
+          He also makes a point that matches exactly what went wrong with my own religions
+          dashboard: geographic training data is unevenly distributed, models built on
+          well-mapped regions can fail quietly in places with less data, and "human expertise
+          remains irreplaceable" for actually validating what comes out. I'd add my own
+          version of that from direct experience: fabricated data doesn't look different from
+          real data at a glance. It only breaks under someone actually checking it, which is
+          why every project on this site gets tested, not just generated.
+        </p>
+        <p>
+          There's a genuine access argument too, and I don't want to skip past it just because
+          it's about me. I don't have a computer science degree. I have real GIS training and a
+          disability that shapes how I work. AI tools are a real part of how someone with my
+          background and my constraints gets to build things at this scale at all, not a
+          shortcut around doing the work. That's worth saying honestly, the same way the risk
+          is worth saying honestly.
+        </p>
+        <p>
+          None of that erases the real costs: the compute and energy behind every model I run,
+          the open questions about what these tools mean for entry-level GIS jobs, the fact
+          that I'm still the one responsible when something's wrong, not the model. I don't
+          have a tidy resolution to any of that. I think the honest position is to keep using
+          the tools where they genuinely help, say so plainly, and hold the output to the same
+          bar I'd hold my own work to, or higher, since it's my name attached to it either way.
+        </p>
+      </div>
+    </section>
+
+    <section class="about-section">
+      <h2>Where this actually started</h2>
+      <div class="section-body">
+        <p>
+          This whole site exists because of a guide a friend and LinkedIn connection, Juliana
+          McMillan-Wilhoit, wrote and shared with me. She's Chief Product Officer and
+          Co-Founder of F&amp;T Labs and has run her own GIS portfolio challenge to help other
+          people showcase their work. Her core line is the one I've tried to actually live up
+          to on this page: "The thinking, the reflection, the decisions about what to include
+          and how to frame it: that is all you."
+        </p>
+        <div class="credit-card">
+          <h3>Juliana McMillan-Wilhoit's portfolio guide</h3>
+          <p>
+            A nine-phase process for building a live, self-hosted GIS portfolio with Claude
+            Code: content database, brand identity, thesis, resume, visuals, story, build,
+            deploy, share. This site was built by following it.
+          </p>
+          <a href="https://julianamapper.com/portfolio-prompt" target="_blank" rel="noopener">julianamapper.com/portfolio-prompt <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
+        </div>
+        <p>
+          And credit where I've already given it once but it belongs here too: Milan
+          Janosov's GeoAI writing is a real part of my own self-directed study, alongside
+          Qiusheng Wu's open-source geospatial Python tools. Their work is why I know enough
+          to have an actual opinion on this page, instead of a borrowed one.
+        </p>
+      </div>
+    </section>
+  </div>
+
+    <aside class="blog-sidebar" aria-label="Search and browse by date">
+      <div class="sidebar-panel">
+        <h2>Search posts</h2>
+        <form class="search-field" id="sidebarSearchForm">
+          <label class="visually-hidden" for="blogSearch">Search posts</label>
+          <input type="search" id="blogSearch" name="q" placeholder="Search titles, tags, topics…">
+          <button type="submit" class="search-submit" aria-label="Search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4a6 6 0 104.472 10.03l4.749 4.748 1.414-1.414-4.748-4.749A6 6 0 0010 4zm-4 6a4 4 0 118 0 4 4 0 01-8 0z"/></svg>
+          </button>
+        </form>
+        <p class="search-status" id="searchStatus" hidden></p>
+      </div>
+
+      <div class="sidebar-panel">
+        <h2>Browse by date</h2>
+        <div class="cal-head">
+          <button class="cal-nav" id="calPrev" type="button" aria-label="Previous month">&larr;</button>
+          <span class="cal-label" id="calLabel"></span>
+          <button class="cal-nav" id="calNext" type="button" aria-label="Next month">&rarr;</button>
+        </div>
+        <div class="cal-grid" id="calGrid" role="grid" aria-label="Post dates"></div>
+        <button class="cal-clear" id="calClear" type="button" hidden>Clear date filter</button>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <svg class="footer-mark" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="46" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-dasharray="255 40" transform="rotate(-58 60 60)" /></svg>
+    <p class="footer-note">&copy; <a href="mailto:brian@bergstromgis.com">Brian Bergstrom</a>. Built by Claude, hosted on GitHub Pages.</p>
+  </div>
+</footer>
+
+<script>
+  document.documentElement.classList.add('js-ready');
+  var toggle = document.getElementById('navToggle');
+  var links = document.getElementById('navLinks');
+  toggle.addEventListener('click', function () {
+    var open = links.classList.toggle('is-open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+</script>
+<script src="js/hero-sparkles.js"></script>
+<script src="js/blog-post-data.js"></script>
+<script src="js/blog-sidebar.js"></script>
+</body>
+</html>
