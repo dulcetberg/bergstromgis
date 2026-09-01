@@ -118,15 +118,29 @@
 
 <div class="layout">
   <nav class="rail" aria-label="Legend and controls">
+    <h2>View</h2>
+    <div class="year-toggle" id="viewToggle">
+      <button data-view="dominant" class="active">Dominant religion</button>
+      <button data-view="change">Change since 2010</button>
+    </div>
+    <p class="hint" id="viewHint">A country's dominant religion rarely flips in a decade &mdash; only 2 of 168 countries here do. Switch to "Change since 2010" to see real shifts that a dominant-religion map hides.</p>
+
     <h2>Year</h2>
     <div class="year-toggle" id="yearToggle">
       <button data-year="2010">2010</button>
       <button data-year="2020" class="active">2020</button>
     </div>
-    <p class="hint">Real Pew Research Center estimates, via Our World in Data.</p>
+    <p class="hint">Real Pew Research Center estimates, via Our World in Data. Affects the map in "Dominant religion" view and the country panel's headline share; the panel always shows both years.</p>
 
-    <h2>Dominant religion</h2>
+    <h2 id="legendHeading">Dominant religion</h2>
     <div id="legendList"></div>
+    <div id="changeLegend" style="display:none">
+      <div class="hint">Point change in "Unaffiliated" share, 2010&rarr;2020. Chosen because it's the clearest, most comparable real signal across almost every country in this dataset.</div>
+      <div style="height:12px; border-radius:6px; margin:0.6rem 0 0.3rem; background:linear-gradient(90deg, #2b2539, #d9a441);"></div>
+      <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--muted);">
+        <span>No change</span><span id="maxChangeLabel">+&hellip; pts</span>
+      </div>
+    </div>
 
     <h2>Real Pagan &amp; Heathen sites</h2>
     <div class="toggle-row">
@@ -223,26 +237,38 @@
   function fmtPct(v) {
     return v == null ? "—" : v.toFixed(1) + "%";
   }
+  function fmtDelta(v) {
+    if (v == null) return "";
+    const sign = v > 0 ? "+" : "";
+    return ` (${sign}${v.toFixed(1)} pts)`;
+  }
+
+  let selectedCountry = null;
 
   function renderCountryDetail(p) {
+    selectedCountry = p;
     const el = document.getElementById("detail");
-    const rows2020 = Object.entries(RELIGIONS).map(([name, info]) => {
-      const v = p[`${info.field}_2020`];
-      return { name, color: info.color, v: v || 0 };
-    }).sort((a, b) => b.v - a.v);
+    const rows = Object.entries(RELIGIONS).map(([name, info]) => {
+      const v10 = p[`${info.field}_2010`];
+      const v20 = p[`${info.field}_2020`];
+      return { name, color: info.color, v10: v10 || 0, v20: v20 || 0 };
+    }).sort((a, b) => b.v20 - a.v20);
 
-    const bars = rows2020.map(r => `
+    const bars = rows.map(r => {
+      const delta = (r.v20 != null && r.v10 != null) ? r.v20 - r.v10 : null;
+      return `
       <div class="bar-row">
-        <div class="bar-label"><span>${r.name}</span><b>${fmtPct(r.v)}</b></div>
-        <div class="bar-track"><div class="bar-fill" style="width:${Math.min(r.v, 100)}%; background:${r.color}"></div></div>
+        <div class="bar-label"><span>${r.name}</span><b>${fmtPct(r.v20)}${fmtDelta(delta)}</b></div>
+        <div class="bar-track"><div class="bar-fill" style="width:${Math.min(r.v20, 100)}%; background:${r.color}"></div></div>
       </div>
-    `).join("");
+    `;
+    }).join("");
 
     const dom2010 = p.dominant_religion_2010;
     const dom2020 = p.dominant_religion_2020;
     const shift = dom2010 && dom2020 && dom2010 !== dom2020
       ? `<div class="year-diff">Dominant religion shifted from ${dom2010} (2010) to ${dom2020} (2020) in this dataset.</div>`
-      : `<div class="year-diff">Dominant religion (${dom2020 || "—"}) unchanged between 2010 and 2020 in this dataset.</div>`;
+      : `<div class="year-diff">2020 shown with the point change from 2010 in parentheses. The dominant category (${dom2020 || "—"}) didn't flip here, but the underlying share still can, and often does, move a lot.</div>`;
 
     el.innerHTML = `<h2>${p.name}</h2>${bars}${shift}`;
   }
@@ -261,7 +287,64 @@
     btn.addEventListener("click", () => {
       currentYear = btn.dataset.year;
       document.querySelectorAll("#yearToggle button").forEach(b => b.classList.toggle("active", b === btn));
+      applyView();
+    });
+  });
+
+  // --- secondary view: real point-change in Unaffiliated share, 2010-2020 ---
+  // Most countries don't flip their DOMINANT religion in a decade, so the
+  // categorical map above barely changes between years even where the real
+  // underlying share moved a lot (Australia's Christian share alone dropped
+  // 20 points). This sequential view surfaces that real shift directly.
+  let viewMode = "dominant";
+  const changeVals = countries.features
+    .map(f => f.properties.pct_unaffiliated_2020 - f.properties.pct_unaffiliated_2010)
+    .filter(v => !isNaN(v));
+  const maxChange = Math.max(...changeVals);
+
+  function changeColor(v) {
+    if (v == null || isNaN(v)) return "#3a3745";
+    const t = Math.max(0, Math.min(1, v / maxChange));
+    // single-hue sequential ramp, dark violet -> bright gold
+    const r = Math.round(43 + t * (217 - 43));
+    const g = Math.round(37 + t * (164 - 37));
+    const b = Math.round(63 + t * (65 - 63));
+    return `rgb(${r},${g},${b})`;
+  }
+
+  function styleForChange(feature) {
+    const p = feature.properties;
+    const v = (p.pct_unaffiliated_2020 != null && p.pct_unaffiliated_2010 != null)
+      ? p.pct_unaffiliated_2020 - p.pct_unaffiliated_2010 : null;
+    return {
+      color: "#0f0e14",
+      weight: 0.6,
+      fillColor: changeColor(v),
+      fillOpacity: 0.85
+    };
+  }
+
+  document.getElementById("maxChangeLabel").textContent = `+${maxChange.toFixed(1)} pts (Australia)`;
+
+  function applyView() {
+    if (viewMode === "dominant") {
       countryLayer.setStyle(styleForCountry);
+      document.getElementById("legendHeading").textContent = "Dominant religion";
+      document.getElementById("legendList").style.display = "";
+      document.getElementById("changeLegend").style.display = "none";
+    } else {
+      countryLayer.setStyle(styleForChange);
+      document.getElementById("legendHeading").textContent = "2010 → 2020 change";
+      document.getElementById("legendList").style.display = "none";
+      document.getElementById("changeLegend").style.display = "";
+    }
+  }
+
+  document.getElementById("viewToggle").querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      viewMode = btn.dataset.view;
+      document.querySelectorAll("#viewToggle button").forEach(b => b.classList.toggle("active", b === btn));
+      applyView();
     });
   });
 
