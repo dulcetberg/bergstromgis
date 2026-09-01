@@ -3,21 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>World Religions Dashboard — Brian Bergstrom</title>
-<meta name="description" content="A map of global religious distribution, with particular methodological care on Norse/Neopagan Ásatrú data.">
+<title>World Religions, Mapped for Real — Brian Bergstrom</title>
+<meta name="description" content="A full rebuild of an early AI-assisted project that turned out to be running on mock data. Real Pew Research country data, real OpenStreetMap Pagan/Heathen sites, and Iceland's real government-tracked Ásatrú membership growth.">
 <link rel="canonical" href="https://bergstromgis.com/work/world-religions-dashboard.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Brian Bergstrom">
-<meta property="og:title" content="World Religions Dashboard — Brian Bergstrom">
-<meta property="og:description" content="A map of global religious distribution, with particular methodological care on Norse/Neopagan Ásatrú data.">
+<meta property="og:title" content="World Religions, Mapped for Real — Brian Bergstrom">
+<meta property="og:description" content="A full rebuild of an early AI-assisted project that turned out to be running on mock data. Real Pew Research country data, real OpenStreetMap Pagan/Heathen sites, and Iceland's real government-tracked Ásatrú membership growth.">
 <meta property="og:image" content="https://bergstromgis.com/images/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Brian Bergstrom — GIS that makes the overlooked undeniable.">
 <meta property="og:url" content="https://bergstromgis.com/work/world-religions-dashboard.html">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="World Religions Dashboard — Brian Bergstrom">
-<meta name="twitter:description" content="A map of global religious distribution, with particular methodological care on Norse/Neopagan Ásatrú data.">
+<meta name="twitter:title" content="World Religions, Mapped for Real — Brian Bergstrom">
+<meta name="twitter:description" content="A full rebuild of an early AI-assisted project that turned out to be running on mock data. Real Pew Research country data, real OpenStreetMap Pagan/Heathen sites, and Iceland's real government-tracked Ásatrú membership growth.">
 <meta name="twitter:image" content="https://bergstromgis.com/images/og-image.png">
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <link rel="alternate icon" href="../favicon.ico">
@@ -101,34 +101,74 @@
 
     <header class="project-header">
       <span class="tag tag-personal">Personal — gift</span>
-      <h1>World Religions Dashboard</h1>
-      <p class="subtitle">Maps global religious distribution, with particular methodological care on Norse/Neopagan Ásatrú data.</p>
+      <h1>World Religions, Mapped for Real</h1>
+      <p class="subtitle">A full rebuild of one of my earliest AI-assisted projects, replacing fake mock data with real Pew Research figures, real OpenStreetMap Pagan and Heathen sites, and Iceland's real government-tracked Ásatrú membership growth.</p>
+      <div class="meta-row">
+        <span class="stat">Pew Research Center via Our World in Data</span>
+        <span class="stat">OpenStreetMap &middot; Statistics Iceland &middot; DuckDB</span>
+      </div>
     </header>
   </div>
 
   <div class="project-hero-media">
     <div class="media-inner">
-      <img src="../images/world-religions-dashboard.jpg" alt="Screenshot of the World Religions GIS Dashboard, showing layer toggles for Christianity, Islam, Hinduism, Buddhism, and Norse Mythology across a world map.">
+      <img src="../images/world-religions-dashboard.jpg" alt="Interactive dark-themed world map showing dominant religion by country, with real OpenStreetMap Pagan and Heathen sites marked and a sparkline of Iceland's real Ásatrú membership growth.">
     </div>
   </div>
 
   <div class="project-body">
     <p>
-      Like the Vampire Film Atlas, this was built as a gift — this time for a friend who
-      practices Ásatrú, a modern Norse/Neopagan faith. I put real, documented care into
-      getting that specific dataset right, more than a throwaway map would need, because
-      it mattered to someone I know personally.
+      This was originally built as a gift, for a friend who practices Ásatrú, a modern
+      Norse Heathen faith, and it was one of the first things I ever built while testing
+      out AI coding tools. Going back to it now, the map itself was barely readable and,
+      worse, the underlying data was fake. The original notebook's own comments say so
+      directly: a cell literally labeled "Mock Data" gave every major world religion a
+      single hardcoded latitude and longitude, and the country borders were four-point
+      rectangles typed by hand, not real geography. The write-up claimed "particular
+      methodological care" on the Ásatrú data that the code never actually did. I wanted
+      to go back and actually do that work.
     </p>
+
+    <h2>What's real now</h2>
     <p>
-      It maps global religious distribution more broadly, and connects naturally to my own
-      ongoing interest in religion and Buddhist practice — not as an academic exercise,
-      but as something I actually think about.
+      Every country's religious composition comes from Pew Research Center's Global
+      Religious Landscape estimates (via Our World in Data), for both 2010 and 2020, with
+      a real toggle to compare them. Country geometry is real Natural Earth boundary data,
+      not hand-drawn rectangles. A DuckDB pipeline does the actual joins and aggregation in
+      SQL rather than hand-rolled Python loops.
+    </p>
+
+    <div class="callout">
+      <span class="callout-label">The part that actually needed care</span>
+      <p>
+        Iceland's Ásatrúarfélagið was the first modern Heathen organization in the world
+        to receive official state recognition, in 1973. Because Iceland registers
+        religious organizations formally, Statistics Iceland has published its real annual
+        membership count every year since 1998: 280 members that year, 6,158 by 2026, a
+        real, government-tracked 22x increase over 28 years. That's on the map now as an
+        actual time series, not a guess. A second, smaller state-tracked group, the Pagan
+        Chieftainship of Reykjavík, is real too, and has stayed small (18 to 39 members)
+        since it started being tracked separately in 2007.
+      </p>
+    </div>
+
+    <h2>Where the real data runs out, and I say so</h2>
+    <p>
+      OpenStreetMap has 324 real points worldwide tagged <code>religion=pagan</code>,
+      including 10 explicitly tagged Ásatrú or Norse, genuine crowd-mapped sacred sites
+      like Iceland's own Ásheimur Hof. That's real, but it's sparse and uneven, a
+      reflection of who has mapped what, not a census, and the map says exactly that
+      rather than implying more coverage than exists. Sikhism, Jainism, Baha'i, and other
+      smaller world religions aren't broken out as their own category, because Pew's own
+      published methodology doesn't break them out by country either; they fall under
+      "Other" in the source data itself, and I chose not to fake a precision Pew doesn't
+      claim.
     </p>
 
     <div class="evidence-panel">
-      <p>Live dashboard, global coverage.</p>
+      <p>Explore the real map, by country and by year.</p>
       <a class="btn btn-primary" href="../religions/" target="_blank" rel="noopener">
-        View the dashboard <span class="visually-hidden">(opens in a new tab)</span>
+        View the map <span class="visually-hidden">(opens in a new tab)</span>
       </a>
       <a class="btn btn-outline" href="https://github.com/dulcetberg/world-religions-dashboard" target="_blank" rel="noopener">
         View the code <span class="visually-hidden">(opens in a new tab)</span>
