@@ -13,9 +13,12 @@
   html, body { margin: 0; background: var(--bg); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
   .container { max-width: 640px; margin: 0 auto; padding: 1.75rem 1.25rem 4rem; }
   header { padding-bottom: 1.25rem; border-bottom: 1px solid var(--rule); margin-bottom: 1.5rem; }
-  header .eyebrow { color: var(--amber); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; margin-bottom: 0.4rem; }
+  header .eyebrow { color: var(--amber); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.4rem; }
+  .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); display: inline-block; box-shadow: 0 0 0 rgba(78,169,130,0.5); animation: pulse 2s infinite; }
+  @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(78,169,130,0.5); } 70% { box-shadow: 0 0 0 6px rgba(78,169,130,0); } 100% { box-shadow: 0 0 0 0 rgba(78,169,130,0); } }
   header h1 { font-size: 1.5rem; margin: 0 0 0.5rem; line-height: 1.25; }
   header p { color: var(--muted); font-size: 0.9rem; line-height: 1.6; margin: 0; }
+  .updated { color: var(--muted); font-size: 0.78rem; margin-top: 0.6rem; }
 
   .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; margin-bottom: 1.5rem; }
   .stat-box { background: var(--bg-raised); border: 1px solid var(--rule); border-radius: 10px; padding: 0.85rem 0.9rem; }
@@ -39,6 +42,9 @@
   th.num, td.num { text-align: right; }
   td { padding: 0.5rem 0.5rem; border-bottom: 1px solid var(--rule); }
   .missed { color: var(--red); font-weight: 700; }
+  .table-wrap { max-height: 340px; overflow-y: auto; overflow-x: auto; border: 1px solid var(--rule); border-radius: 10px; margin-bottom: 1rem; }
+  .table-wrap table { margin-bottom: 0; }
+  .table-wrap thead th { position: sticky; top: 0; background: var(--bg); }
 
   .method {
     background: var(--bg-raised); border: 1px solid var(--rule); border-radius: 10px;
@@ -51,18 +57,17 @@
 <body>
 <div class="container">
   <header>
-    <div class="eyebrow">Independent rider data · not affiliated with Pace</div>
+    <div class="eyebrow"><span class="live-dot"></span>Live · independent rider data · not affiliated with Pace</div>
     <h1>Route 309 (Lake St) is missing real scheduled stops at Elmhurst Metra</h1>
     <p>
-      Built from Pace's own published schedule (GTFS) checked against real vehicle GPS data collected directly from
-      Pace's live tracker, minute by minute, over three full days.
+      Built from Pace's own published schedule (GTFS) checked continuously against real vehicle GPS data collected
+      directly from Pace's live tracker. Updates automatically as new scheduled stops occur, refreshed roughly every
+      30 minutes.
     </p>
+    <div class="updated" id="updated">Loading current data&hellip;</div>
   </header>
 
-  <div class="stat-grid">
-    <div class="stat-box"><div class="num">17.5%</div><div class="lbl">Of all Route 309 scheduled stops, route-wide, had no bus show up</div></div>
-    <div class="stat-box"><div class="num">7 / 58</div><div class="lbl">Scheduled buses missed at the Elmhurst Metra stop specifically</div></div>
-  </div>
+  <div class="stat-grid" id="statGrid"></div>
 
   <div class="cta">
     <span class="lbl">If this has happened to you, say so</span>
@@ -73,29 +78,52 @@
   </div>
 
   <h2>Confirmed missed buses at the Elmhurst Metra stop</h2>
-  <p class="section-note">Every one of these was a real scheduled arrival, per Pace's own timetable, with zero vehicle within 500 meters of the stop within 15 minutes of that time, in three full days of tracking.</p>
-  <table>
-    <thead><tr><th>Date</th><th>Scheduled time</th><th>Result</th></tr></thead>
-    <tbody>
-      <tr><td>Mon, Aug 31</td><td>3:34 PM</td><td class="missed">No bus came</td></tr>
-      <tr><td>Mon, Aug 31</td><td>5:35 PM</td><td class="missed">No bus came</td></tr>
-      <tr><td>Tue, Sep 1</td><td>4:04 PM</td><td class="missed">No bus came</td></tr>
-      <tr><td>Tue, Sep 1</td><td>4:34 PM</td><td class="missed">No bus came</td></tr>
-      <tr><td>Tue, Sep 1</td><td>5:04 PM</td><td class="missed">No bus came</td></tr>
-    </tbody>
-  </table>
-  <p class="section-note">On Tuesday, Sept 1, three consecutive scheduled afternoon buses in a row never arrived, a rider waiting from 4:04 PM would have had no real bus until well past 5:04 PM. Two additional early-morning misses (5:32 AM and 8:30 AM) were also confirmed but aren't shown above since they fall outside the typical afternoon commute window.</p>
+  <p class="section-note" id="missedNote">Every one of these was a real scheduled arrival, per Pace's own timetable, with zero vehicle within 500 meters of the stop within 15 minutes of that time.</p>
+  <div class="table-wrap">
+    <table id="missedTable"></table>
+  </div>
 
   <div class="method">
     <span class="lbl">Method, briefly</span>
-    Pace's own currently-published GTFS schedule was checked stop-by-stop against real vehicle GPS pings collected
-    directly from Pace's public live-tracking feed, once every ~60 seconds, 24/7, over three complete calendar days
-    (Aug 30&ndash;Sep 1, 2026). A scheduled stop is counted as missed only if no vehicle was recorded within 500 meters
-    and 15 minutes of that stop's real scheduled time, generous enough to allow for normal traffic and light schedule
-    slack. This is a rider-side independent data project, not affiliated with or endorsed by Pace.
+    Pace's own currently-published GTFS schedule is checked stop-by-stop against real vehicle GPS pings collected
+    directly from Pace's public live-tracking feed, once every ~60 seconds, 24/7, since Aug 30, 2026. A scheduled
+    stop only counts once its scheduled time has actually passed, so this report reflects real elapsed service, never
+    a bus that just hasn't arrived yet. It's counted as missed if no vehicle was recorded within 500 meters and 15
+    minutes of that stop's real scheduled time, generous enough to allow for normal traffic and light schedule slack.
+    This is a rider-side independent data project, not affiliated with or endorsed by Pace.
   </div>
 
-  <footer>Data collected and analyzed by a Route 309 rider · bergstromgis.com</footer>
+  <footer id="footerNote">Data collected and analyzed by a Route 309 rider · bergstromgis.com</footer>
 </div>
+
+<script>
+(async function () {
+  let data;
+  try {
+    data = await fetch("data.json", { cache: "no-store" }).then(r => r.json());
+  } catch (e) {
+    document.getElementById("updated").textContent = "Live data unavailable right now, showing page as last built.";
+    return;
+  }
+
+  document.getElementById("updated").textContent =
+    `Last updated ${data.last_updated_local_display} · tracking since ${data.data_since}`;
+
+  document.getElementById("statGrid").innerHTML = `
+    <div class="stat-box"><div class="num">${data.ghost_rate_pct}%</div><div class="lbl">Of all Route 309 scheduled stops, route-wide, had no bus show up (${data.n_ghosted.toLocaleString()} / ${data.n_checked.toLocaleString()})</div></div>
+    <div class="stat-box"><div class="num">${data.stop_n_ghosted} / ${data.stop_n_checked}</div><div class="lbl">Scheduled buses missed at the Elmhurst Metra stop specifically (${data.stop_ghost_rate_pct}%)</div></div>
+  `;
+
+  const rows = [...data.missed_at_stop].reverse(); // most recent first
+  document.getElementById("missedTable").innerHTML = `
+    <thead><tr><th>Date</th><th>Scheduled time</th><th>Result</th></tr></thead>
+    <tbody>
+      ${rows.map(r => `<tr><td>${r.date}</td><td>${r.time}</td><td class="missed">No bus came</td></tr>`).join("")}
+    </tbody>
+  `;
+  document.getElementById("missedNote").textContent =
+    `${data.stop_n_ghosted} confirmed misses at this stop since tracking began on ${data.data_since}. Most recent first.`;
+})();
+</script>
 </body>
 </html>
