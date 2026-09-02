@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Route 309 Ghost Bus Report</title>
+<style>
+  :root {
+    --bg: #0d1015; --bg-raised: #161b23; --ink: #e8ecf3; --muted: #8f9aad; --rule: #232a36;
+    --amber: #d9a441; --red: #c1553f; --green: #4ea982;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+  .container { max-width: 640px; margin: 0 auto; padding: 1.75rem 1.25rem 4rem; }
+  header { padding-bottom: 1.25rem; border-bottom: 1px solid var(--rule); margin-bottom: 1.5rem; }
+  header .eyebrow { color: var(--amber); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; margin-bottom: 0.4rem; }
+  header h1 { font-size: 1.5rem; margin: 0 0 0.5rem; line-height: 1.25; }
+  header p { color: var(--muted); font-size: 0.9rem; line-height: 1.6; margin: 0; }
+
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; margin-bottom: 1.5rem; }
+  .stat-box { background: var(--bg-raised); border: 1px solid var(--rule); border-radius: 10px; padding: 0.85rem 0.9rem; }
+  .stat-box .num { font-size: 1.5rem; font-weight: 800; color: var(--amber); }
+  .stat-box .lbl { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin-top: 0.25rem; line-height: 1.4; }
+
+  .cta {
+    background: rgba(78,169,130,0.1); border: 1px solid rgba(78,169,130,0.35); border-radius: 12px;
+    padding: 1.1rem 1.2rem; margin-bottom: 1.5rem;
+  }
+  .cta .lbl { display: block; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--green); margin-bottom: 0.5rem; font-weight: 700; }
+  .cta p { font-size: 0.9rem; line-height: 1.6; margin: 0 0 0.7rem; }
+  .cta a.phone { display: inline-block; font-size: 1.15rem; font-weight: 800; color: var(--ink); text-decoration: none; background: var(--green); color: #0d1015; padding: 0.5rem 0.9rem; border-radius: 8px; margin-bottom: 0.4rem; }
+  .cta .altcontact { color: var(--muted); font-size: 0.82rem; }
+
+  h2 { font-size: 1.05rem; margin: 1.75rem 0 0.4rem; }
+  .section-note { color: var(--muted); font-size: 0.84rem; margin: 0 0 0.9rem; line-height: 1.6; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-bottom: 1rem; }
+  th { text-align: left; font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); padding: 0.45rem 0.5rem; border-bottom: 1px solid var(--rule); }
+  th.num, td.num { text-align: right; }
+  td { padding: 0.5rem 0.5rem; border-bottom: 1px solid var(--rule); }
+  .missed { color: var(--red); font-weight: 700; }
+
+  .method {
+    background: var(--bg-raised); border: 1px solid var(--rule); border-radius: 10px;
+    padding: 0.95rem 1.1rem; margin-top: 1.75rem; font-size: 0.82rem; line-height: 1.6;
+  }
+  .method .lbl { display: block; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 0.4rem; font-weight: 700; }
+  footer { margin-top: 2rem; color: var(--muted); font-size: 0.76rem; text-align: center; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="eyebrow">Independent rider data · not affiliated with Pace</div>
+    <h1>Route 309 (Lake St) is missing real scheduled stops at Elmhurst Metra</h1>
+    <p>
+      Built from Pace's own published schedule (GTFS) checked against real vehicle GPS data collected directly from
+      Pace's live tracker, minute by minute, over three full days.
+    </p>
+  </header>
+
+  <div class="stat-grid">
+    <div class="stat-box"><div class="num">17.5%</div><div class="lbl">Of all Route 309 scheduled stops, route-wide, had no bus show up</div></div>
+    <div class="stat-box"><div class="num">7 / 58</div><div class="lbl">Scheduled buses missed at the Elmhurst Metra stop specifically</div></div>
+  </div>
+
+  <div class="cta">
+    <span class="lbl">If this has happened to you, say so</span>
+    <p>Pace can't fix a problem it doesn't hear about. Call and reference Route 309, the York St &amp; 3rd St stop
+      (at Elmhurst Metra), and, if you can, the date and time you were left waiting.</p>
+    <a class="phone" href="tel:8473647223">(847) 364-7223</a>
+    <div class="altcontact">or email Passenger.Services@PaceBus.com</div>
+  </div>
+
+  <h2>Confirmed missed buses at the Elmhurst Metra stop</h2>
+  <p class="section-note">Every one of these was a real scheduled arrival, per Pace's own timetable, with zero vehicle within 500 meters of the stop within 15 minutes of that time, in three full days of tracking.</p>
+  <table>
+    <thead><tr><th>Date</th><th>Scheduled time</th><th>Result</th></tr></thead>
+    <tbody>
+      <tr><td>Mon, Aug 31</td><td>3:34 PM</td><td class="missed">No bus came</td></tr>
+      <tr><td>Mon, Aug 31</td><td>5:35 PM</td><td class="missed">No bus came</td></tr>
+      <tr><td>Tue, Sep 1</td><td>4:04 PM</td><td class="missed">No bus came</td></tr>
+      <tr><td>Tue, Sep 1</td><td>4:34 PM</td><td class="missed">No bus came</td></tr>
+      <tr><td>Tue, Sep 1</td><td>5:04 PM</td><td class="missed">No bus came</td></tr>
+    </tbody>
+  </table>
+  <p class="section-note">On Tuesday, Sept 1, three consecutive scheduled afternoon buses in a row never arrived, a rider waiting from 4:04 PM would have had no real bus until well past 5:04 PM. Two additional early-morning misses (5:32 AM and 8:30 AM) were also confirmed but aren't shown above since they fall outside the typical afternoon commute window.</p>
+
+  <div class="method">
+    <span class="lbl">Method, briefly</span>
+    Pace's own currently-published GTFS schedule was checked stop-by-stop against real vehicle GPS pings collected
+    directly from Pace's public live-tracking feed, once every ~60 seconds, 24/7, over three complete calendar days
+    (Aug 30&ndash;Sep 1, 2026). A scheduled stop is counted as missed only if no vehicle was recorded within 500 meters
+    and 15 minutes of that stop's real scheduled time, generous enough to allow for normal traffic and light schedule
+    slack. This is a rider-side independent data project, not affiliated with or endorsed by Pace.
+  </div>
+
+  <footer>Data collected and analyzed by a Route 309 rider · bergstromgis.com</footer>
+</div>
+</body>
+</html>
