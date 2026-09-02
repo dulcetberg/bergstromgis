@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Who's Covering Which Camp — a demo for Aid Evaluator</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<style>
+  :root {
+    --bg: #0d1210;
+    --bg-raised: #16211c;
+    --bg-deep: #0a0e0c;
+    --ink: #e9f0ec;
+    --muted: #94a89e;
+    --rule: #223028;
+    --amber: #d9a441;
+    --red: #c1553f;
+    --green: #4ea982;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+
+  .topbar {
+    padding: 0.9rem 1.2rem;
+    border-bottom: 1px solid var(--rule);
+    background: var(--bg-deep);
+  }
+  .topbar h1 { font-size: 1.05rem; margin: 0 0 0.25rem; font-weight: 800; }
+  .topbar p { margin: 0; font-size: 0.82rem; color: var(--muted); max-width: 74ch; }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 300px 1fr 340px;
+    height: calc(100vh - 78px);
+  }
+  @media (max-width: 1040px) {
+    .layout { grid-template-columns: 1fr; height: auto; }
+    #map { height: 55vh; }
+  }
+
+  .rail {
+    border-right: 1px solid var(--rule);
+    overflow-y: auto;
+    padding: 1rem;
+    background: var(--bg-deep);
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+  .rail h2 { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0.9rem 0 0.6rem; }
+  .rail h2:first-child { margin-top: 0.2rem; }
+  .rail p.hint { color: var(--muted); font-size: 0.78rem; }
+
+  .legend-scale { height: 12px; border-radius: 6px; margin: 0.6rem 0 0.3rem; background: linear-gradient(90deg, #c1553f, #d9a441, #4ea982); }
+  .legend-labels { display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--muted); }
+
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 0.3rem 0; }
+  .switch { position: relative; width: 2.1rem; height: 1.15rem; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .slider { position: absolute; inset: 0; background: var(--rule); border-radius: 999px; cursor: pointer; transition: 0.15s; }
+  .slider::before { content: ""; position: absolute; width: 0.9rem; height: 0.9rem; left: 0.13rem; top: 0.13rem; background: var(--muted); border-radius: 50%; transition: 0.15s; }
+  input:checked + .slider { background: var(--amber); }
+  input:checked + .slider::before { transform: translateX(0.95rem); background: #1a1408; }
+
+  .source-note { margin-top: 1.1rem; padding-top: 1rem; border-top: 1px solid var(--rule); font-size: 0.71rem; color: var(--muted); line-height: 1.7; }
+  .source-note a { color: var(--muted); }
+
+  #map { background: var(--bg-deep); }
+
+  .detail {
+    border-left: 1px solid var(--rule);
+    overflow-y: auto;
+    padding: 1.1rem 1.2rem;
+    background: var(--bg-deep);
+  }
+  .detail .placeholder { color: var(--muted); font-size: 0.88rem; line-height: 1.6; margin-top: 1rem; }
+  .detail h2 { font-size: 1.25rem; margin: 0 0 0.15rem; }
+  .detail .alias { color: var(--muted); font-size: 0.82rem; margin-bottom: 0.9rem; }
+
+  .metric-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.55rem; margin-bottom: 1rem; }
+  .metric-box { background: var(--bg-raised); border: 1px solid var(--rule); border-radius: 10px; padding: 0.65rem 0.6rem; }
+  .metric-box .num { font-size: 1.1rem; font-weight: 800; line-height: 1.1; }
+  .metric-box .lbl { font-size: 0.62rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin-top: 0.25rem; }
+
+  .below-median-flag {
+    font-size: 0.74rem; color: var(--red); background: rgba(193,85,63,0.12);
+    border: 1px solid rgba(193,85,63,0.3); border-radius: 6px; padding: 0.4rem 0.6rem; margin-bottom: 0.9rem;
+  }
+
+  .sector-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-bottom: 1rem; }
+  .sector-table td { padding: 0.32rem 0; border-bottom: 1px solid var(--rule); }
+  .sector-table td:last-child { text-align: right; font-weight: 700; }
+  .sector-table tr.thin td:last-child { color: var(--red); }
+  .sector-table tr.thin td:first-child::after { content: " ⚠"; font-size: 0.7rem; }
+
+  details.org-list { margin-bottom: 0.8rem; }
+  details.org-list summary { cursor: pointer; font-size: 0.82rem; color: var(--muted); margin-bottom: 0.4rem; }
+  details.org-list ul { margin: 0.4rem 0 0; padding-left: 1.1rem; font-size: 0.78rem; color: var(--muted); max-height: 180px; overflow-y: auto; }
+
+  .leaflet-popup-content-wrapper { background: var(--bg-raised); color: var(--ink); border-radius: 8px; }
+  .leaflet-popup-tip { background: var(--bg-raised); }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>Who's Covering Which Camp</h1>
+  <p>
+    A working demo built for Aid Evaluator, using real, public data: which organizations are active in each Rohingya refugee camp in Cox's Bazar, Bangladesh, in which sectors, and how thin that coverage actually is camp by camp. Not mock data, not a mockup, this is a real "Who does What Where" (3W) coordination dataset, the same kind of tool the UN's own humanitarian coordination office uses in real crisis response, mapped for the first time at the camp level for a system like this one.
+  </p>
+</div>
+
+<div class="layout">
+  <nav class="rail" aria-label="Legend and controls">
+    <h2>Partner density</h2>
+    <div class="legend-scale"></div>
+    <div class="legend-labels"><span>Fewest partners</span><span>Most partners</span></div>
+    <p class="hint">Each camp shaded by how many distinct organizations are actively implementing programs there. Camps below the citywide median are flagged red-leaning; this is real variation in the data, not a design choice.</p>
+
+    <h2>Thin sector coverage</h2>
+    <div class="toggle-row">
+      <label for="thinToggle">Highlight multi-sector gaps (3+)</label>
+      <label class="switch"><input type="checkbox" id="thinToggle"><span class="slider"></span></label>
+    </div>
+    <p class="hint">"Thin" means 2 or fewer organizations cover that entire sector in that camp, even though the sector is nominally present. Shelter-CCCM is thin in nearly every single camp, so on its own it doesn't distinguish anything, every camp has that gap. This toggle instead highlights the 12 of 33 camps where 3 or more sectors are thin at once, a real, meaningfully worse pattern than the citywide norm.</p>
+
+    <div class="source-note">
+      Partner, sector, and donor data: Inter Sector Coordination Group (ISCG), <a href="https://data.humdata.org/dataset/iscg-4w-influx-cox-s-bazar-bangladesh" target="_blank" rel="noopener">3W Influx, Cox's Bazar</a>, 2024, via the UN's Humanitarian Data Exchange (HDX), public domain. Camp boundaries: <a href="https://data.humdata.org/dataset/outline-of-camps-sites-of-rohingya-refugees-in-cox-s-bazar-bangladesh" target="_blank" rel="noopener">HDX camp outlines</a>, April 2023. 33 camps, 17,187 real logged activities, 316 real donors.
+    </div>
+  </nav>
+
+  <div id="map"></div>
+
+  <aside class="detail" id="detail">
+    <div class="placeholder">Click a camp to see which organizations actually work there, in which sectors, and funded by whom.</div>
+  </aside>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+(async function () {
+  const data = await fetch("data/camp_coverage.geojson").then(r => r.json());
+  const features = data.features;
+
+  const partnerCounts = features.map(f => f.properties.n_partners);
+  const minP = Math.min(...partnerCounts);
+  const maxP = Math.max(...partnerCounts);
+
+  const map = L.map("map", { zoomControl: false }).setView([21.19, 92.16], 12);
+  L.control.zoom({ position: "topright" }).addTo(map);
+  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
+    maxZoom: 17,
+    maxNativeZoom: 16,
+    attribution: "Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ"
+  }).addTo(map);
+
+  function densityColor(n) {
+    const t = (n - minP) / (maxP - minP);
+    if (t < 0.5) {
+      const k = t / 0.5;
+      const r = Math.round(193 + k * (217 - 193));
+      const g = Math.round(85 + k * (164 - 85));
+      const b = Math.round(63 + k * (65 - 63));
+      return `rgb(${r},${g},${b})`;
+    } else {
+      const k = (t - 0.5) / 0.5;
+      const r = Math.round(217 + k * (78 - 217));
+      const g = Math.round(164 + k * (169 - 164));
+      const b = Math.round(65 + k * (130 - 65));
+      return `rgb(${r},${g},${b})`;
+    }
+  }
+
+  let highlightThin = false;
+
+  function styleFor(feature) {
+    const p = feature.properties;
+    const dim = highlightThin && p.thin_sectors.length < 3;
+    return {
+      color: "#0d1210",
+      weight: 1,
+      fillColor: densityColor(p.n_partners),
+      fillOpacity: dim ? 0.15 : 0.8
+    };
+  }
+
+  const layer = L.geoJSON(data, {
+    style: styleFor,
+    onEachFeature: (feature, lyr) => {
+      lyr.on("click", () => renderDetail(feature.properties));
+      lyr.on("mouseover", () => lyr.setStyle({ weight: 2, color: "#e9f0ec" }));
+      lyr.on("mouseout", () => lyr.setStyle({ weight: 1, color: "#0d1210" }));
+      lyr.bindTooltip(feature.properties.camp_name, { sticky: true });
+    }
+  }).addTo(map);
+
+  document.getElementById("thinToggle").addEventListener("change", (e) => {
+    highlightThin = e.target.checked;
+    layer.setStyle(styleFor);
+  });
+
+  function renderDetail(p) {
+    const el = document.getElementById("detail");
+    const sectorRows = p.sector_detail.map(s => `
+      <tr class="${s.n_partners <= 2 ? 'thin' : ''}">
+        <td>${s.sector}</td>
+        <td>${s.n_partners}</td>
+      </tr>
+    `).join("");
+
+    const partnerItems = p.partners.map(n => `<li>${n}</li>`).join("");
+    const donorItems = p.donors.map(n => `<li>${n}</li>`).join("");
+
+    el.innerHTML = `
+      <h2>${p.camp_name}</h2>
+      ${p.camp_alias ? `<div class="alias">${p.camp_alias}</div>` : '<div class="alias">&nbsp;</div>'}
+      ${p.below_median ? `<div class="below-median-flag">Fewer active partners than the citywide median across all 33 camps.</div>` : ''}
+      <div class="metric-grid">
+        <div class="metric-box"><div class="num">${p.n_partners}</div><div class="lbl">Partners</div></div>
+        <div class="metric-box"><div class="num">${p.n_donors}</div><div class="lbl">Donors</div></div>
+        <div class="metric-box"><div class="num">${p.n_activities}</div><div class="lbl">Activities</div></div>
+      </div>
+      <table class="sector-table">${sectorRows}</table>
+      <details class="org-list">
+        <summary>${p.partners.length} implementing partners</summary>
+        <ul>${partnerItems}</ul>
+      </details>
+      <details class="org-list">
+        <summary>${p.donors.length} donors</summary>
+        <ul>${donorItems}</ul>
+      </details>
+    `;
+  }
+})();
+</script>
+</body>
+</html>
