@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Global Need vs. Provision — a demo for Aid Evaluator</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<style>
+  :root {
+    --bg: #0d1210;
+    --bg-raised: #16211c;
+    --bg-deep: #0a0e0c;
+    --ink: #e9f0ec;
+    --muted: #94a89e;
+    --rule: #223028;
+    --amber: #d9a441;
+    --red: #c1553f;
+    --green: #4ea982;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+
+  .topbar {
+    padding: 0.9rem 1.2rem;
+    border-bottom: 1px solid var(--rule);
+    background: var(--bg-deep);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .topbar h1 { font-size: 1.05rem; margin: 0 0 0.25rem; font-weight: 800; }
+  .topbar p { margin: 0; font-size: 0.82rem; color: var(--muted); max-width: 74ch; }
+  .topbar nav { font-size: 0.8rem; white-space: nowrap; }
+  .topbar nav a { color: var(--muted); text-decoration: none; margin-left: 1rem; }
+  .topbar nav a.active { color: var(--amber); font-weight: 700; }
+  .topbar nav a:hover { color: var(--ink); }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 300px 1fr 340px;
+    height: calc(100vh - 78px);
+  }
+  @media (max-width: 1040px) {
+    .layout { grid-template-columns: 1fr; height: auto; }
+    #map { height: 55vh; }
+  }
+
+  .rail {
+    border-right: 1px solid var(--rule);
+    overflow-y: auto;
+    padding: 1rem;
+    background: var(--bg-deep);
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+  .rail h2 { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0.9rem 0 0.6rem; }
+  .rail h2:first-child { margin-top: 0.2rem; }
+  .rail p.hint { color: var(--muted); font-size: 0.78rem; }
+
+  .legend-scale { height: 12px; border-radius: 6px; margin: 0.6rem 0 0.3rem; background: linear-gradient(90deg, #c1553f, #d9a441, #4ea982); }
+  .legend-labels { display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--muted); }
+
+  .stat-row { display: flex; justify-content: space-between; padding: 0.4rem 0; border-bottom: 1px solid var(--rule); font-size: 0.82rem; }
+  .stat-row b { font-weight: 800; }
+
+  .source-note { margin-top: 1.1rem; padding-top: 1rem; border-top: 1px solid var(--rule); font-size: 0.71rem; color: var(--muted); line-height: 1.7; }
+  .source-note a { color: var(--muted); }
+
+  #map { background: var(--bg-deep); }
+
+  .detail {
+    border-left: 1px solid var(--rule);
+    overflow-y: auto;
+    padding: 1.1rem 1.2rem;
+    background: var(--bg-deep);
+  }
+  .detail .placeholder { color: var(--muted); font-size: 0.88rem; line-height: 1.6; margin-top: 1rem; }
+  .detail h2 { font-size: 1.25rem; margin: 0 0 0.9rem; }
+
+  .coverage-headline { background: var(--bg-raised); border: 1px solid var(--rule); border-radius: 10px; padding: 0.9rem 1rem; margin-bottom: 1rem; }
+  .coverage-headline .pct { font-size: 2rem; font-weight: 800; line-height: 1; }
+  .coverage-headline .lbl { font-size: 0.72rem; color: var(--muted); margin-top: 0.3rem; }
+  .coverage-bar-track { height: 8px; background: var(--rule); border-radius: 4px; margin-top: 0.7rem; overflow: hidden; }
+  .coverage-bar-fill { height: 100%; border-radius: 4px; }
+
+  .metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.55rem; margin-bottom: 1rem; }
+  .metric-box { background: var(--bg-raised); border: 1px solid var(--rule); border-radius: 10px; padding: 0.65rem 0.7rem; }
+  .metric-box .num { font-size: 1.05rem; font-weight: 800; line-height: 1.15; }
+  .metric-box .lbl { font-size: 0.62rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin-top: 0.25rem; }
+
+  .donor-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-bottom: 0.5rem; }
+  .donor-table td { padding: 0.32rem 0; border-bottom: 1px solid var(--rule); }
+  .donor-table td:last-child { text-align: right; font-weight: 700; white-space: nowrap; }
+
+  .plan-list { font-size: 0.76rem; color: var(--muted); margin: 0.6rem 0 0; padding-left: 1.1rem; }
+
+  .leaflet-popup-content-wrapper { background: var(--bg-raised); color: var(--ink); border-radius: 8px; }
+  .leaflet-popup-tip { background: var(--bg-raised); }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    <h1>Global Need vs. Provision</h1>
+    <p>
+      A second working demo for Aid Evaluator: how much of the world's assessed humanitarian need is actually being funded, right now, country by country. Real, live 2026 data from the UN's own Financial Tracking Service, not an estimate.
+    </p>
+  </div>
+  <nav>
+    <a href="index.html">Camp Coverage demo</a>
+    <a href="global-need.html" class="active">Global Need vs. Provision</a>
+  </nav>
+</div>
+
+<div class="layout">
+  <nav class="rail" aria-label="Legend and stats">
+    <h2>Funding coverage</h2>
+    <div class="legend-scale"></div>
+    <div class="legend-labels"><span>Least funded</span><span>Most funded</span></div>
+    <p class="hint">Each country shaded by what share of its official 2026 humanitarian requirement has actually been funded so far. This is the real headline number for every crisis in this dataset, straight from OCHA's own tracking system.</p>
+
+    <h2>Right now, globally</h2>
+    <div id="globalStats"></div>
+
+    <div class="source-note">
+      Requirements and funding: UN OCHA <a href="https://fts.unocha.org/" target="_blank" rel="noopener">Financial Tracking Service</a>, via the public Humanitarian Programme Cycle API, live 2026 data. Country boundaries: Natural Earth. 31 countries with an active 2026 response plan; a further $1.34 billion in real funding went to regional or global appeals not tied to one country, and isn't shown on this map.
+    </div>
+  </nav>
+
+  <div id="map"></div>
+
+  <aside class="detail" id="detail">
+    <div class="placeholder">Click a country to see its real 2026 humanitarian requirement, how much has actually been funded, and by whom.</div>
+  </aside>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+(async function () {
+  const data = await fetch("data/global_need.geojson").then(r => r.json());
+  const features = data.features;
+
+  const pcts = features.map(f => f.properties.coverage_pct).filter(v => v != null);
+  const minP = Math.min(...pcts);
+  const maxP = Math.max(...pcts);
+
+  const totalReq = features.reduce((s, f) => s + f.properties.requirements_usd, 0);
+  const totalFund = features.reduce((s, f) => s + f.properties.funding_usd, 0);
+  document.getElementById("globalStats").innerHTML = `
+    <div class="stat-row"><span>Countries tracked</span><b>${features.length}</b></div>
+    <div class="stat-row"><span>Total requirement</span><b>${fmtUSD(totalReq)}</b></div>
+    <div class="stat-row"><span>Total funded</span><b>${fmtUSD(totalFund)}</b></div>
+    <div class="stat-row"><span>Overall coverage</span><b>${(totalFund / totalReq * 100).toFixed(1)}%</b></div>
+  `;
+
+  const map = L.map("map", { zoomControl: false, worldCopyJump: false, minZoom: 2,
+    maxBounds: [[-90, -200], [90, 200]], maxBoundsViscosity: 1.0 }).setView([15, 20], 2);
+  L.control.zoom({ position: "topright" }).addTo(map);
+  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
+    maxZoom: 12,
+    maxNativeZoom: 12,
+    attribution: "Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ"
+  }).addTo(map);
+
+  function coverageColor(pct) {
+    if (pct == null) return "#3a3745";
+    const t = (pct - minP) / (maxP - minP);
+    if (t < 0.5) {
+      const k = t / 0.5;
+      const r = Math.round(193 + k * (217 - 193));
+      const g = Math.round(85 + k * (164 - 85));
+      const b = Math.round(63 + k * (65 - 63));
+      return `rgb(${r},${g},${b})`;
+    } else {
+      const k = (t - 0.5) / 0.5;
+      const r = Math.round(217 + k * (78 - 217));
+      const g = Math.round(164 + k * (169 - 164));
+      const b = Math.round(65 + k * (130 - 65));
+      return `rgb(${r},${g},${b})`;
+    }
+  }
+
+  function styleFor(feature) {
+    const p = feature.properties;
+    return {
+      color: "#0d1210",
+      weight: 0.8,
+      fillColor: coverageColor(p.coverage_pct),
+      fillOpacity: 0.85
+    };
+  }
+
+  function fmtUSD(v) {
+    if (v == null) return "—";
+    if (v >= 1e9) return "$" + (v / 1e9).toFixed(2) + "B";
+    if (v >= 1e6) return "$" + (v / 1e6).toFixed(1) + "M";
+    return "$" + v.toLocaleString();
+  }
+
+  const layer = L.geoJSON(data, {
+    style: styleFor,
+    onEachFeature: (feature, lyr) => {
+      lyr.on("click", () => renderDetail(feature.properties));
+      lyr.on("mouseover", () => lyr.setStyle({ weight: 2, color: "#e9f0ec" }));
+      lyr.on("mouseout", () => lyr.setStyle({ weight: 0.8, color: "#0d1210" }));
+      lyr.bindTooltip(`${feature.properties.country_name} — ${feature.properties.coverage_pct}% funded`, { sticky: true });
+    }
+  }).addTo(map);
+
+  function renderDetail(p) {
+    const el = document.getElementById("detail");
+    const donorRows = p.top_donors.map(d => `
+      <tr><td>${d.name}</td><td>${fmtUSD(d.amount_usd)}</td></tr>
+    `).join("");
+
+    const planItems = p.plan_names.map(n => `<li>${n}</li>`).join("");
+
+    el.innerHTML = `
+      <h2>${p.country_name}</h2>
+      <div class="coverage-headline">
+        <div class="pct">${p.coverage_pct}%</div>
+        <div class="lbl">of the real 2026 requirement funded so far</div>
+        <div class="coverage-bar-track"><div class="coverage-bar-fill" style="width:${Math.min(p.coverage_pct, 100)}%; background:${coverageColor(p.coverage_pct)}"></div></div>
+      </div>
+      <div class="metric-grid">
+        <div class="metric-box"><div class="num">${fmtUSD(p.requirements_usd)}</div><div class="lbl">Requirement</div></div>
+        <div class="metric-box"><div class="num">${fmtUSD(p.funding_usd)}</div><div class="lbl">Funded</div></div>
+      </div>
+      <table class="donor-table">${donorRows}</table>
+      <ul class="plan-list">${planItems}</ul>
+    `;
+  }
+})();
+</script>
+</body>
+</html>
