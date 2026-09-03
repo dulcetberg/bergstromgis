@@ -103,7 +103,7 @@
     <header class="project-header">
       <span class="tag tag-civic">Civic &mdash; Independent Study</span>
       <h1>Where Predictors of Crime Change Across Chicago</h1>
-      <p class="subtitle">A 2025 PLOS One study used Geographically Weighted Regression to show that what predicts crime in Chicago isn't the same everywhere in Chicago. I rebuilt their method on real, more recent data to see where each predictor actually strengthens, weakens, or reverses across the city.</p>
+      <p class="subtitle">A 2025 study found that the things that predict crime in a city aren't the same everywhere in that city &mdash; they shift from neighborhood to neighborhood. I rebuilt their approach on real, more current Chicago data to see exactly where and how that shift happens.</p>
       <div class="meta-row">
         <span class="stat">389,334 real crime incidents, Chicago Data Portal, 2023&ndash;2025</span>
         <span class="stat">777 census tracts, four real predictors</span>
@@ -119,68 +119,81 @@
 
   <div class="project-body">
     <p>
-      A normal regression gives the whole city one number: "more of X predicts
-      more of Y," same coefficient everywhere. Cai (2025, PLOS One,
+      Most attempts to predict crime give you one answer for the whole city:
+      "more of X tends to mean more crime," treated as equally true
+      everywhere. Cai (2025, PLOS One,
       <a href="https://doi.org/10.1371/journal.pone.0331788" target="_blank" rel="noopener">"Advancing urban management"</a>)
-      used Geographically Weighted Regression (GWR) instead, which fits a
-      separate local model at every location, weighted by distance to nearby
-      points. The result isn't one number, it's a map of how the relationship
-      itself changes block by block. Their real Chicago data ran 2017&ndash;2023;
-      I rebuilt the method on more current real data, 2023&ndash;2025.
+      did something different: instead of one citywide answer, the method
+      works out a separate answer for every neighborhood, based on what's
+      actually happening nearby. So instead of a single number, you get a
+      map. It shows exactly where each factor matters a lot, where it barely
+      matters, and where it points in the opposite direction than you'd
+      expect. The original study used real Chicago crime data through 2023;
+      I rebuilt the same approach on more current real data, 2023&ndash;2025.
     </p>
 
     <p>
-      Same real structure as the source paper: real crime data from the
-      Chicago Data Portal (389,334 incidents, three types: theft, criminal
-      damage, battery), aggregated to all 777 Chicago census tracts with
-      complete data. Four real predictors: housing units and population
-      (Census ACS), a walkability index and worker density (EPA Smart
-      Location Database), and point-of-interest density (OpenStreetMap, via
-      OSMnx). Checked for multicollinearity first (VIF, all under 5, nothing
-      dropped), confirmed real spatial clustering with Moran's I before
-      trusting a spatially-explicit model over an ordinary one (all three
-      crime types: p &lt; 0.001), then fit one GWR model per crime type with a
-      Gaussian distance-decay kernel, bandwidth chosen by golden-section
-      search.
+      The real numbers behind this: 389,334 actual crime reports from the
+      City of Chicago, covering three kinds of crime (theft, criminal
+      damage, and battery), spread across all 777 Chicago neighborhoods
+      (census tracts) with complete data. Four real factors were tested
+      against each crime type: how many housing units are in the area, how
+      walkable it is, how many jobs are nearby, and how many businesses and
+      amenities are nearby. Before trusting any of it, I ran two sanity
+      checks. First, made sure none of the four factors were basically
+      measuring the same thing twice under different names (they weren't).
+      Second, confirmed that crime really does cluster into real patterns
+      across the city rather than being scattered at random (it does,
+      clearly, for all three crime types) &mdash; which is what justifies
+      looking at this neighborhood by neighborhood instead of settling for
+      one citywide average.
     </p>
 
-    <h2>The fit is strong, and it moves around the city</h2>
+    <h2>The model explains a lot, but not equally everywhere</h2>
     <p>
-      All three models explain a real majority of the variation (adjusted
-      R&sup2; between 0.80 and 0.82), and the map shows exactly where that
-      explanatory power concentrates and where it thins out, which a single
-      citywide R&sup2; can't show at all. Local R&sup2; runs highest through
-      the North Side and central corridor and drops on parts of the South
-      and far Southwest sides, meaning these four predictors explain crime
-      well in some neighborhoods and leave real ground uncovered in others,
-      the paper's own honest caveat, borne out again in newer data.
+      All three crime types were explained well by these four factors,
+      correctly accounting for roughly 80% of what's going on with theft,
+      criminal damage, and battery citywide. But "well" isn't even across
+      the city, and that's the whole point of doing it this way. The map
+      shows coverage is strongest on the North Side and through the central
+      corridor, and weaker on parts of the South Side and far Southwest
+      Side. In those areas, these four factors don't tell the full story,
+      meaning something else is driving crime there that this data doesn't
+      capture, a real, honest gap rather than something papered over.
     </p>
 
     <div class="callout">
-      <span class="callout-label">A coefficient that flips sign across town</span>
+      <span class="callout-label">A finding that reverses depending on where you look</span>
       <p>
-        Housing density's relationship with theft isn't fixed. Near the
-        Loop and Near North, more housing units locally predicts real theft
-        going down, dense downtown housing tends to mean more building
-        security and more informal surveillance. Move further out and the
-        same variable flips positive. A single citywide regression would
-        average this into one misleading number; the local map shows both
-        real patterns at once.
+        Take housing density. Near downtown, more housing (more people in
+        apartment buildings, packed closer together) is linked to <b>less</b>
+        theft, likely because dense buildings tend to come with more
+        security and more people around to notice something happening.
+        Move further out from downtown, and that same relationship flips:
+        more housing is linked to <b>more</b> theft. A citywide-only analysis
+        would average these two opposite real patterns into one meaningless
+        number. Looking at it neighborhood by neighborhood is what reveals
+        both patterns actually exist, in different parts of the same city.
       </p>
     </div>
 
-    <h2>Where I deviated from the original paper, and why</h2>
+    <h2>Where I made a different choice than the original study, and why</h2>
     <p>
-      The paper used estimated greenhouse-gas emissions as a proxy for
-      neighborhood activity level, which requires the EPA's full 90-attribute
-      Smart Location Database. I substituted real worker/job density from the
-      same database instead, a standard, directly available activity-generator
-      proxy in the same literature, not a citywide GHG model. Road density and
-      vacant-building counts, which the paper reports as separate Spearman
-      correlations rather than regression inputs, are reported the same way
-      here: vacant buildings correlate far more strongly with criminal damage
-      and battery (Spearman &rho; = 0.55, 0.53) than with theft (0.19), a real,
-      specific pattern worth sitting with on its own.
+      The original researchers used an estimate of each neighborhood's
+      greenhouse-gas emissions as a stand-in for "how much activity happens
+      here" (more activity and traffic generally means more opportunity for
+      crime). That estimate requires pulling a massive federal dataset that
+      wasn't practical here. Instead, I used real job counts per
+      neighborhood as the activity stand-in &mdash; more jobs nearby
+      generally means more people passing through, and it's a well-established
+      substitute for the same idea in this same field of research. I also
+      checked two more real things the original study looked at, but kept
+      outside the main model, same as they did: how dense the street network
+      is, and how many vacant or abandoned buildings are nearby. One real,
+      specific finding there: vacant buildings are strongly linked to
+      criminal damage and to battery, but barely linked to theft at all,
+      suggesting they matter a lot for some kinds of crime and not much for
+      others.
     </p>
 
     <div class="evidence-panel">
