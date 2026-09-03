@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Where Predictors of Crime Change Across Chicago</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<style>
+  :root {
+    --bg: #0d1015; --bg-raised: #161b23; --ink: #e8ecf3; --muted: #8f9aad; --rule: #232a36;
+    --amber: #d9a441; --red: #c1553f; --green: #4ea982; --blue: #5f8fd9;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem 5rem; }
+  header { padding: 1.5rem 0; border-bottom: 1px solid var(--rule); margin-bottom: 2rem; }
+  header .eyebrow { color: var(--amber); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; margin-bottom: 0.5rem; }
+  header h1 { font-size: 1.7rem; margin: 0 0 0.6rem; line-height: 1.25; }
+  header p { color: var(--muted); font-size: 0.92rem; max-width: 76ch; line-height: 1.6; margin: 0; }
+
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.8rem; margin-bottom: 2rem; }
+  .stat-box { background: var(--bg-raised); border: 1px solid var(--rule); border-radius: 10px; padding: 0.9rem 1rem; }
+  .stat-box .num { font-size: 1.5rem; font-weight: 800; color: var(--amber); }
+  .stat-box .lbl { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin-top: 0.3rem; line-height: 1.4; }
+
+  .method {
+    background: var(--bg-raised); border: 1px solid var(--rule); border-radius: 10px;
+    padding: 1.1rem 1.3rem; margin-bottom: 2rem; font-size: 0.87rem; line-height: 1.7;
+  }
+  .method .lbl { display: block; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 0.5rem; font-weight: 700; }
+  .method a { color: var(--blue); }
+
+  h2 { font-size: 1.15rem; margin: 2.2rem 0 0.4rem; }
+  .section-note { color: var(--muted); font-size: 0.85rem; margin: 0 0 1rem; max-width: 76ch; line-height: 1.6; }
+
+  .controls { display: flex; gap: 0.7rem; flex-wrap: wrap; margin-bottom: 1rem; }
+  .controls select {
+    background: var(--bg-raised); color: var(--ink); border: 1px solid var(--rule); border-radius: 8px;
+    padding: 0.5rem 0.7rem; font-size: 0.85rem; font-family: inherit;
+  }
+  #map { height: 600px; border-radius: 12px; border: 1px solid var(--rule); overflow: hidden; }
+  .legend {
+    background: var(--bg-raised); padding: 0.7rem 0.9rem; border-radius: 8px; font-size: 0.78rem;
+    line-height: 1.9; color: var(--ink); border: 1px solid var(--rule);
+  }
+  .legend .grad { display: flex; height: 10px; border-radius: 4px; overflow: hidden; margin-bottom: 0.3rem; width: 180px; }
+  .legend .grad span { flex: 1; }
+  .legend .row { display: flex; justify-content: space-between; width: 180px; font-size: 0.7rem; color: var(--muted); }
+  .leaflet-popup-content-wrapper { background: var(--bg-raised); color: var(--ink); border-radius: 8px; }
+  .leaflet-popup-tip { background: var(--bg-raised); }
+  .leaflet-popup-content { font-size: 0.82rem; }
+  .leaflet-popup-content b { display: block; margin-bottom: 0.2rem; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-bottom: 1rem; }
+  th { text-align: left; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); padding: 0.5rem 0.6rem; border-bottom: 1px solid var(--rule); }
+  th.num, td.num { text-align: right; }
+  td { padding: 0.5rem 0.6rem; border-bottom: 1px solid var(--rule); }
+  .pos { color: var(--green); } .neg { color: var(--red); }
+
+  footer { margin-top: 2.5rem; color: var(--muted); font-size: 0.76rem; text-align: center; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="eyebrow">Replicating a real academic methodology &middot; independent analysis</div>
+    <h1>Where the predictors of crime actually change across Chicago</h1>
+    <p>
+      A citywide regression gives one number: "more of X predicts more of Y." Geographically Weighted
+      Regression (GWR) instead fits a separate local model at every location, revealing where each real,
+      physical predictor of crime is strong, weak, or reversed &mdash; something a single citywide number
+      erases entirely. Built on real 2023&ndash;2025 Chicago data (777 census tracts), replicating the
+      methodology of <a href="https://doi.org/10.1371/journal.pone.0331788" target="_blank" rel="noopener">Cai (2025), PLOS One</a>.
+    </p>
+  </header>
+
+  <div class="stat-grid" id="statGrid"></div>
+
+  <div class="method" id="methodBox"></div>
+
+  <h2>Local model fit and coefficients, by tract</h2>
+  <p class="section-note">
+    Pick a crime type and a layer. "Local R&sup2;" shows how well the four predictors explain that crime type
+    in each part of the city. Each predictor's coefficient map shows where more of that predictor is
+    associated with more crime (green) versus less (red) &mdash; the relationship's local direction and
+    strength, not just whether it matters citywide.
+  </p>
+  <div class="controls">
+    <select id="crimeSelect"></select>
+    <select id="layerSelect"></select>
+  </div>
+  <div id="map"></div>
+  <div style="margin-top: 0.8rem;" id="legendWrap"></div>
+
+  <h2>Spatial clustering (Moran's I)</h2>
+  <p class="section-note">All three crime types cluster spatially, not randomly &mdash; confirming GWR is the right tool here, not an ordinary citywide regression.</p>
+  <table id="moranTable"></table>
+
+  <h2>What else correlates, even outside the regression</h2>
+  <p class="section-note">Real Spearman correlations for two variables not in the GWR model itself (road density, vacant buildings), matching the paper's fuller comparison.</p>
+  <table id="spearmanTable"></table>
+
+  <footer id="footerNote">Independent replication &middot; bergstromgis.com</footer>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+(async function () {
+  const [results, tracts] = await Promise.all([
+    fetch("gwr_results.json").then(r => r.json()),
+    fetch("tracts.geojson").then(r => r.json()),
+  ]);
+
+  document.getElementById("statGrid").innerHTML = `
+    <div class="stat-box"><div class="num">${results.n_tracts}</div><div class="lbl">Chicago census tracts</div></div>
+    <div class="stat-box"><div class="num">${(131790+84217+170919).toLocaleString()}</div><div class="lbl">Real crime incidents, 2023&ndash;2025</div></div>
+    <div class="stat-box"><div class="num">${results.models.criminal_damage_count.global_adj_r2}</div><div class="lbl">Best adjusted R&sup2; (criminal damage)</div></div>
+    <div class="stat-box"><div class="num">4</div><div class="lbl">Predictors: housing, walkability, worker density, POI density</div></div>
+  `;
+
+  document.getElementById("methodBox").innerHTML = `
+    <span class="lbl">Method, briefly</span>
+    Real crime data (theft, criminal damage, battery) from the Chicago Data Portal, aggregated to all 777
+    Chicago census tracts with complete data, 2023&ndash;2025. Four predictors, all real: housing units and
+    population (Census ACS), walkability index and worker density (EPA Smart Location Database), and
+    point-of-interest density (OpenStreetMap via OSMnx). GWR fit with a Gaussian distance-decay kernel,
+    bandwidth optimized via golden-section search (<code>mgwr</code>), one model per crime type. Multicollinearity
+    checked first (VIF, all under 5, none dropped). <b>One deliberate deviation from the source paper:</b> it
+    used estimated greenhouse-gas emissions as an activity-level proxy, which requires the full 90-attribute
+    Smart Location Database; worker density is used here instead &mdash; a standard, directly available
+    activity-generator proxy in the same literature.
+  `;
+
+  const crimeOptions = Object.keys(results.outcome_labels);
+  document.getElementById("crimeSelect").innerHTML = crimeOptions.map(c => `<option value="${c}">${results.outcome_labels[c]}</option>`).join("");
+
+  const layerOptions = [["local_r2", "Local R² (model fit)"], ...results.predictors.map(p => [p, results.predictor_labels[p] + " (coefficient)"])];
+  document.getElementById("layerSelect").innerHTML = layerOptions.map(([v, l]) => `<option value="${v}">${l}</option>`).join("");
+
+  // join tract data onto geometry
+  const dataByTract = {};
+  for (const crime of crimeOptions) {
+    dataByTract[crime] = {};
+    for (const row of results.models[crime].per_tract) dataByTract[crime][row.tract_geoid] = row;
+  }
+
+  const map = L.map("map", { scrollWheelZoom: false }).setView([41.86, -87.68], 10);
+  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
+    attribution: "Esri", maxZoom: 16,
+  }).addTo(map);
+
+  // sequential (R2, magnitude) and diverging (coefficients, can be +/-) ramps
+  const seqRamp = ["#161b23", "#2a3550", "#3d5a86", "#4f8fb8", "#6dc3c9", "#a8e0c8"];
+  const divNeg = ["#c1553f", "#8f5a4a", "#5a5a55"];
+  const divPos = ["#5a5a55", "#5a8f6e", "#4ea982"];
+
+  function seqColor(t) {
+    t = Math.max(0, Math.min(1, t));
+    const idx = t * (seqRamp.length - 1);
+    return seqRamp[Math.round(idx)];
+  }
+  function lerpColor(a, b, t) {
+    const pa = a.match(/\w\w/g).map(x => parseInt(x, 16));
+    const pb = b.match(/\w\w/g).map(x => parseInt(x, 16));
+    const p = pa.map((v, i) => Math.round(v + (pb[i] - v) * t));
+    return "#" + p.map(v => v.toString(16).padStart(2, "0")).join("");
+  }
+  function divColor(t) {
+    t = Math.max(-1, Math.min(1, t));
+    if (t < 0) return lerpColor(divNeg[2], divNeg[0], -t);
+    return lerpColor(divPos[0], divPos[2], t);
+  }
+
+  let geoLayer = null;
+
+  function render() {
+    const crime = document.getElementById("crimeSelect").value;
+    const layer = document.getElementById("layerSelect").value;
+    const data = dataByTract[crime];
+    const isR2 = layer === "local_r2";
+
+    const values = Object.values(data).map(r => r[layer]);
+    const maxAbs = Math.max(...values.map(Math.abs), 0.0001);
+    const maxR2 = Math.max(...values, 0.0001);
+
+    if (geoLayer) map.removeLayer(geoLayer);
+    geoLayer = L.geoJSON(tracts, {
+      style: feat => {
+        const row = data[feat.properties.tract_geoid];
+        if (!row) return { fillOpacity: 0, weight: 0 };
+        const v = row[layer];
+        const color = isR2 ? seqColor(v / maxR2) : divColor(v / maxAbs);
+        return { fillColor: color, fillOpacity: 0.85, color: "#0d1015", weight: 0.5 };
+      },
+      onEachFeature: (feat, lyr) => {
+        const row = data[feat.properties.tract_geoid];
+        if (!row) return;
+        lyr.bindPopup(`
+          <b>Tract ${feat.properties.tract_geoid.slice(-6)}</b>
+          Local R&sup2;: ${row.local_r2}<br>
+          ${results.predictors.map(p => `${results.predictor_labels[p]}: ${row[p] > 0 ? "+" : ""}${row[p]}`).join("<br>")}
+        `);
+      },
+    }).addTo(map);
+
+    const legendWrap = document.getElementById("legendWrap");
+    if (isR2) {
+      legendWrap.innerHTML = `
+        <div class="legend">
+          <div class="grad">${seqRamp.map(c => `<span style="background:${c}"></span>`).join("")}</div>
+          <div class="row"><span>0</span><span>${maxR2.toFixed(2)}</span></div>
+          Local R&sup2; &mdash; how well the model explains ${results.outcome_labels[crime].toLowerCase()} here
+        </div>`;
+    } else {
+      legendWrap.innerHTML = `
+        <div class="legend">
+          <div class="grad">${[divNeg[0], divNeg[1], divNeg[2], divPos[1], divPos[2]].map(c => `<span style="background:${c}"></span>`).join("")}</div>
+          <div class="row"><span>&minus;${maxAbs.toFixed(2)}</span><span>0</span><span>+${maxAbs.toFixed(2)}</span></div>
+          Coefficient &mdash; red = more of this predicts less ${results.outcome_labels[crime].toLowerCase()} here, green = more predicts more
+        </div>`;
+    }
+  }
+
+  document.getElementById("crimeSelect").addEventListener("change", render);
+  document.getElementById("layerSelect").addEventListener("change", render);
+  render();
+
+  document.getElementById("moranTable").innerHTML = `
+    <thead><tr><th>Crime type</th><th class="num">Moran's I</th><th class="num">p-value</th></tr></thead>
+    <tbody>
+      ${crimeOptions.map(c => `<tr><td>${results.outcome_labels[c]}</td><td class="num">${results.moran[c].I}</td><td class="num">${results.moran[c].p}</td></tr>`).join("")}
+    </tbody>
+  `;
+
+  document.getElementById("spearmanTable").innerHTML = `
+    <thead><tr><th>Crime type</th><th class="num">Road density</th><th class="num">Vacant buildings</th></tr></thead>
+    <tbody>
+      ${crimeOptions.map(c => {
+        const rd = results.spearman[c].road_density, vb = results.spearman[c].vacant_building_count;
+        return `<tr><td>${results.outcome_labels[c]}</td><td class="num ${rd >= 0 ? 'pos' : 'neg'}">${rd}</td><td class="num ${vb >= 0 ? 'pos' : 'neg'}">${vb}</td></tr>`;
+      }).join("")}
+    </tbody>
+  `;
+})();
+</script>
+</body>
+</html>
