@@ -14,6 +14,8 @@
   html, body { margin: 0; background: var(--bg); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
   .container { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem 5rem; }
   header { padding: 1.5rem 0; border-bottom: 1px solid var(--rule); margin-bottom: 2rem; }
+  .back-link { display: inline-block; color: var(--muted); font-size: 0.85rem; text-decoration: none; margin-bottom: 1rem; }
+  .back-link:hover { color: var(--ink); }
   header .eyebrow { color: var(--amber); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; margin-bottom: 0.5rem; }
   header h1 { font-size: 1.7rem; margin: 0 0 0.6rem; line-height: 1.25; }
   header p { color: var(--muted); font-size: 0.92rem; max-width: 76ch; line-height: 1.6; margin: 0; }
@@ -63,14 +65,15 @@
 <body>
 <div class="container">
   <header>
-    <div class="eyebrow">Replicating a real academic methodology &middot; independent analysis</div>
-    <h1>Where the predictors of crime actually change across Chicago</h1>
+    <a class="back-link" href="../work/chicago-crime-gwr.html">&larr; Back to the write-up</a>
+    <div class="eyebrow">Independent analysis &middot; built on a real published study</div>
+    <h1>Where the things that predict crime actually change across Chicago</h1>
     <p>
-      A citywide regression gives one number: "more of X predicts more of Y." Geographically Weighted
-      Regression (GWR) instead fits a separate local model at every location, revealing where each real,
-      physical predictor of crime is strong, weak, or reversed &mdash; something a single citywide number
-      erases entirely. Built on real 2023&ndash;2025 Chicago data (777 census tracts), replicating the
-      methodology of <a href="https://doi.org/10.1371/journal.pone.0331788" target="_blank" rel="noopener">Cai (2025), PLOS One</a>.
+      Most crime maps assume one relationship holds true everywhere in a city. This one doesn't: it works
+      out a separate answer for every neighborhood, so you can see exactly where each real factor matters a
+      lot, matters a little, or points in the opposite direction than you'd expect. Built on real Chicago
+      data from 2023&ndash;2025 (777 neighborhoods), using the same approach as a real 2025 study,
+      <a href="https://doi.org/10.1371/journal.pone.0331788" target="_blank" rel="noopener">Cai (2025), PLOS One</a>.
     </p>
   </header>
 
@@ -78,12 +81,12 @@
 
   <div class="method" id="methodBox"></div>
 
-  <h2>Local model fit and coefficients, by tract</h2>
+  <h2>Where each factor matters more, less, or the opposite of what you'd expect</h2>
   <p class="section-note">
-    Pick a crime type and a layer. "Local R&sup2;" shows how well the four predictors explain that crime type
-    in each part of the city. Each predictor's coefficient map shows where more of that predictor is
-    associated with more crime (green) versus less (red) &mdash; the relationship's local direction and
-    strength, not just whether it matters citywide.
+    Pick a crime type, then pick what to look at. "How well it fits" shows how much of that crime type these
+    four factors actually explain in each part of the city. Each factor's own map shows where more of it
+    lines up with more crime (green) or less crime (red) &mdash; not just whether it matters somewhere in
+    Chicago, but exactly where and how strongly.
   </p>
   <div class="controls">
     <select id="crimeSelect"></select>
@@ -92,12 +95,23 @@
   <div id="map"></div>
   <div style="margin-top: 0.8rem;" id="legendWrap"></div>
 
-  <h2>Spatial clustering (Moran's I)</h2>
-  <p class="section-note">All three crime types cluster spatially, not randomly &mdash; confirming GWR is the right tool here, not an ordinary citywide regression.</p>
+  <h2>Does crime cluster into real patterns, or is it scattered randomly?</h2>
+  <p class="section-note">
+    All three crime types cluster into clear, real patterns across the city rather than being scattered at
+    random. That's what justifies breaking this down neighborhood by neighborhood instead of settling for
+    one citywide average. ("Moran's I" below is the statistical test that confirms this &mdash; further from
+    0 means stronger real clustering, and the tiny p-values mean it isn't a coincidence.)
+  </p>
   <table id="moranTable"></table>
 
-  <h2>What else correlates, even outside the regression</h2>
-  <p class="section-note">Real Spearman correlations for two variables not in the GWR model itself (road density, vacant buildings), matching the paper's fuller comparison.</p>
+  <h2>What else is connected, even outside the main model</h2>
+  <p class="section-note">
+    Two more real things were checked against each crime type, but kept separate from the main model, the
+    same way the original study handled them: how dense the street network is, and how many vacant or
+    abandoned buildings are nearby. Positive numbers mean more of that thing tends to go along with more of
+    that crime type; negative numbers mean the opposite. Vacant buildings turn out to matter a lot for
+    criminal damage and battery, but barely at all for theft.
+  </p>
   <table id="spearmanTable"></table>
 
   <footer id="footerNote">Independent replication &middot; bergstromgis.com</footer>
@@ -112,29 +126,29 @@
   ]);
 
   document.getElementById("statGrid").innerHTML = `
-    <div class="stat-box"><div class="num">${results.n_tracts}</div><div class="lbl">Chicago census tracts</div></div>
-    <div class="stat-box"><div class="num">${(131790+84217+170919).toLocaleString()}</div><div class="lbl">Real crime incidents, 2023&ndash;2025</div></div>
-    <div class="stat-box"><div class="num">${results.models.criminal_damage_count.global_adj_r2}</div><div class="lbl">Best adjusted R&sup2; (criminal damage)</div></div>
-    <div class="stat-box"><div class="num">4</div><div class="lbl">Predictors: housing, walkability, worker density, POI density</div></div>
+    <div class="stat-box"><div class="num">${results.n_tracts}</div><div class="lbl">Chicago neighborhoods included</div></div>
+    <div class="stat-box"><div class="num">${(131790+84217+170919).toLocaleString()}</div><div class="lbl">Real crime reports, 2023&ndash;2025</div></div>
+    <div class="stat-box"><div class="num">${Math.round(results.models.criminal_damage_count.global_adj_r2 * 100)}%</div><div class="lbl">Best score &mdash; how well the model explains criminal damage citywide</div></div>
+    <div class="stat-box"><div class="num">4</div><div class="lbl">Real factors checked: housing, walkability, nearby jobs, nearby businesses</div></div>
   `;
 
   document.getElementById("methodBox").innerHTML = `
-    <span class="lbl">Method, briefly</span>
-    Real crime data (theft, criminal damage, battery) from the Chicago Data Portal, aggregated to all 777
-    Chicago census tracts with complete data, 2023&ndash;2025. Four predictors, all real: housing units and
-    population (Census ACS), walkability index and worker density (EPA Smart Location Database), and
-    point-of-interest density (OpenStreetMap via OSMnx). GWR fit with a Gaussian distance-decay kernel,
-    bandwidth optimized via golden-section search (<code>mgwr</code>), one model per crime type. Multicollinearity
-    checked first (VIF, all under 5, none dropped). <b>One deliberate deviation from the source paper:</b> it
-    used estimated greenhouse-gas emissions as an activity-level proxy, which requires the full 90-attribute
-    Smart Location Database; worker density is used here instead &mdash; a standard, directly available
-    activity-generator proxy in the same literature.
+    <span class="lbl">How this was built, in plain terms</span>
+    Real crime reports (theft, criminal damage, and battery) from the City of Chicago, sorted into all 777
+    Chicago neighborhoods with complete data, 2023&ndash;2025. Four real factors were checked against each
+    crime type: how many housing units are in the area, how walkable it is, how many jobs are nearby, and
+    how many businesses and amenities are nearby (all from real public sources: Census, EPA, OpenStreetMap).
+    Instead of one answer for the whole city, the model works out a separate answer for every neighborhood,
+    based on what's happening there and nearby. <b>One deliberate change from the original study:</b> it used
+    an estimate of greenhouse-gas emissions as a stand-in for "how much activity happens here," which needed
+    a massive dataset that wasn't practical to pull here. Real job counts are used instead &mdash; a
+    well-established substitute for the same idea.
   `;
 
   const crimeOptions = Object.keys(results.outcome_labels);
   document.getElementById("crimeSelect").innerHTML = crimeOptions.map(c => `<option value="${c}">${results.outcome_labels[c]}</option>`).join("");
 
-  const layerOptions = [["local_r2", "Local R² (model fit)"], ...results.predictors.map(p => [p, results.predictor_labels[p] + " (coefficient)"])];
+  const layerOptions = [["local_r2", "How well it fits"], ...results.predictors.map(p => [p, results.predictor_labels[p] + " — where it matters"])];
   document.getElementById("layerSelect").innerHTML = layerOptions.map(([v, l]) => `<option value="${v}">${l}</option>`).join("");
 
   // join tract data onto geometry
@@ -196,8 +210,8 @@
         const row = data[feat.properties.tract_geoid];
         if (!row) return;
         lyr.bindPopup(`
-          <b>Tract ${feat.properties.tract_geoid.slice(-6)}</b>
-          Local R&sup2;: ${row.local_r2}<br>
+          <b>Neighborhood ${feat.properties.tract_geoid.slice(-6)}</b>
+          How well this explains crime here: ${Math.round(row.local_r2 * 100)}%<br>
           ${results.predictors.map(p => `${results.predictor_labels[p]}: ${row[p] > 0 ? "+" : ""}${row[p]}`).join("<br>")}
         `);
       },
@@ -208,15 +222,15 @@
       legendWrap.innerHTML = `
         <div class="legend">
           <div class="grad">${seqRamp.map(c => `<span style="background:${c}"></span>`).join("")}</div>
-          <div class="row"><span>0</span><span>${maxR2.toFixed(2)}</span></div>
-          Local R&sup2; &mdash; how well the model explains ${results.outcome_labels[crime].toLowerCase()} here
+          <div class="row"><span>Explains little</span><span>Explains a lot</span></div>
+          How well these four factors explain ${results.outcome_labels[crime].toLowerCase()} in each neighborhood
         </div>`;
     } else {
       legendWrap.innerHTML = `
         <div class="legend">
           <div class="grad">${[divNeg[0], divNeg[1], divNeg[2], divPos[1], divPos[2]].map(c => `<span style="background:${c}"></span>`).join("")}</div>
-          <div class="row"><span>&minus;${maxAbs.toFixed(2)}</span><span>0</span><span>+${maxAbs.toFixed(2)}</span></div>
-          Coefficient &mdash; red = more of this predicts less ${results.outcome_labels[crime].toLowerCase()} here, green = more predicts more
+          <div class="row"><span>Less crime here</span><span>&nbsp;</span><span>More crime here</span></div>
+          Red = more of this factor is linked to <b>less</b> ${results.outcome_labels[crime].toLowerCase()} here. Green = more of this factor is linked to <b>more</b> ${results.outcome_labels[crime].toLowerCase()} here.
         </div>`;
     }
   }
