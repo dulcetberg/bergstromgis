@@ -12,7 +12,7 @@
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; background: var(--bg); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-  .container { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem 5rem; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 2rem clamp(1.5rem, 6vw, 4rem) 5rem; }
   header { padding: 1.5rem 0; border-bottom: 1px solid var(--rule); margin-bottom: 2rem; }
   .back-link { display: inline-block; color: var(--muted); font-size: 0.85rem; text-decoration: none; margin-bottom: 1rem; }
   .back-link:hover { color: var(--ink); }
@@ -58,6 +58,10 @@
   th.num, td.num { text-align: right; }
   td { padding: 0.5rem 0.6rem; border-bottom: 1px solid var(--rule); }
   .pos { color: var(--green); } .neg { color: var(--red); }
+
+  .references { margin-top: 1rem; padding: 0; list-style: none; font-size: 0.82rem; line-height: 1.7; color: var(--muted); max-width: 76ch; }
+  .references li { margin-bottom: 0.9rem; padding-left: 1.6em; text-indent: -1.6em; }
+  .references a { color: var(--blue); }
 
   footer { margin-top: 2.5rem; color: var(--muted); font-size: 0.76rem; text-align: center; }
 </style>
@@ -113,6 +117,20 @@
     criminal damage and battery, but barely at all for theft.
   </p>
   <table id="spearmanTable"></table>
+
+  <h2>Sources</h2>
+  <ol class="references">
+    <li>Boeing, G. (2017). OSMnx: New methods for acquiring, constructing, analyzing, and visualizing complex street networks. <em>Computers, Environment and Urban Systems</em>, <em>65</em>, 126&ndash;139. <a href="https://doi.org/10.1016/j.compenvurbsys.2017.05.004" target="_blank" rel="noopener">https://doi.org/10.1016/j.compenvurbsys.2017.05.004</a></li>
+    <li>Cai, Y. (2025). Advancing urban management: Integrating GIS, LLMs, and media narratives into environmental and socio-economic analyses for enhanced urban crime analysis. <em>PLOS ONE</em>. <a href="https://doi.org/10.1371/journal.pone.0331788" target="_blank" rel="noopener">https://doi.org/10.1371/journal.pone.0331788</a></li>
+    <li>City of Chicago. (2026). <em>311 service requests</em> [Data set]. Chicago Data Portal. <a href="https://data.cityofchicago.org/Service-Requests/311-Service-Requests/v6vf-nfxy" target="_blank" rel="noopener">https://data.cityofchicago.org/Service-Requests/311-Service-Requests/v6vf-nfxy</a></li>
+    <li>City of Chicago. (2026). <em>Boundaries &ndash; city</em> [Data set]. Chicago Data Portal. <a href="https://data.cityofchicago.org/Facilities-Geographic-Boundaries/Boundaries-City/qqq8-j68g" target="_blank" rel="noopener">https://data.cityofchicago.org/Facilities-Geographic-Boundaries/Boundaries-City/qqq8-j68g</a></li>
+    <li>City of Chicago. (2026). <em>Crimes &ndash; 2001 to present</em> [Data set]. Chicago Data Portal. <a href="https://data.cityofchicago.org/Public-Safety/Crimes-2001-to-Present/ijzp-q8t2" target="_blank" rel="noopener">https://data.cityofchicago.org/Public-Safety/Crimes-2001-to-Present/ijzp-q8t2</a></li>
+    <li>OpenStreetMap contributors. (2026). <em>Chicago street network and points of interest</em> [Data set]. OpenStreetMap. <a href="https://www.openstreetmap.org" target="_blank" rel="noopener">https://www.openstreetmap.org</a></li>
+    <li>Oshan, T. M., Li, Z., Kang, W., Wolf, L. J., &amp; Fotheringham, A. S. (2019). mgwr: A Python implementation of multiscale geographically weighted regression for investigating process spatial heterogeneity and scale. <em>ISPRS International Journal of Geo-Information</em>, <em>8</em>(6), Article 269. <a href="https://doi.org/10.3390/ijgi8060269" target="_blank" rel="noopener">https://doi.org/10.3390/ijgi8060269</a></li>
+    <li>U.S. Census Bureau. (2023). <em>American Community Survey 5-year estimates, 2019&ndash;2023</em> [Data set]. <a href="https://www.census.gov/programs-surveys/acs" target="_blank" rel="noopener">https://www.census.gov/programs-surveys/acs</a></li>
+    <li>U.S. Census Bureau. (2023). <em>2023 cartographic boundary files: Census tracts</em> [Data set]. <a href="https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html" target="_blank" rel="noopener">https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html</a></li>
+    <li>U.S. Environmental Protection Agency. (2021). <em>Smart Location Database, version 3.0</em> [Data set]. <a href="https://www.epa.gov/smartgrowth/smart-location-mapping" target="_blank" rel="noopener">https://www.epa.gov/smartgrowth/smart-location-mapping</a></li>
+  </ol>
 
   <footer id="footerNote">Independent replication &middot; bergstromgis.com</footer>
 </div>
