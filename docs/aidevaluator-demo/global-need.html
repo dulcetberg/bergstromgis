@@ -59,11 +59,30 @@
   .rail h2:first-child { margin-top: 0.2rem; }
   .rail p.hint { color: var(--muted); font-size: 0.78rem; }
 
-  .legend-scale { height: 12px; border-radius: 6px; margin: 0.6rem 0 0.3rem; background: linear-gradient(90deg, #c1553f, #d9a441, #4ea982); }
+  .control-group { margin-bottom: 0.55rem; }
+  .control-group label { display: block; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 0.3rem; }
+  .control-group select {
+    width: 100%;
+    background: var(--bg-raised);
+    color: var(--ink);
+    border: 1px solid var(--rule);
+    border-radius: 7px;
+    padding: 0.45rem 0.55rem;
+    font-size: 0.82rem;
+    font-family: inherit;
+  }
+  .control-group select:disabled { opacity: 0.45; }
+
+  .legend-scale { height: 12px; border-radius: 6px; margin: 0.6rem 0 0.3rem; }
   .legend-labels { display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--muted); }
 
   .stat-row { display: flex; justify-content: space-between; padding: 0.4rem 0; border-bottom: 1px solid var(--rule); font-size: 0.82rem; }
   .stat-row b { font-weight: 800; }
+
+  .rank-list { margin: 0.5rem 0 0; padding: 0; list-style: none; font-size: 0.78rem; }
+  .rank-list li { display: flex; justify-content: space-between; gap: 0.5rem; padding: 0.28rem 0; border-bottom: 1px solid var(--rule); cursor: pointer; }
+  .rank-list li:hover { color: var(--amber); }
+  .rank-list li b { font-weight: 800; white-space: nowrap; }
 
   .source-note { margin-top: 1.1rem; padding-top: 1rem; border-top: 1px solid var(--rule); font-size: 0.71rem; color: var(--muted); line-height: 1.7; }
   .source-note a { color: var(--muted); }
@@ -78,6 +97,7 @@
   }
   .detail .placeholder { color: var(--muted); font-size: 0.88rem; line-height: 1.6; margin-top: 1rem; }
   .detail h2 { font-size: 1.25rem; margin: 0 0 0.9rem; }
+  .detail h3 { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin: 1.1rem 0 0.5rem; }
 
   .coverage-headline { background: var(--bg-raised); border: 1px solid var(--rule); border-radius: 10px; padding: 0.9rem 1rem; margin-bottom: 1rem; }
   .coverage-headline .pct { font-size: 2rem; font-weight: 800; line-height: 1; }
@@ -89,6 +109,38 @@
   .metric-box { background: var(--bg-raised); border: 1px solid var(--rule); border-radius: 10px; padding: 0.65rem 0.7rem; }
   .metric-box .num { font-size: 1.05rem; font-weight: 800; line-height: 1.15; }
   .metric-box .lbl { font-size: 0.62rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin-top: 0.25rem; }
+  .metric-box.wide { grid-column: 1 / -1; }
+  .metric-box.highlight { border-color: rgba(217,164,65,0.45); }
+  .metric-box.highlight .num { color: var(--amber); }
+  .metric-box.edited { border-color: rgba(78,169,130,0.5); }
+
+  .pop-edit {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px dashed var(--rule);
+    color: var(--ink);
+    font-size: 1.05rem;
+    font-weight: 800;
+    font-family: inherit;
+    padding: 0 0 2px;
+  }
+  .pop-edit:focus { outline: none; border-bottom-color: var(--amber); }
+  .pop-edit::-webkit-outer-spin-button, .pop-edit::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .pop-edit[type=number] { -moz-appearance: textfield; }
+  .edit-flag { font-size: 0.58rem; color: var(--green); letter-spacing: 0.03em; }
+  .reset-link {
+    background: none; border: none; padding: 0; margin-left: 0.4rem;
+    color: var(--muted); font-size: 0.58rem; text-decoration: underline;
+    cursor: pointer; font-family: inherit;
+  }
+  .reset-link:hover { color: var(--ink); }
+  .reset-all {
+    width: 100%; margin-top: 0.5rem; background: var(--bg-raised); color: var(--muted);
+    border: 1px solid var(--rule); border-radius: 7px; padding: 0.4rem;
+    font-size: 0.74rem; font-family: inherit; cursor: pointer;
+  }
+  .reset-all:hover { color: var(--ink); }
 
   .donor-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-bottom: 0.5rem; }
   .donor-table td { padding: 0.32rem 0; border-bottom: 1px solid var(--rule); }
@@ -116,24 +168,50 @@
 </div>
 
 <div class="layout">
-  <nav class="rail" aria-label="Legend and stats">
-    <h2>Funding coverage</h2>
-    <div class="legend-scale"></div>
-    <div class="legend-labels"><span>Least funded</span><span>Most funded</span></div>
-    <p class="hint">Each country shaded by what share of its official 2026 humanitarian requirement has actually been funded so far. This is the real headline number for every crisis in this dataset, straight from OCHA's own tracking system.</p>
+  <nav class="rail" aria-label="Controls, legend and stats">
+    <h2>Compare countries by</h2>
+    <div class="control-group">
+      <label for="metricSelect">Measure</label>
+      <select id="metricSelect">
+        <option value="coverage">Share of need funded (%)</option>
+        <option value="gap_total">Total unmet need ($)</option>
+        <option value="gap_per" selected>Unmet need per person ($)</option>
+      </select>
+    </div>
+    <div class="control-group">
+      <label for="denomSelect">Per person, measured as</label>
+      <select id="denomSelect">
+        <option value="inNeed" selected>People in need</option>
+        <option value="target">People the plan targets</option>
+        <option value="totalPopulation">Total country population</option>
+      </select>
+    </div>
+    <p class="hint" id="metricHint"></p>
+
+    <div class="legend-scale" id="legendScale"></div>
+    <div class="legend-labels"><span id="legendLow"></span><span id="legendHigh"></span></div>
+
+    <div id="overrideBox"></div>
+
+    <h2 id="rankHeading">Most underserved</h2>
+    <ul class="rank-list" id="rankList"></ul>
 
     <h2>Right now, globally</h2>
     <div id="globalStats"></div>
 
     <div class="source-note">
-      Requirements and funding: UN OCHA <a href="https://fts.unocha.org/" target="_blank" rel="noopener">Financial Tracking Service</a>, via the public Humanitarian Programme Cycle API, live 2026 data. Country boundaries: Natural Earth. 31 countries with an active 2026 response plan; a further $1.34 billion in real funding went to regional or global appeals not tied to one country, and isn't shown on this map.
+      Requirements and funding: UN OCHA <a href="https://fts.unocha.org/" target="_blank" rel="noopener">Financial Tracking Service</a>, via the public Humanitarian Programme Cycle API, live 2026 data. Population, people in need and people targeted come from the same OCHA API, from each response plan's own published caseload figures. Country boundaries: Natural Earth. 31 countries with an active 2026 response plan; a further $1.34 billion in real funding went to regional or global appeals not tied to one country, and isn't shown on this map.
+      <br><br>
+      Five entries here are refugee response plans (Lebanon, Bangladesh, Iran, Djibouti, Uganda). Those report a refugee caseload rather than a host country population, so they have no total population figure and are shown in grey under that option. People in need is the one figure published for every country in the dataset.
+      <br><br>
+      Every population figure can be replaced with your own: click a country, type over the number, and the map, the ranking and the per person maths all update immediately. Your figures are saved in this browser and can be reverted to OCHA's at any time.
     </div>
   </nav>
 
   <div id="map"></div>
 
   <aside class="detail" id="detail">
-    <div class="placeholder">Click a country to see its real 2026 humanitarian requirement, how much has actually been funded, and by whom.</div>
+    <div class="placeholder">Click a country to see its real 2026 humanitarian requirement, how much has actually been funded, how many people it covers, and by whom it's paid for.</div>
   </aside>
 </div>
 
@@ -143,18 +221,123 @@
   const data = await fetch("data/global_need.geojson").then(r => r.json());
   const features = data.features;
 
-  const pcts = features.map(f => f.properties.coverage_pct).filter(v => v != null);
-  const minP = Math.min(...pcts);
-  const maxP = Math.max(...pcts);
+  const DENOM_LABEL = {
+    inNeed: "person in need",
+    target: "person targeted",
+    totalPopulation: "person in the country"
+  };
+  const DENOM_SHORT = {
+    inNeed: "People in need",
+    target: "People targeted",
+    totalPopulation: "Total population"
+  };
 
-  const totalReq = features.reduce((s, f) => s + f.properties.requirements_usd, 0);
-  const totalFund = features.reduce((s, f) => s + f.properties.funding_usd, 0);
-  document.getElementById("globalStats").innerHTML = `
-    <div class="stat-row"><span>Countries tracked</span><b>${features.length}</b></div>
-    <div class="stat-row"><span>Total requirement</span><b>${fmtUSD(totalReq)}</b></div>
-    <div class="stat-row"><span>Total funded</span><b>${fmtUSD(totalFund)}</b></div>
-    <div class="stat-row"><span>Overall coverage</span><b>${(totalFund / totalReq * 100).toFixed(1)}%</b></div>
-  `;
+  function fmtUSD(v) {
+    if (v == null) return "—";
+    if (v >= 1e9) return "$" + (v / 1e9).toFixed(2) + "B";
+    if (v >= 1e6) return "$" + (v / 1e6).toFixed(1) + "M";
+    if (v >= 1e3) return "$" + Math.round(v).toLocaleString();
+    return "$" + v.toFixed(0);
+  }
+  function fmtNum(v) {
+    return v == null ? "—" : v.toLocaleString();
+  }
+
+  function gapOf(p) { return p.requirements_usd - p.funding_usd; }
+
+  // --- manual population overrides -------------------------------------
+  // Aid Evaluator asked to be able to enter population figures themselves.
+  // OCHA's own figures load automatically as the baseline; anything typed
+  // here overrides just that one number for that one country, is kept in
+  // the browser between visits, and can be reverted at any time. The
+  // underlying OCHA value is never overwritten, only shadowed.
+  const OVERRIDE_KEY = "aidevaluator.populationOverrides.v1";
+  let overrides = {};
+  try {
+    overrides = JSON.parse(localStorage.getItem(OVERRIDE_KEY) || "{}");
+  } catch (e) {
+    overrides = {};
+  }
+  function saveOverrides() {
+    try { localStorage.setItem(OVERRIDE_KEY, JSON.stringify(overrides)); } catch (e) {}
+  }
+  function isOverridden(iso3, key) {
+    return overrides[iso3] && overrides[iso3][key] != null;
+  }
+  // The value actually used everywhere: manual entry if present, else OCHA's.
+  function popOf(p, key) {
+    if (isOverridden(p.iso3, key)) return overrides[p.iso3][key];
+    return p[key];
+  }
+  function setOverride(iso3, key, value) {
+    if (value == null || !isFinite(value) || value <= 0) {
+      if (overrides[iso3]) {
+        delete overrides[iso3][key];
+        if (!Object.keys(overrides[iso3]).length) delete overrides[iso3];
+      }
+    } else {
+      overrides[iso3] = overrides[iso3] || {};
+      overrides[iso3][key] = value;
+    }
+    saveOverrides();
+  }
+  function overrideCount() {
+    return Object.values(overrides).reduce((n, o) => n + Object.keys(o).length, 0);
+  }
+
+  // Value for the currently selected measure. null means "no data for this
+  // country under this measure" -- rendered grey, never silently treated as 0.
+  function valueOf(p, metric, denom) {
+    if (metric === "coverage") return p.coverage_pct;
+    if (metric === "gap_total") return gapOf(p);
+    const d = popOf(p, denom);
+    if (!d) return null;
+    return gapOf(p) / d;
+  }
+
+  // Coverage: higher is better. Both gap measures: higher is worse.
+  function higherIsBetter(metric) { return metric === "coverage"; }
+
+  const RED = [193, 85, 63], AMBER = [217, 164, 65], GREEN = [78, 169, 130];
+  function ramp(t) {
+    const mix = (a, b, k) => Math.round(a + k * (b - a));
+    let c;
+    if (t < 0.5) {
+      const k = t / 0.5;
+      c = [mix(RED[0], AMBER[0], k), mix(RED[1], AMBER[1], k), mix(RED[2], AMBER[2], k)];
+    } else {
+      const k = (t - 0.5) / 0.5;
+      c = [mix(AMBER[0], GREEN[0], k), mix(AMBER[1], GREEN[1], k), mix(AMBER[2], GREEN[2], k)];
+    }
+    return `rgb(${c[0]},${c[1]},${c[2]})`;
+  }
+
+  let scale = { min: 0, max: 1, metric: "gap_per", denom: "inNeed" };
+
+  // Both money measures are heavily right-skewed: one country sits far above
+  // the rest, which on a straight linear ramp flattens every other country
+  // into near-identical colour and hides exactly the differences this view
+  // exists to show. Log scaling spreads the crowded low end back out while
+  // still being a true, monotonic reading of magnitude. Coverage percent is
+  // naturally bounded and evenly spread, so it stays linear.
+  function normalise(v) {
+    if (scale.metric === "coverage") {
+      const span = scale.max - scale.min;
+      return span === 0 ? 0.5 : (v - scale.min) / span;
+    }
+    const lo = Math.log(Math.max(scale.min, 1));
+    const hi = Math.log(Math.max(scale.max, 1));
+    const span = hi - lo;
+    return span === 0 ? 0.5 : (Math.log(Math.max(v, 1)) - lo) / span;
+  }
+
+  function colorFor(p) {
+    const v = valueOf(p, scale.metric, scale.denom);
+    if (v == null) return "#3a3745";
+    const t = Math.max(0, Math.min(1, normalise(v)));
+    // Worse should always read red, so invert when higher means worse.
+    return ramp(higherIsBetter(scale.metric) ? t : 1 - t);
+  }
 
   const map = L.map("map", { zoomControl: false, worldCopyJump: false, minZoom: 2,
     maxBounds: [[-90, -200], [90, 200]], maxBoundsViscosity: 1.0 }).setView([15, 20], 2);
@@ -165,74 +348,213 @@
     attribution: "Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ"
   }).addTo(map);
 
-  function coverageColor(pct) {
-    if (pct == null) return "#3a3745";
-    const t = (pct - minP) / (maxP - minP);
-    if (t < 0.5) {
-      const k = t / 0.5;
-      const r = Math.round(193 + k * (217 - 193));
-      const g = Math.round(85 + k * (164 - 85));
-      const b = Math.round(63 + k * (65 - 63));
-      return `rgb(${r},${g},${b})`;
-    } else {
-      const k = (t - 0.5) / 0.5;
-      const r = Math.round(217 + k * (78 - 217));
-      const g = Math.round(164 + k * (169 - 164));
-      const b = Math.round(65 + k * (130 - 65));
-      return `rgb(${r},${g},${b})`;
-    }
-  }
-
-  function styleFor(feature) {
-    const p = feature.properties;
-    return {
-      color: "#0d1210",
-      weight: 0.8,
-      fillColor: coverageColor(p.coverage_pct),
-      fillOpacity: 0.85
-    };
-  }
-
-  function fmtUSD(v) {
-    if (v == null) return "—";
-    if (v >= 1e9) return "$" + (v / 1e9).toFixed(2) + "B";
-    if (v >= 1e6) return "$" + (v / 1e6).toFixed(1) + "M";
-    return "$" + v.toLocaleString();
-  }
-
   const layer = L.geoJSON(data, {
-    style: styleFor,
+    style: f => ({ color: "#0d1210", weight: 0.8, fillColor: colorFor(f.properties), fillOpacity: 0.85 }),
     onEachFeature: (feature, lyr) => {
       lyr.on("click", () => renderDetail(feature.properties));
       lyr.on("mouseover", () => lyr.setStyle({ weight: 2, color: "#e9f0ec" }));
       lyr.on("mouseout", () => lyr.setStyle({ weight: 0.8, color: "#0d1210" }));
-      lyr.bindTooltip(`${feature.properties.country_name} — ${feature.properties.coverage_pct}% funded`, { sticky: true });
     }
   }).addTo(map);
 
+  const byIso = {};
+  layer.eachLayer(l => { byIso[l.feature.properties.iso3] = l; });
+
+  function labelFor(p) {
+    const v = valueOf(p, scale.metric, scale.denom);
+    if (v == null) return `${p.country_name} — no ${DENOM_SHORT[scale.denom].toLowerCase()} figure published`;
+    if (scale.metric === "coverage") return `${p.country_name} — ${v}% funded`;
+    if (scale.metric === "gap_total") return `${p.country_name} — ${fmtUSD(v)} unmet`;
+    return `${p.country_name} — ${fmtUSD(v)} unmet per ${DENOM_LABEL[scale.denom]}`;
+  }
+
+  function render() {
+    const metric = document.getElementById("metricSelect").value;
+    const denom = document.getElementById("denomSelect").value;
+    document.getElementById("denomSelect").disabled = metric !== "gap_per";
+    scale.metric = metric;
+    scale.denom = denom;
+
+    const vals = features.map(f => valueOf(f.properties, metric, denom)).filter(v => v != null);
+    scale.min = Math.min(...vals);
+    scale.max = Math.max(...vals);
+
+    layer.setStyle(f => ({ color: "#0d1210", weight: 0.8, fillColor: colorFor(f.properties), fillOpacity: 0.85 }));
+    layer.eachLayer(l => {
+      l.unbindTooltip();
+      l.bindTooltip(labelFor(l.feature.properties), { sticky: true });
+    });
+
+    // Legend always reads worst on the left, best on the right.
+    document.getElementById("legendScale").style.background =
+      "linear-gradient(90deg, #c1553f, #d9a441, #4ea982)";
+    const fmt = metric === "coverage" ? (v => v.toFixed(0) + "%") : fmtUSD;
+    if (higherIsBetter(metric)) {
+      document.getElementById("legendLow").textContent = fmt(scale.min);
+      document.getElementById("legendHigh").textContent = fmt(scale.max);
+    } else {
+      document.getElementById("legendLow").textContent = fmt(scale.max);
+      document.getElementById("legendHigh").textContent = fmt(scale.min);
+    }
+
+    const hints = {
+      coverage: "What share of each country's official 2026 requirement has actually been funded. Red is least funded.",
+      gap_total: "The raw dollar shortfall between what each country asked for and what it has received. This favours large countries, which is exactly why the per person view exists.",
+      gap_per: "The shortfall divided by the number of people it has to cover. This is the view that lets a small, severely underfunded crisis show up next to a large one."
+    };
+    document.getElementById("metricHint").textContent = hints[metric];
+
+    // Ranked list, worst first
+    const ranked = features
+      .map(f => ({ p: f.properties, v: valueOf(f.properties, metric, denom) }))
+      .filter(r => r.v != null)
+      .sort((a, b) => higherIsBetter(metric) ? a.v - b.v : b.v - a.v)
+      .slice(0, 10);
+    const n = overrideCount();
+    document.getElementById("overrideBox").innerHTML = n === 0
+      ? `<p class="hint">Population figures load automatically from OCHA. Click any country and you can type your own figure over them.</p>`
+      : `<p class="hint"><b>${n}</b> figure${n === 1 ? "" : "s"} replaced with your own. These are saved in this browser and used everywhere on this page.</p>
+         <button class="reset-all" id="resetAll">Revert all to OCHA figures</button>`;
+    const resetAllBtn = document.getElementById("resetAll");
+    if (resetAllBtn) {
+      resetAllBtn.addEventListener("click", () => {
+        overrides = {};
+        saveOverrides();
+        render();
+        document.getElementById("detail").innerHTML =
+          `<div class="placeholder">All figures reverted to OCHA's published values. Click a country to view or edit it again.</div>`;
+      });
+    }
+
+    renderGlobalStats();
+
+    document.getElementById("rankHeading").textContent =
+      metric === "coverage" ? "Least funded" : "Most underserved";
+    document.getElementById("rankList").innerHTML = ranked.map(r => `
+      <li data-iso="${r.p.iso3}">
+        <span>${r.p.country_name}</span>
+        <b>${metric === "coverage" ? r.v + "%" : fmtUSD(r.v)}</b>
+      </li>
+    `).join("");
+    document.querySelectorAll("#rankList li").forEach(li => {
+      li.addEventListener("click", () => {
+        const l = byIso[li.dataset.iso];
+        if (!l) return;
+        map.fitBounds(l.getBounds(), { maxZoom: 5 });
+        renderDetail(l.feature.properties);
+      });
+    });
+  }
+
+  function renderGlobalStats() {
+  const totalReq = features.reduce((s, f) => s + f.properties.requirements_usd, 0);
+  const totalFund = features.reduce((s, f) => s + f.properties.funding_usd, 0);
+  const totalPin = features.reduce((s, f) => s + (popOf(f.properties, "inNeed") || 0), 0);
+  document.getElementById("globalStats").innerHTML = `
+    <div class="stat-row"><span>Countries tracked</span><b>${features.length}</b></div>
+    <div class="stat-row"><span>People in need</span><b>${(totalPin / 1e6).toFixed(1)}M</b></div>
+    <div class="stat-row"><span>Total requirement</span><b>${fmtUSD(totalReq)}</b></div>
+    <div class="stat-row"><span>Total funded</span><b>${fmtUSD(totalFund)}</b></div>
+    <div class="stat-row"><span>Unmet</span><b>${fmtUSD(totalReq - totalFund)}</b></div>
+    <div class="stat-row"><span>Unmet per person in need</span><b>${fmtUSD((totalReq - totalFund) / totalPin)}</b></div>
+  `;
+  }
+
+  // One editable population figure. Shows OCHA's value by default; typing
+  // replaces it, and a revert link appears once it differs.
+  function popBox(p, key, label, wide) {
+    const edited = isOverridden(p.iso3, key);
+    const val = popOf(p, key);
+    const official = p[key];
+    return `
+      <div class="metric-box${wide ? " wide" : ""}${edited ? " edited" : ""}">
+        <input class="pop-edit" type="text" inputmode="numeric"
+               data-iso="${p.iso3}" data-key="${key}"
+               value="${val != null ? val.toLocaleString() : ""}"
+               placeholder="${official != null ? official.toLocaleString() : "enter a figure"}"
+               aria-label="${label} for ${p.country_name}">
+        <div class="lbl">
+          ${label}
+          ${edited
+            ? `<span class="edit-flag">· your figure</span><button class="reset-link" data-reset-iso="${p.iso3}" data-reset-key="${key}">use ${official != null ? fmtNum(official) : "OCHA"}</button>`
+            : (official == null ? `<span class="edit-flag">· not published, you can enter one</span>` : `<span class="edit-flag">· from OCHA</span>`)}
+        </div>
+      </div>`;
+  }
+
   function renderDetail(p) {
     const el = document.getElementById("detail");
+    const gap = gapOf(p);
     const donorRows = p.top_donors.map(d => `
       <tr><td>${d.name}</td><td>${fmtUSD(d.amount_usd)}</td></tr>
     `).join("");
-
     const planItems = p.plan_names.map(n => `<li>${n}</li>`).join("");
+
+    const perRows = ["inNeed", "target", "totalPopulation"].map(k => {
+      const d = popOf(p, k);
+      const isActive = k === scale.denom && scale.metric === "gap_per";
+      return `
+        <div class="metric-box${isActive ? " highlight" : ""}">
+          <div class="num">${d ? fmtUSD(gap / d) : "—"}</div>
+          <div class="lbl">per ${DENOM_LABEL[k]}</div>
+        </div>`;
+    }).join("");
 
     el.innerHTML = `
       <h2>${p.country_name}</h2>
       <div class="coverage-headline">
         <div class="pct">${p.coverage_pct}%</div>
         <div class="lbl">of the real 2026 requirement funded so far</div>
-        <div class="coverage-bar-track"><div class="coverage-bar-fill" style="width:${Math.min(p.coverage_pct, 100)}%; background:${coverageColor(p.coverage_pct)}"></div></div>
+        <div class="coverage-bar-track"><div class="coverage-bar-fill" style="width:${Math.min(p.coverage_pct, 100)}%; background:${ramp(p.coverage_pct / 100)}"></div></div>
       </div>
+
       <div class="metric-grid">
         <div class="metric-box"><div class="num">${fmtUSD(p.requirements_usd)}</div><div class="lbl">Requirement</div></div>
         <div class="metric-box"><div class="num">${fmtUSD(p.funding_usd)}</div><div class="lbl">Funded</div></div>
+        <div class="metric-box wide"><div class="num">${fmtUSD(gap)}</div><div class="lbl">Still unmet</div></div>
       </div>
+
+      <h3>People this covers &mdash; editable</h3>
+      <div class="metric-grid">
+        ${popBox(p, "inNeed", "In need")}
+        ${popBox(p, "target", "Targeted")}
+        ${popBox(p, "totalPopulation", "Total population", true)}
+      </div>
+
+      <h3>Unmet need per person</h3>
+      <div class="metric-grid">${perRows}</div>
+
+      <h3>Largest donors</h3>
       <table class="donor-table">${donorRows}</table>
       <ul class="plan-list">${planItems}</ul>
     `;
+
+    // Typing a figure updates the map, the ranking and the per-person maths
+    // straight away, so the effect of the change is immediately visible.
+    el.querySelectorAll(".pop-edit").forEach(input => {
+      input.addEventListener("change", () => {
+        // Accept what a person would actually type: commas, spaces, a stray
+        // "$". Anything that isn't a usable positive number clears the
+        // override and falls back to OCHA's figure rather than silently
+        // colouring the map off a bad value.
+        const raw = input.value.replace(/[^0-9.]/g, "");
+        setOverride(input.dataset.iso, input.dataset.key, raw === "" ? null : Number(raw));
+        render();
+        renderDetail(p);
+      });
+    });
+    el.querySelectorAll(".reset-link").forEach(btn => {
+      btn.addEventListener("click", () => {
+        setOverride(btn.dataset.resetIso, btn.dataset.resetKey, null);
+        render();
+        renderDetail(p);
+      });
+    });
   }
+
+  document.getElementById("metricSelect").addEventListener("change", render);
+  document.getElementById("denomSelect").addEventListener("change", render);
+  render();
 })();
 </script>
 </body>
