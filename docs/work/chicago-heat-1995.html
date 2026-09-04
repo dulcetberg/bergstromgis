@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chicago's Heat Wave, 30 Years On — Brian Bergstrom</title>
+<meta name="description" content="Thirty years after the 1995 Chicago heat wave killed more than 700 people, satellite thermal imagery and 1995 business records show the neighborhoods that suffered most were not the hottest by day, but the ones that stayed hot at night and had lost their gathering places.">
+<link rel="canonical" href="https://bergstromgis.com/work/chicago-heat-1995.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Brian Bergstrom">
+<meta property="og:title" content="Chicago's Heat Wave, 30 Years On — Brian Bergstrom">
+<meta property="og:description" content="Thirty years after the 1995 Chicago heat wave killed more than 700 people, satellite thermal imagery and 1995 business records show the neighborhoods that suffered most were not the hottest by day, but the ones that stayed hot at night and had lost their gathering places.">
+<meta property="og:image" content="https://bergstromgis.com/images/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Brian Bergstrom — GIS that makes the overlooked undeniable.">
+<meta property="og:url" content="https://bergstromgis.com/work/chicago-heat-1995.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Chicago's Heat Wave, 30 Years On — Brian Bergstrom">
+<meta name="twitter:description" content="Thirty years after the 1995 Chicago heat wave killed more than 700 people, satellite thermal imagery and 1995 business records show the neighborhoods that suffered most were not the hottest by day, but the ones that stayed hot at night and had lost their gathering places.">
+<meta name="twitter:image" content="https://bergstromgis.com/images/og-image.png">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="alternate icon" href="../favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../css/brand.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <nav class="site-nav container" aria-label="Primary">
+    <a class="wordmark" href="../index.html">Brian Bergstrom</a>
+    <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks">Menu</button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../work-civic.html">Work</a></li>
+      <li><a href="../blog.html">Blog</a></li>
+      <li><a href="../about.html">About</a></li>
+      <li><a href="../../resume/resume.html">Resume</a></li>
+      <li><a href="../ai-use.html">AI Use</a></li>
+      <li><a href="../contact.html">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="redmap" color-interpolation-filters="sRGB">
+    <feColorMatrix type="matrix" values="0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0 0 0 1 0" result="gray"/>
+    <feComponentTransfer in="gray" result="normalized">
+      <feFuncR type="linear" slope="11.087" intercept="-3.348"/>
+      <feFuncG type="linear" slope="11.087" intercept="-3.348"/>
+      <feFuncB type="linear" slope="11.087" intercept="-3.348"/>
+    </feComponentTransfer>
+    <feComponentTransfer in="normalized">
+      <feFuncR type="table" tableValues="0.02 0.18 0.45 0.75 1.0"/>
+      <feFuncG type="table" tableValues="0.00 0.015 0.04 0.10 0.30"/>
+      <feFuncB type="table" tableValues="0.00 0.015 0.03 0.07 0.22"/>
+    </feComponentTransfer>
+  </filter>
+</svg>
+
+<main id="main">
+  <section class="site-hero">
+    <div class="hero-base"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-lines"></div>
+    <div class="hero-vignette"></div>
+    <svg class="hero-sparkles">
+      <defs>
+        <radialGradient id="sparkGrad">
+          <stop offset="0%" stop-color="#FFEFD6" stop-opacity="1"/>
+          <stop offset="35%" stop-color="#FFB199" stop-opacity="0.9"/>
+          <stop offset="100%" stop-color="#C0392B" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <circle class="sparkle" data-sx="211" data-sy="414" r="3.4" fill="url(#sparkGrad)" style="animation-delay:-0.2s; animation-duration:2.3s;"/>
+      <circle class="sparkle" data-sx="988" data-sy="388" r="3.0" fill="url(#sparkGrad)" style="animation-delay:-1.4s; animation-duration:2.9s;"/>
+      <circle class="sparkle" data-sx="634" data-sy="539" r="3.6" fill="url(#sparkGrad)" style="animation-delay:-0.8s; animation-duration:2.5s;"/>
+      <circle class="sparkle" data-sx="849" data-sy="449" r="3.1" fill="url(#sparkGrad)" style="animation-delay:-2.1s; animation-duration:3.1s;"/>
+      <circle class="sparkle" data-sx="1077" data-sy="463" r="3.5" fill="url(#sparkGrad)" style="animation-delay:-0.5s; animation-duration:2.4s;"/>
+      <circle class="sparkle" data-sx="1260" data-sy="552" r="3.0" fill="url(#sparkGrad)" style="animation-delay:-1.8s; animation-duration:2.8s;"/>
+      <circle class="sparkle" data-sx="1745" data-sy="527" r="4.0" fill="url(#sparkGrad)" style="animation-delay:-1.0s; animation-duration:2.6s;"/>
+      <circle class="sparkle" data-sx="965" data-sy="561" r="3.2" fill="url(#sparkGrad)" style="animation-delay:-2.4s; animation-duration:3.0s;"/>
+      <circle class="sparkle" data-sx="1169" data-sy="592" r="3.3" fill="url(#sparkGrad)" style="animation-delay:-0.1s; animation-duration:2.7s;"/>
+      <circle class="sparkle" data-sx="1262" data-sy="617" r="3.6" fill="url(#sparkGrad)" style="animation-delay:-1.6s; animation-duration:2.5s;"/>
+      <circle class="sparkle" data-sx="1060" data-sy="835" r="3.1" fill="url(#sparkGrad)" style="animation-delay:-0.9s; animation-duration:2.9s;"/>
+      <circle class="sparkle" data-sx="1135" data-sy="816" r="3.4" fill="url(#sparkGrad)" style="animation-delay:-2.0s; animation-duration:2.6s;"/>
+    </svg>
+    <svg class="hero-corner" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="46" fill="none" stroke="#FF6A52" stroke-width="5" stroke-linecap="round" stroke-dasharray="255 40" transform="rotate(-58 60 60)" /></svg>
+    <div class="hero-content">
+      <span class="eyebrow">GIS Analyst &middot; Chicago</span>
+      <p class="hero-title">GIS that makes the overlooked undeniable.</p>
+      <p class="lede">Real maps, real data, real people who needed someone to notice. New ones posted here roughly every week.</p>
+    </div>
+  </section>
+
+  <div class="blog-layout container">
+  <div class="blog-main">
+    <div class="container">
+    <a class="breadcrumb" href="../work-civic.html">&larr; Back to civic work</a>
+
+    <header class="project-header">
+      <span class="tag tag-civic">Civic &mdash; Independent Study</span>
+      <h1>Chicago's Heat Wave, 30 Years On</h1>
+      <p class="subtitle">In July 1995, more than 700 people died in a Chicago heat wave. The
+      sociologist Eric Klinenberg argued the deaths were social rather than meteorological. I tested
+      that claim with satellite thermal imagery and business records from 1995, and found the
+      neighborhoods that suffered most were not the hottest by day.</p>
+      <div class="meta-row">
+        <span class="stat">121 satellite scenes, summers 2019&ndash;2025</span>
+        <span class="stat">110,605 rows of 1995 US Census business records</span>
+        <span class="stat">77 community areas, no mortality data used</span>
+      </div>
+    </header>
+  </div>
+
+  <div class="project-hero-media">
+    <div class="media-inner">
+      <img src="../images/chicago-heat-1995.jpg" alt="Map of Chicago's 77 community areas shaded by a combined heat-vulnerability score, with the darkest areas forming a band across the West and South sides.">
+    </div>
+  </div>
+
+  <div class="project-body">
+    <p>
+      Between July 13 and July 20, 1995, Chicago hit 106 degrees. The Cook County Medical Examiner
+      certified 465 heat related deaths in that week, and researchers later put the number of excess
+      deaths closer to 700. Almost all of the victims were elderly, and most died indoors and alone.
+    </p>
+    <p>
+      The obvious explanation is that some neighborhoods were simply hotter than others. In his book
+      <em>Heat Wave</em>, the sociologist Eric Klinenberg argued for something different. He compared
+      two adjacent West Side neighborhoods with similar poverty rates and very different death rates,
+      and concluded that what protected people was ordinary social contact. Where there were busy
+      shops, restaurants and churches, older residents had reasons to leave the house, and neighbors
+      noticed when they stopped showing up.
+    </p>
+    <p>
+      Thirty years on, there is data available now that nobody had then. I wanted to know whether his
+      geography still holds, and whether a satellite can see it.
+    </p>
+
+    <h2>The problem with mortality data</h2>
+    <p>
+      There is no public record of where people died in 1995 at the neighborhood level. Records that
+      detailed are not released, and Cook County's open medical examiner archive only begins in 2008.
+      Modern heat deaths are too few to model: 62 in the whole county since 2015, and only 45 with a
+      neighborhood attached.
+    </p>
+    <p>
+      So this project does not model deaths. It measures the two things Klinenberg said mattered, and
+      asks whether they line up with the geography the historical record already describes. That
+      turns out to be a stronger test than it sounds, because the two measurements come from
+      completely independent sources and neither one knows anything about 1995 mortality.
+    </p>
+
+    <h2>The finding I did not expect</h2>
+    <p>
+      Landsat satellites measure surface temperature at about 10:30 in the morning. By that measure,
+      the hottest parts of Chicago are the bungalow neighborhoods on the Southwest and Northwest
+      sides, and the neighborhoods that suffered most in 1995 look unremarkable. Washington Park came
+      out as the ninth coolest community area in the city.
+    </p>
+    <p>
+      That is a real measurement, and it is also the wrong one. Lake Michigan keeps the lakefront
+      cool during the day. But heat does not kill people at 10:30 in the morning. It kills when
+      buildings hold their heat overnight and the body never gets a chance to recover.
+    </p>
+    <div class="callout">
+      <p>
+        Switching to a satellite that passes over at 1:30 in the morning reverses the picture. North
+        Lawndale moves from 41st hottest to 2nd. East Garfield Park moves from 44th to 3rd.
+        Washington Park moves from 69th to 16th. Daytime and nighttime temperature agree only about
+        half the time, and it is the nighttime map that matches where people actually died.
+      </p>
+    </div>
+
+    <h2>Thirty years of commercial geography</h2>
+    <p>
+      For 1995 I used the Census Bureau's ZIP Code Business Patterns, which counts establishments by
+      industry code and reaches back to 1994. Restaurants and bars are as close as public data gets
+      to "places where people gather." For today I used OpenStreetMap's record of cafes, libraries,
+      community centres and social facilities.
+    </p>
+    <p>
+      Chicago's commercial geography has barely moved. Where there were bars and restaurants in 1995,
+      there are cafes now, and where there were not, there still are not. The relationship is about
+      0.7 on a scale where 1.0 would be a perfect match. Klinenberg was not describing a moment that
+      has since passed. The pattern he identified is still in place.
+    </p>
+
+    <h2>Why both maps are needed</h2>
+    <p>
+      Heat and social infrastructure turn out to be almost unrelated to each other. Some hot
+      neighborhoods are full of cafes, and some cool ones have almost none. Neither map alone predicts
+      where the 1995 deaths clustered. The overlap does.
+    </p>
+    <p>
+      Five community areas fall in the worst quarter of the city on all three measures, hot at night,
+      short of businesses in 1995, and short of gathering places today: South Lawndale, West Garfield
+      Park, West Englewood, Chicago Lawn and Austin. About 7,000 residents over 65 live alone in
+      those five areas.
+    </p>
+
+    <h2>The obvious objection</h2>
+    <p>
+      OpenStreetMap is built by volunteers, so a neighborhood can look empty simply because nobody
+      mapped it. If volunteer mapping were thinnest in poor neighborhoods, this whole analysis would
+      be measuring mapping effort rather than real amenities.
+    </p>
+    <p>
+      I checked, using the share of buildings in each area that carry a street address in
+      OpenStreetMap as a measure of how thoroughly it has been surveyed. The neighborhoods this
+      finding depends on are mapped as well as or better than the city average. West Garfield Park
+      sits twelve points above the median. Chicago's least mapped areas are the outlying bungalow
+      belt, not the South and West sides.
+    </p>
+
+    <h2>What this does not show</h2>
+    <p>
+      No death records appear anywhere in this analysis. This is a map of vulnerability, not of what
+      happened. Its claim to be meaningful is that it independently reproduces a pattern that
+      historians and sociologists documented by other means.
+    </p>
+    <p>
+      There is also one comparison it cannot make. The two neighborhoods at the center of
+      Klinenberg's argument, North and South Lawndale, share a single ZIP code, so the 1995 business
+      data cannot tell them apart. I measured the gap at 41 percent before interpolation and 5
+      percent after, which is a difference produced by method rather than by anything real. That
+      specific test needs a different source, and saying so is more useful than picking whichever
+      number looked better.
+    </p>
+
+    <div class="evidence-panel">
+      <p>Switch between night heat, day heat, 1995 commerce and today's gathering places, and click any community area for its full numbers.</p>
+      <a class="btn btn-primary" href="../chicago-heat-1995/" target="_blank" rel="noopener">
+        View the map <span class="visually-hidden">(opens in a new tab)</span>
+      </a>
+      <a class="btn btn-outline" href="https://github.com/dulcetberg/chicago-heat-1995" target="_blank" rel="noopener">
+        View the code <span class="visually-hidden">(opens in a new tab)</span>
+      </a>
+    </div>
+  </div>
+    </div>
+
+    <aside class="blog-sidebar" aria-label="Search and browse by date">
+      <div class="sidebar-panel">
+        <h2>Search posts</h2>
+        <form class="search-field" id="sidebarSearchForm">
+          <label class="visually-hidden" for="blogSearch">Search posts</label>
+          <input type="search" id="blogSearch" name="q" placeholder="Search titles, tags, topics…">
+          <button type="submit" class="search-submit" aria-label="Search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4a6 6 0 104.472 10.03l4.749 4.748 1.414-1.414-4.748-4.749A6 6 0 0010 4zm-4 6a4 4 0 118 0 4 4 0 01-8 0z"/></svg>
+          </button>
+        </form>
+        <p class="search-status" id="searchStatus" hidden></p>
+      </div>
+
+      <div class="sidebar-panel">
+        <h2>Browse by date</h2>
+        <div class="cal-head">
+          <button class="cal-nav" id="calPrev" type="button" aria-label="Previous month">&larr;</button>
+          <span class="cal-label" id="calLabel"></span>
+          <button class="cal-nav" id="calNext" type="button" aria-label="Next month">&rarr;</button>
+        </div>
+        <div class="cal-grid" id="calGrid" role="grid" aria-label="Post dates"></div>
+        <button class="cal-clear" id="calClear" type="button" hidden>Clear date filter</button>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <svg class="footer-mark" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="46" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-dasharray="255 40" transform="rotate(-58 60 60)" /></svg>
+    <p class="footer-note">&copy; <a href="mailto:brian@bergstromgis.com">Brian Bergstrom</a>. Built by Claude, hosted on GitHub Pages.</p>
+  </div>
+</footer>
+
+<script>
+  document.documentElement.classList.add('js-ready');
+  var toggle = document.getElementById('navToggle');
+  var links = document.getElementById('navLinks');
+  toggle.addEventListener('click', function () {
+    var open = links.classList.toggle('is-open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+</script>
+<script src="../js/hero-sparkles.js"></script>
+<script src="../js/blog-post-data.js"></script>
+<script src="../js/blog-sidebar.js"></script>
+</body>
+</html>
