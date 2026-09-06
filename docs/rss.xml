@@ -5,7 +5,14 @@
   <link>https://bergstromgis.com/blog.html</link>
   <description>Weekly and biweekly GIS projects and write-ups from Brian Bergstrom: civic data journalism, humanitarian mapping, and personal-interest builds.</description>
   <language>en-us</language>
-  <lastBuildDate>Fri, 04 Sep 2026 14:00:00 GMT</lastBuildDate>
+  <lastBuildDate>Sat, 05 Sep 2026 20:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Dulcet GIS, a New Podcast</title>
+      <link>https://dulcetgis.com</link>
+      <guid isPermaLink="true">https://dulcetgis.com</guid>
+      <pubDate>Sat, 05 Sep 2026 20:00:00 GMT</pubDate>
+      <description>Launching Dulcet GIS, a podcast about maps and who gets to draw them. Episode one covers the UN General Assembly vote to adopt the Equal Earth projection, the executive orders that renamed the Gulf of Mexico and Lake Ontario, and why OpenStreetMap was the only map that did not change.</description>
+    </item>
     <item>
       <title>Chicago's Heat Wave, 30 Years On</title>
       <link>https://bergstromgis.com/work/chicago-heat-1995.html</link>
