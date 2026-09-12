@@ -4,6 +4,7 @@
 // whatever happens to be rendered on the current page. Update this
 // alongside blog.html (and rss.xml) whenever a new post goes up.
 window.BLOG_POST_DATES = [
+  "2026-09-12",
   "2026-09-08",
   "2026-09-07",
   "2026-09-05",
