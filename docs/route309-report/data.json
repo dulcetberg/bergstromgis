@@ -1,12 +1,12 @@
 {
-  "last_updated_utc": "2026-09-15T00:18:35Z",
-  "last_updated_local_display": "7:18 PM CDT on Mon, Sep 14",
-  "n_checked": 23718,
-  "n_ghosted": 5692,
+  "last_updated_utc": "2026-09-15T00:48:40Z",
+  "last_updated_local_display": "7:48 PM CDT on Mon, Sep 14",
+  "n_checked": 23786,
+  "n_ghosted": 5700,
   "ghost_rate_pct": 24.0,
-  "stop_n_checked": 199,
+  "stop_n_checked": 200,
   "stop_n_ghosted": 41,
-  "stop_ghost_rate_pct": 20.6,
+  "stop_ghost_rate_pct": 20.5,
   "missed_at_stop": [
     {
       "date": "2026-09-04",
