@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Buses That Never Came &mdash; Brian Bergstrom</title>
+<meta name="description" content="Across sixteen US transit systems, 5.8% of scheduled bus trips left no trace in the agency's own realtime feed. San Antonio missed 0.4%; Chicago and Baltimore missed roughly one trip in seven.">
+<link rel="canonical" href="https://bergstromgis.com/work/ghost-bus-index.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Brian Bergstrom">
+<meta property="og:title" content="The Buses That Never Came &mdash; Brian Bergstrom">
+<meta property="og:description" content="Across sixteen US transit systems, 5.8% of scheduled bus trips left no trace in the agency's own realtime feed. San Antonio missed 0.4%; Chicago and Baltimore missed roughly one trip in seven.">
+<meta property="og:image" content="https://bergstromgis.com/images/ghost-bus-index.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Ranked bar chart in coral on near-black, showing ghost bus rates for sixteen US transit systems from San Antonio at 0.4 percent to Chicago and Baltimore at 14.1 percent.">
+<meta property="og:url" content="https://bergstromgis.com/work/ghost-bus-index.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The Buses That Never Came &mdash; Brian Bergstrom">
+<meta name="twitter:description" content="Across sixteen US transit systems, 5.8% of scheduled bus trips left no trace in the agency's own realtime feed. San Antonio missed 0.4%; Chicago and Baltimore missed roughly one trip in seven.">
+<meta name="twitter:image" content="https://bergstromgis.com/images/ghost-bus-index.jpg">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="alternate icon" href="../favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../css/brand.css">
+<style>
+  /* Page-local only. Every colour is a brand.css token, so this page re-themes
+     with the rest of the site and introduces no new palette. */
+  .project-body .wide { max-width: none; width: min(100%, 1000px); margin: 2rem 0 0.6rem; }
+  .project-body figure { margin: 2rem 0 0.6rem; }
+  .project-body figcaption { font-size: 0.8rem; color: var(--text-muted);
+    margin-top: 0.9rem; line-height: 1.55; max-width: 640px; }
+  .chart { background: var(--bg-raised); border: 1px solid var(--rule);
+    padding: 1.3rem 1.2rem 0.6rem; }
+  .chart svg { width: 100%; height: auto; display: block; overflow: visible; }
+  .grid { stroke: var(--rule); stroke-width: 1; }
+  .ax-t { font-size: 10.5px; fill: var(--text-muted); letter-spacing: 0.04em; }
+  .cty { font-size: 12.5px; fill: var(--text); }
+  .val { font-size: 11.5px; fill: var(--text-muted); font-variant-numeric: tabular-nums; }
+  .bar { fill: var(--accent); }
+  .conn { stroke: var(--rule); stroke-width: 2; }
+  .d-we { fill: var(--accent); stroke: var(--bg-raised); stroke-width: 2; }
+  .d-wd { fill: var(--bg-raised); stroke: var(--accent); stroke-width: 2.5; }
+  .legend { display: flex; gap: 1.3rem; align-items: center; margin-bottom: 0.9rem;
+    font-size: 0.78rem; color: var(--text-muted); }
+  .key { display: inline-flex; align-items: center; gap: 0.45rem; }
+  .ring, .disc { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+  .disc { background: var(--accent); }
+  .ring { border: 2.5px solid var(--accent); }
+
+  .scroll { overflow-x: auto; border: 1px solid var(--rule); background: var(--bg-raised); }
+  .project-body table { border-collapse: collapse; width: 100%; font-size: 0.88rem; }
+  .project-body th { font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text-muted); text-align: left; padding: 0.8rem 0.85rem; white-space: nowrap;
+    border-bottom: 1px solid var(--rule); font-weight: 700; }
+  .project-body td { padding: 0.7rem 0.85rem; border-bottom: 1px solid var(--rule);
+    vertical-align: top; }
+  .project-body tbody tr:last-child td { border-bottom: none; }
+  .project-body td.n, .project-body th.n { text-align: right;
+    font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .project-body td.hi { color: var(--accent); font-weight: 700; }
+  .ag { font-size: 0.78rem; color: var(--text-muted); }
+  .guards .gname { font-weight: 700; white-space: nowrap; }
+  .guards .thr { font-size: 0.74rem; color: var(--coral); line-height: 1.5; min-width: 130px; }
+  .guards .what { min-width: 230px; font-size: 0.85rem; }
+  .guards .excl { font-size: 0.74rem; color: var(--text-muted); line-height: 1.5;
+    white-space: normal; min-width: 96px; }
+  .src .ep { font-size: 0.72rem; color: var(--text); word-break: break-all; min-width: 215px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .src .what { font-size: 0.82rem; min-width: 240px; }
+
+  .figures { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+    background: var(--rule); border: 1px solid var(--rule); margin: 0 0 2rem; }
+  .figures div { background: var(--bg-raised); padding: 1rem; }
+  .figures b { display: block; font-family: var(--font-heading); font-size: 1.5rem;
+    font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; }
+  .figures span { display: block; font-size: 0.66rem; letter-spacing: 0.07em;
+    text-transform: uppercase; color: var(--text-muted); margin-top: 0.35rem; line-height: 1.4; }
+  @media (max-width: 720px) { .figures { grid-template-columns: repeat(2, 1fr); } }
+
+  .note { border-left: 4px solid var(--primary); background: var(--bg-raised);
+    padding: 1.1rem 1.4rem; margin: 1.8rem 0; }
+  .note p:last-child { margin-bottom: 0; }
+  .note .lbl { display: block; font-size: 0.68rem; letter-spacing: 0.09em;
+    text-transform: uppercase; color: var(--accent); font-weight: 700; margin-bottom: 0.5rem; }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <nav class="site-nav container" aria-label="Primary">
+    <a class="wordmark" href="../index.html">Brian Bergstrom</a>
+    <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks">Menu</button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../work-civic.html">Work</a></li>
+      <li><a href="../blog.html">Blog</a></li>
+      <li><a href="../about.html">About</a></li>
+      <li><a href="../../resume/resume.html">Resume</a></li>
+      <li><a href="../ai-use.html">AI Use</a></li>
+      <li><a href="../contact.html">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="redmap" color-interpolation-filters="sRGB">
+    <feColorMatrix type="matrix" values="0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0 0 0 1 0" result="gray"/>
+    <feComponentTransfer in="gray" result="normalized">
+      <feFuncR type="linear" slope="11.087" intercept="-3.348"/>
+      <feFuncG type="linear" slope="11.087" intercept="-3.348"/>
+      <feFuncB type="linear" slope="11.087" intercept="-3.348"/>
+    </feComponentTransfer>
+    <feComponentTransfer in="normalized">
+      <feFuncR type="table" tableValues="0.02 0.18 0.45 0.75 1.0"/>
+      <feFuncG type="table" tableValues="0.00 0.015 0.04 0.10 0.30"/>
+      <feFuncB type="table" tableValues="0.00 0.015 0.03 0.07 0.22"/>
+    </feComponentTransfer>
+  </filter>
+</svg>
+
+<main id="main">
+  <section class="site-hero">
+    <div class="hero-base"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-lines"></div>
+    <div class="hero-vignette"></div>
+    <svg class="hero-sparkles">
+      <defs>
+        <radialGradient id="sparkGrad">
+          <stop offset="0%" stop-color="#FFEFD6" stop-opacity="1"/>
+          <stop offset="35%" stop-color="#FFB199" stop-opacity="0.9"/>
+          <stop offset="100%" stop-color="#C0392B" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <circle class="sparkle" data-sx="211" data-sy="414" r="3.4" fill="url(#sparkGrad)" style="animation-delay:-0.2s; animation-duration:2.3s;"/>
+      <circle class="sparkle" data-sx="988" data-sy="388" r="3.0" fill="url(#sparkGrad)" style="animation-delay:-1.4s; animation-duration:2.9s;"/>
+      <circle class="sparkle" data-sx="634" data-sy="539" r="3.6" fill="url(#sparkGrad)" style="animation-delay:-0.8s; animation-duration:2.5s;"/>
+      <circle class="sparkle" data-sx="849" data-sy="449" r="3.1" fill="url(#sparkGrad)" style="animation-delay:-2.1s; animation-duration:3.1s;"/>
+      <circle class="sparkle" data-sx="1077" data-sy="463" r="3.5" fill="url(#sparkGrad)" style="animation-delay:-0.5s; animation-duration:2.4s;"/>
+      <circle class="sparkle" data-sx="1260" data-sy="552" r="3.0" fill="url(#sparkGrad)" style="animation-delay:-1.8s; animation-duration:2.8s;"/>
+      <circle class="sparkle" data-sx="1745" data-sy="527" r="4.0" fill="url(#sparkGrad)" style="animation-delay:-1.0s; animation-duration:2.6s;"/>
+      <circle class="sparkle" data-sx="965" data-sy="561" r="3.2" fill="url(#sparkGrad)" style="animation-delay:-2.4s; animation-duration:3.0s;"/>
+      <circle class="sparkle" data-sx="1169" data-sy="592" r="3.3" fill="url(#sparkGrad)" style="animation-delay:-0.1s; animation-duration:2.7s;"/>
+      <circle class="sparkle" data-sx="1262" data-sy="617" r="3.6" fill="url(#sparkGrad)" style="animation-delay:-1.6s; animation-duration:2.5s;"/>
+      <circle class="sparkle" data-sx="1060" data-sy="835" r="3.1" fill="url(#sparkGrad)" style="animation-delay:-0.9s; animation-duration:2.9s;"/>
+      <circle class="sparkle" data-sx="1135" data-sy="816" r="3.4" fill="url(#sparkGrad)" style="animation-delay:-2.0s; animation-duration:2.6s;"/>
+    </svg>
+    <svg class="hero-corner" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="46" fill="none" stroke="#FF6A52" stroke-width="5" stroke-linecap="round" stroke-dasharray="255 40" transform="rotate(-58 60 60)" /></svg>
+    <div class="hero-content">
+      <span class="eyebrow">GIS Analyst &middot; Chicago</span>
+      <p class="hero-title">GIS that makes the overlooked undeniable.</p>
+      <p class="lede">Real maps, real data, real people who needed someone to notice. New ones posted here roughly every week.</p>
+    </div>
+  </section>
+
+  <div class="blog-layout container">
+  <div class="blog-main">
+    <div class="container">
+    <a class="breadcrumb" href="../work-civic.html">&larr; Back to civic work</a>
+
+    <header class="project-header">
+      <span class="tag tag-civic">Civic &mdash; Independent Study</span>
+      <h1>The Buses That Never Came</h1>
+      <p class="subtitle">A ghost bus is a trip that exists on the schedule and never appears on
+      the street. Across sixteen US transit systems, 5.8% of scheduled bus trips left no trace in
+      the agency's own realtime feed.</p>
+      <div class="meta-row">
+        <span class="stat">16 transit systems, 12 service days</span>
+        <span class="stat">1,359,631 scheduled trips checked</span>
+        <span class="stat">78,966 never observed</span>
+      </div>
+    </header>
+  </div>
+
+  <div class="project-hero-media">
+    <div class="media-inner">
+      <img src="../images/ghost-bus-index.jpg" alt="Ranked bar chart in coral on near-black, showing ghost bus rates for sixteen US transit systems from San Antonio at 0.4 percent to Chicago and Baltimore at 14.1 percent.">
+    </div>
+  </div>
+
+  <div class="project-body">
+    <div class="figures">
+      <div><b>16</b><span>Transit systems</span></div>
+      <div><b>12</b><span>Service days</span></div>
+      <div><b>1.36M</b><span>Scheduled trips checked</span></div>
+      <div><b>78,966</b><span>Never observed</span></div>
+    </div>
+
+    <h2>What was measured</h2>
+    <p>Every transit agency publishes two things: a schedule saying which trips are supposed to run,
+    and a realtime feed reporting where its vehicles actually are. Compare them and you can count
+    the trips that were promised but never showed up.</p>
+
+    <p>From 3 to 15 September 2026 I collected vehicle positions every 90 seconds from 19 US
+    agencies, alongside a daily snapshot of each agency's published schedule. For each service day I
+    took the set of trips scheduled to run and checked which of them ever appeared in the realtime
+    feed. A scheduled trip that is never seen is counted as a ghost.</p>
+
+    <p>That is a deliberately generous test. A trip counts as having run if it reported its position
+    even once, so a bus that appeared for two minutes and vanished still counts as delivered. The
+    real shortfall riders experience is larger than what follows.</p>
+
+    <h2>The count</h2>
+    <figure class="wide">
+      <div class="chart"><svg viewBox="0 0 720 496" role="img" aria-label="Ghost bus rate by city">
+<text x="0" y="14" class="ax-t">share of scheduled bus trips never seen in the realtime feed</text>
+<line x1="162.0" y1="28" x2="162.0" y2="470" class="grid"/>
+<text x="162.0" y="486" class="ax-t" text-anchor="middle">0%</text>
+<line x1="324.0" y1="28" x2="324.0" y2="470" class="grid"/>
+<text x="324.0" y="486" class="ax-t" text-anchor="middle">5%</text>
+<line x1="486.0" y1="28" x2="486.0" y2="470" class="grid"/>
+<text x="486.0" y="486" class="ax-t" text-anchor="middle">10%</text>
+<line x1="648.0" y1="28" x2="648.0" y2="470" class="grid"/>
+<text x="648.0" y="486" class="ax-t" text-anchor="middle">15%</text>
+<text x="140" y="51.5" class="cty" text-anchor="end">San Antonio</text>
+<rect x="162" y="39.0" width="13.0" height="15" rx="3" class="bar"><title>San Antonio (VIA Metropolitan Transit): 0.4% ghost, 11 clean days</title></rect>
+<text x="184.0" y="51.5" class="val">0.4%</text>
+<text x="140" y="78.5" class="cty" text-anchor="end">Denver</text>
+<rect x="162" y="66.0" width="55.1" height="15" rx="3" class="bar"><title>Denver (RTD): 1.7% ghost, 11 clean days</title></rect>
+<text x="226.1" y="78.5" class="val">1.7%</text>
+<text x="140" y="105.5" class="cty" text-anchor="end">Milwaukee</text>
+<rect x="162" y="93.0" width="61.6" height="15" rx="3" class="bar"><title>Milwaukee (MCTS): 1.9% ghost, 9 clean days</title></rect>
+<text x="232.6" y="105.5" class="val">1.9%</text>
+<text x="140" y="132.5" class="cty" text-anchor="end">Orlando</text>
+<rect x="162" y="120.0" width="74.5" height="15" rx="3" class="bar"><title>Orlando (LYNX): 2.3% ghost, 9 clean days</title></rect>
+<text x="245.5" y="132.5" class="val">2.3%</text>
+<text x="140" y="159.5" class="cty" text-anchor="end">Phoenix</text>
+<rect x="162" y="147.0" width="77.8" height="15" rx="3" class="bar"><title>Phoenix (Valley Metro): 2.4% ghost, 11 clean days</title></rect>
+<text x="248.8" y="159.5" class="val">2.4%</text>
+<text x="140" y="186.5" class="cty" text-anchor="end">Los Angeles</text>
+<rect x="162" y="174.0" width="87.5" height="15" rx="3" class="bar"><title>Los Angeles (LA Metro): 2.7% ghost, 9 clean days</title></rect>
+<text x="258.5" y="186.5" class="val">2.7%</text>
+<text x="140" y="213.5" class="cty" text-anchor="end">Charlotte</text>
+<rect x="162" y="201.0" width="90.7" height="15" rx="3" class="bar"><title>Charlotte (CATS): 2.8% ghost, 11 clean days</title></rect>
+<text x="261.7" y="213.5" class="val">2.8%</text>
+<text x="140" y="240.5" class="cty" text-anchor="end">Boston</text>
+<rect x="162" y="228.0" width="123.1" height="15" rx="3" class="bar"><title>Boston (MBTA): 3.8% ghost, 11 clean days</title></rect>
+<text x="294.1" y="240.5" class="val">3.8%</text>
+<text x="140" y="267.5" class="cty" text-anchor="end">New York</text>
+<rect x="162" y="255.0" width="158.8" height="15" rx="3" class="bar"><title>New York (MTA New York City Bus): 4.9% ghost, 6 clean days</title></rect>
+<text x="329.8" y="267.5" class="val">4.9%</text>
+<text x="140" y="294.5" class="cty" text-anchor="end">Philadelphia</text>
+<rect x="162" y="282.0" width="171.7" height="15" rx="3" class="bar"><title>Philadelphia (SEPTA): 5.3% ghost, 10 clean days</title></rect>
+<text x="342.7" y="294.5" class="val">5.3%</text>
+<text x="140" y="321.5" class="cty" text-anchor="end">Honolulu</text>
+<rect x="162" y="309.0" width="200.9" height="15" rx="3" class="bar"><title>Honolulu (TheBus): 6.2% ghost, 11 clean days</title></rect>
+<text x="371.9" y="321.5" class="val">6.2%</text>
+<text x="140" y="348.5" class="cty" text-anchor="end">Minneapolis</text>
+<rect x="162" y="336.0" width="230.0" height="15" rx="3" class="bar"><title>Minneapolis (Metro Transit): 7.1% ghost, 11 clean days</title></rect>
+<text x="401.0" y="348.5" class="val">7.1%</text>
+<text x="140" y="375.5" class="cty" text-anchor="end">Austin</text>
+<rect x="162" y="363.0" width="246.2" height="15" rx="3" class="bar"><title>Austin (CapMetro): 7.6% ghost, 11 clean days</title></rect>
+<text x="417.2" y="375.5" class="val">7.6%</text>
+<text x="140" y="402.5" class="cty" text-anchor="end">Pittsburgh</text>
+<rect x="162" y="390.0" width="330.5" height="15" rx="3" class="bar"><title>Pittsburgh (PRT): 10.2% ghost, 11 clean days</title></rect>
+<text x="501.5" y="402.5" class="val">10.2%</text>
+<text x="140" y="429.5" class="cty" text-anchor="end">Chicago</text>
+<rect x="162" y="417.0" width="456.8" height="15" rx="3" class="bar"><title>Chicago (CTA): 14.1% ghost, 9 clean days</title></rect>
+<text x="627.8" y="429.5" class="val">14.1%</text>
+<text x="140" y="456.5" class="cty" text-anchor="end">Baltimore</text>
+<rect x="162" y="444.0" width="456.8" height="15" rx="3" class="bar"><title>Baltimore (MTA Maryland): 14.1% ghost, 9 clean days</title></rect>
+<text x="627.8" y="456.5" class="val">14.1%</text>
+</svg></div>
+      <figcaption>Share of scheduled bus trips never observed, pooled across all clean service days.
+      Hover any bar for the agency and day count. Atlanta, Miami and LA Rail were collected but are
+      not measurable; see the exclusions below.</figcaption>
+    </figure>
+
+    <p>The spread is wide. San Antonio's VIA delivered essentially everything it promised, at 0.4%.
+    Chicago and Baltimore sit at 14.1%, meaning roughly one scheduled trip in seven left no trace at
+    all. The median system lands at 4.3%.</p>
+
+    <p>Ranking cities against each other is the obvious thing to do with this table and also the
+    thing to be most careful about. These are not equally comparable systems: they differ in fleet
+    size, in how much of the fleet reports, and in how their feeds behave. What the number measures
+    cleanly is a system against itself, day to day.</p>
+
+    <figure class="wide">
+    <div class="scroll"><table><thead><tr><th>City</th><th>Agency</th><th class="n">Clean days</th><th class="n">Ghost rate</th><th class="n">Weekday</th><th class="n">Weekend</th></tr></thead><tbody>
+<tr><td>San Antonio</td><td class="ag">VIA Metropolitan Transit</td><td class="n">11</td><td class="n hi">0.4%</td><td class="n">0.4%</td><td class="n">0.5%</td></tr>
+<tr><td>Denver</td><td class="ag">RTD</td><td class="n">11</td><td class="n hi">1.7%</td><td class="n">2.0%</td><td class="n">0.8%</td></tr>
+<tr><td>Milwaukee</td><td class="ag">MCTS</td><td class="n">9</td><td class="n hi">1.9%</td><td class="n">1.2%</td><td class="n">4.1%</td></tr>
+<tr><td>Orlando</td><td class="ag">LYNX</td><td class="n">9</td><td class="n hi">2.3%</td><td class="n">3.2%</td><td class="n">0.7%</td></tr>
+<tr><td>Phoenix</td><td class="ag">Valley Metro</td><td class="n">11</td><td class="n hi">2.4%</td><td class="n">2.7%</td><td class="n">1.4%</td></tr>
+<tr><td>Los Angeles</td><td class="ag">LA Metro</td><td class="n">9</td><td class="n hi">2.7%</td><td class="n">2.6%</td><td class="n">2.9%</td></tr>
+<tr><td>Charlotte</td><td class="ag">CATS</td><td class="n">11</td><td class="n hi">2.8%</td><td class="n">2.8%</td><td class="n">2.8%</td></tr>
+<tr><td>Boston</td><td class="ag">MBTA</td><td class="n">11</td><td class="n hi">3.8%</td><td class="n">3.4%</td><td class="n">4.7%</td></tr>
+<tr><td>New York</td><td class="ag">MTA New York City Bus</td><td class="n">6</td><td class="n hi">4.9%</td><td class="n">5.0%</td><td class="n">4.2%</td></tr>
+<tr><td>Philadelphia</td><td class="ag">SEPTA</td><td class="n">10</td><td class="n hi">5.3%</td><td class="n">5.3%</td><td class="n">5.5%</td></tr>
+<tr><td>Honolulu</td><td class="ag">TheBus</td><td class="n">11</td><td class="n hi">6.2%</td><td class="n">7.2%</td><td class="n">3.4%</td></tr>
+<tr><td>Minneapolis</td><td class="ag">Metro Transit</td><td class="n">11</td><td class="n hi">7.1%</td><td class="n">8.6%</td><td class="n">3.1%</td></tr>
+<tr><td>Austin</td><td class="ag">CapMetro</td><td class="n">11</td><td class="n hi">7.6%</td><td class="n">7.7%</td><td class="n">7.5%</td></tr>
+<tr><td>Pittsburgh</td><td class="ag">PRT</td><td class="n">11</td><td class="n hi">10.2%</td><td class="n">10.4%</td><td class="n">9.5%</td></tr>
+<tr><td>Chicago</td><td class="ag">CTA</td><td class="n">9</td><td class="n hi">14.1%</td><td class="n">13.7%</td><td class="n">14.7%</td></tr>
+<tr><td>Baltimore</td><td class="ag">MTA Maryland</td><td class="n">9</td><td class="n hi">14.1%</td><td class="n">10.8%</td><td class="n">20.8%</td></tr>
+</tbody></table></div>
+      <figcaption>Clean days are service days that survived all four validity tests. Weekday and
+      weekend columns are computed from the same pooled trips.</figcaption>
+    </figure>
+
+    <h2>Weekday against weekend</h2>
+    <p>Most systems run better on weekends, which is less surprising than it first sounds: there is
+    far less service scheduled, so there is more slack to deliver it. Denver, Orlando, Minneapolis
+    and Honolulu all improve noticeably once the weekday peak disappears.</p>
+    <p>Baltimore goes the other way, and does so hard.</p>
+
+    <figure class="wide">
+      <div class="chart">
+        <div class="legend">
+          <span class="key"><span class="ring"></span>Weekday</span>
+          <span class="key"><span class="disc"></span>Weekend</span>
+        </div>
+        <svg viewBox="0 0 720 496" role="img" aria-label="Weekday versus weekend ghost rate">
+<text x="0" y="14" class="ax-t">weekday and weekend ghost rate, same scale</text>
+<line x1="162.0" y1="28" x2="162.0" y2="470" class="grid"/>
+<text x="162.0" y="486" class="ax-t" text-anchor="middle">0%</text>
+<line x1="245.2" y1="28" x2="245.2" y2="470" class="grid"/>
+<text x="245.2" y="486" class="ax-t" text-anchor="middle">5%</text>
+<line x1="328.4" y1="28" x2="328.4" y2="470" class="grid"/>
+<text x="328.4" y="486" class="ax-t" text-anchor="middle">10%</text>
+<line x1="411.5" y1="28" x2="411.5" y2="470" class="grid"/>
+<text x="411.5" y="486" class="ax-t" text-anchor="middle">15%</text>
+<line x1="494.7" y1="28" x2="494.7" y2="470" class="grid"/>
+<text x="494.7" y="486" class="ax-t" text-anchor="middle">20%</text>
+<text x="140" y="51.5" class="cty" text-anchor="end">San Antonio</text>
+<line x1="168.7" y1="47.5" x2="170.3" y2="47.5" class="conn"/>
+<circle cx="168.7" cy="47.5" r="5" class="d-wd"><title>San Antonio weekday: 0.4%</title></circle>
+<circle cx="170.3" cy="47.5" r="5" class="d-we"><title>San Antonio weekend: 0.5%</title></circle>
+<text x="140" y="78.5" class="cty" text-anchor="end">Denver</text>
+<line x1="175.3" y1="74.5" x2="195.3" y2="74.5" class="conn"/>
+<circle cx="195.3" cy="74.5" r="5" class="d-wd"><title>Denver weekday: 2.0%</title></circle>
+<circle cx="175.3" cy="74.5" r="5" class="d-we"><title>Denver weekend: 0.8%</title></circle>
+<text x="140" y="105.5" class="cty" text-anchor="end">Milwaukee</text>
+<line x1="182.0" y1="101.5" x2="230.2" y2="101.5" class="conn"/>
+<circle cx="182.0" cy="101.5" r="5" class="d-wd"><title>Milwaukee weekday: 1.2%</title></circle>
+<circle cx="230.2" cy="101.5" r="5" class="d-we"><title>Milwaukee weekend: 4.1%</title></circle>
+<text x="140" y="132.5" class="cty" text-anchor="end">Orlando</text>
+<line x1="173.6" y1="128.5" x2="215.2" y2="128.5" class="conn"/>
+<circle cx="215.2" cy="128.5" r="5" class="d-wd"><title>Orlando weekday: 3.2%</title></circle>
+<circle cx="173.6" cy="128.5" r="5" class="d-we"><title>Orlando weekend: 0.7%</title></circle>
+<text x="140" y="159.5" class="cty" text-anchor="end">Phoenix</text>
+<line x1="185.3" y1="155.5" x2="206.9" y2="155.5" class="conn"/>
+<circle cx="206.9" cy="155.5" r="5" class="d-wd"><title>Phoenix weekday: 2.7%</title></circle>
+<circle cx="185.3" cy="155.5" r="5" class="d-we"><title>Phoenix weekend: 1.4%</title></circle>
+<text x="140" y="186.5" class="cty" text-anchor="end">Los Angeles</text>
+<line x1="205.3" y1="182.5" x2="210.2" y2="182.5" class="conn"/>
+<circle cx="205.3" cy="182.5" r="5" class="d-wd"><title>Los Angeles weekday: 2.6%</title></circle>
+<circle cx="210.2" cy="182.5" r="5" class="d-we"><title>Los Angeles weekend: 2.9%</title></circle>
+<text x="140" y="213.5" class="cty" text-anchor="end">Charlotte</text>
+<line x1="208.6" y1="209.5" x2="208.6" y2="209.5" class="conn"/>
+<circle cx="208.6" cy="209.5" r="5" class="d-wd"><title>Charlotte weekday: 2.8%</title></circle>
+<circle cx="208.6" cy="209.5" r="5" class="d-we"><title>Charlotte weekend: 2.8%</title></circle>
+<text x="140" y="240.5" class="cty" text-anchor="end">Boston</text>
+<line x1="218.6" y1="236.5" x2="240.2" y2="236.5" class="conn"/>
+<circle cx="218.6" cy="236.5" r="5" class="d-wd"><title>Boston weekday: 3.4%</title></circle>
+<circle cx="240.2" cy="236.5" r="5" class="d-we"><title>Boston weekend: 4.7%</title></circle>
+<text x="140" y="267.5" class="cty" text-anchor="end">New York</text>
+<line x1="231.9" y1="263.5" x2="245.2" y2="263.5" class="conn"/>
+<circle cx="245.2" cy="263.5" r="5" class="d-wd"><title>New York weekday: 5.0%</title></circle>
+<circle cx="231.9" cy="263.5" r="5" class="d-we"><title>New York weekend: 4.2%</title></circle>
+<text x="140" y="294.5" class="cty" text-anchor="end">Philadelphia</text>
+<line x1="250.2" y1="290.5" x2="253.5" y2="290.5" class="conn"/>
+<circle cx="250.2" cy="290.5" r="5" class="d-wd"><title>Philadelphia weekday: 5.3%</title></circle>
+<circle cx="253.5" cy="290.5" r="5" class="d-we"><title>Philadelphia weekend: 5.5%</title></circle>
+<text x="140" y="321.5" class="cty" text-anchor="end">Honolulu</text>
+<line x1="218.6" y1="317.5" x2="281.8" y2="317.5" class="conn"/>
+<circle cx="281.8" cy="317.5" r="5" class="d-wd"><title>Honolulu weekday: 7.2%</title></circle>
+<circle cx="218.6" cy="317.5" r="5" class="d-we"><title>Honolulu weekend: 3.4%</title></circle>
+<text x="292.8" y="321.5" class="val">3.8 pts worse, weekday</text>
+<text x="140" y="348.5" class="cty" text-anchor="end">Minneapolis</text>
+<line x1="213.6" y1="344.5" x2="305.1" y2="344.5" class="conn"/>
+<circle cx="305.1" cy="344.5" r="5" class="d-wd"><title>Minneapolis weekday: 8.6%</title></circle>
+<circle cx="213.6" cy="344.5" r="5" class="d-we"><title>Minneapolis weekend: 3.1%</title></circle>
+<text x="316.1" y="348.5" class="val">5.5 pts worse, weekday</text>
+<text x="140" y="375.5" class="cty" text-anchor="end">Austin</text>
+<line x1="286.8" y1="371.5" x2="290.1" y2="371.5" class="conn"/>
+<circle cx="290.1" cy="371.5" r="5" class="d-wd"><title>Austin weekday: 7.7%</title></circle>
+<circle cx="286.8" cy="371.5" r="5" class="d-we"><title>Austin weekend: 7.5%</title></circle>
+<text x="140" y="402.5" class="cty" text-anchor="end">Pittsburgh</text>
+<line x1="320.0" y1="398.5" x2="335.0" y2="398.5" class="conn"/>
+<circle cx="335.0" cy="398.5" r="5" class="d-wd"><title>Pittsburgh weekday: 10.4%</title></circle>
+<circle cx="320.0" cy="398.5" r="5" class="d-we"><title>Pittsburgh weekend: 9.5%</title></circle>
+<text x="140" y="429.5" class="cty" text-anchor="end">Chicago</text>
+<line x1="389.9" y1="425.5" x2="406.6" y2="425.5" class="conn"/>
+<circle cx="389.9" cy="425.5" r="5" class="d-wd"><title>Chicago weekday: 13.7%</title></circle>
+<circle cx="406.6" cy="425.5" r="5" class="d-we"><title>Chicago weekend: 14.7%</title></circle>
+<text x="140" y="456.5" class="cty" text-anchor="end">Baltimore</text>
+<line x1="341.7" y1="452.5" x2="508.0" y2="452.5" class="conn"/>
+<circle cx="341.7" cy="452.5" r="5" class="d-wd"><title>Baltimore weekday: 10.8%</title></circle>
+<circle cx="508.0" cy="452.5" r="5" class="d-we"><title>Baltimore weekend: 20.8%</title></circle>
+<text x="519.0" y="456.5" class="val">10.0 pts worse, weekend</text>
+</svg>
+      </div>
+      <figcaption>Gaps of 3 points or more are labelled. Weekend figures rest on three service days
+      (two Saturdays and one Sunday), so treat them as a signal worth following rather than a
+      settled result.</figcaption>
+    </figure>
+
+    <div class="note">
+      <span class="lbl">The caveat that matters most</span>
+      <p>MTA Maryland's weekend ghost rate is 20.8% against 10.8% on weekdays, the largest weekday
+      to weekend swing in the data. It is also built on three weekend days. I would not publish that
+      as a finding about Baltimore yet. I am publishing it as the thing I intend to look at next.</p>
+    </div>
+
+    <h2>Four ways this goes wrong</h2>
+    <p>Every number above survived four tests. Each one exists because it caught something that had
+    already produced a confident, wrong answer, and each catches a failure the others cannot see.</p>
+
+    <figure class="wide">
+    <div class="scroll"><table class="guards"><thead><tr><th>Test</th><th>Threshold</th><th>What it catches</th><th class="n">Excluded</th></tr></thead><tbody>
+<tr><td class="gname">Schedule join</td><td class="thr">join_ok &ge; 90%</td><td class="what">Whether the two sides use the same trip identifiers at all. CTA publishes a Bus Tracker id, not a GTFS trip_id, so Chicago read as 41% realized before it was resolved on scheduled start time instead.</td><td class="n excl">3 city-days</td></tr>
+<tr><td class="gname">Local service day</td><td class="thr">midnight to midnight, agency timezone</td><td class="what">The collector names its files by UTC date, but a service day is local. In Honolulu that put 46% of every file in the wrong day. It hid on weekdays, because consecutive weekdays reuse trip ids, then collapsed at every Friday-to-Saturday boundary.</td><td class="n excl">a correction, not an exclusion</td></tr>
+<tr><td class="gname">Fleet coverage</td><td class="thr">&le; 21 scheduled trips per reporting vehicle</td><td class="what">Whether the feed publishes the whole operating fleet. MARTA reports about 276 buses against 6,918 scheduled trips, the same 187 vehicles every day. Its unobserved trips are buses that ran without reporting.</td><td class="n excl">12 city-days, all Atlanta</td></tr>
+<tr><td class="gname">Day completeness</td><td class="thr">null trip_id &lt; 75%, no gap over 90 minutes</td><td class="what">Whether the day was actually captured. CapMetro spent 9 September publishing positions with no trip attached: 8.8% of rows carried a trip id, and the day scored a perfect join against 154 trips.</td><td class="n excl">22 city-days</td></tr>
+</tbody></table></div>
+      <figcaption>160 city-days passed all four. 68 were excluded.</figcaption>
+    </figure>
+
+    <p>The Atlanta case is the one worth dwelling on, because it was almost the headline. MARTA came
+    in at 37.4% ghost, stable across every day, with a 97.3% schedule join. Nothing in the join
+    diagnostics objected. What gave it away was arithmetic: 6,918 scheduled trips against 276
+    reporting buses is 25.1 trips per vehicle, where every other system in the set falls between 3.5
+    and 15.0. No bus turns 25 trips in a day. MARTA's fleet is not failing to run, it is failing to
+    report, and the two are indistinguishable from the outside unless you check.</p>
+
+    <p>A measurement that only has one way to be wrong is a measurement you should not trust. The
+    timezone bug is the clearest example of why. It was invisible for the entire first pass: weekday
+    joins sat at 99% because consecutive weekdays reuse the same trip ids, so the misattributed rows
+    matched anyway. It only surfaced at service-type boundaries, where Friday and Saturday trip ids
+    overlap by exactly zero.</p>
+
+    <h2>What this does not show</h2>
+    <p><strong>It is not a punctuality measure.</strong> A trip that ran 40 minutes late and a trip
+    that ran exactly on time are both counted as delivered. Only complete absence registers.</p>
+
+    <p><strong>Reporting failures look like service failures.</strong> Atlanta was caught. A milder
+    version of the same problem, an agency where 10% of buses do not report, would inflate that
+    system's rate and would not trip the threshold.</p>
+
+    <p><strong>Twelve days is a fortnight in September.</strong> There is no seasonal context here,
+    no winter, no school calendar, and one of the twelve days was Labor Day.</p>
+
+    <p><strong>The weekend sample is thin.</strong> Two Saturdays and one Sunday. Every weekend
+    figure in this piece carries that qualification.</p>
+
+    <p><strong>Three systems were collected but could not be measured.</strong> Atlanta for fleet
+    under-reporting, Miami and LA Rail because neither has a schedule feed configured to compare
+    against.</p>
+
+    <h2>Method and data</h2>
+    <p>Vehicle positions were polled every 90 seconds from each agency's GTFS-Realtime feed, or its
+    native API where no GTFS-RT endpoint exists. Schedules come from a daily GTFS snapshot per
+    agency, deduplicated by content hash, which matters because MTA and SEPTA both rolled a service
+    pick mid-collection and publish only the current one. A scheduled trip set is resolved from
+    <code>calendar.txt</code> and <code>calendar_dates.txt</code> for the local service date,
+    restricted to bus and trolleybus route types, and matched against distinct trip ids observed in
+    the local service day window including owl trips past midnight.</p>
+
+    <p>Collection is still running. This analysis covers 3 to 15 September 2026 and will be extended
+    as the weekend sample deepens.</p>
+
+    <h2>Sources</h2>
+    <p>Every figure above comes from data the agencies publish themselves. Realtime endpoints are
+    listed below with query strings removed; the feeds that require an API key were accessed with
+    credentials held locally and not reproduced here. Static schedules were retrieved through the
+    <a href="https://mobilitydatabase.org/">Mobility Database</a> catalog, so each agency's schedule
+    is cited by its stable catalog id rather than by a URL that moves.</p>
+
+    <figure class="wide">
+    <div class="scroll"><table class="src"><thead><tr><th>City</th><th>Agency</th><th>Realtime endpoint</th><th>Protocol</th><th class="n">MDB&nbsp;id</th></tr></thead><tbody>
+<tr><td>San Antonio</td><td class="ag">VIA Metropolitan Transit</td><td class="ep">gtfs.viainfo.net/vehicle/vehiclepositions.pb</td><td class="ag">GTFS-RT</td><td class="n ag">2348</td></tr>
+<tr><td>Denver</td><td class="ag">RTD</td><td class="ep">open-data.rtd-denver.com/files/gtfs-rt/rtd/VehiclePosition.pb</td><td class="ag">GTFS-RT</td><td class="n ag">178</td></tr>
+<tr><td>Milwaukee</td><td class="ag">MCTS</td><td class="ep">realtime.ridemcts.com/gtfsrt/vehicles</td><td class="ag">GTFS-RT</td><td class="n ag">2127</td></tr>
+<tr><td>Orlando</td><td class="ag">LYNX</td><td class="ep">gtfsrt.golynx.com/gtfsrt/GTFS_VehiclePositions.pb</td><td class="ag">GTFS-RT</td><td class="n ag">347</td></tr>
+<tr><td>Phoenix</td><td class="ag">Valley Metro</td><td class="ep">mna.mecatran.com/utw/ws/gtfsfeed/vehicles/valleymetro</td><td class="ag">GTFS-RT</td><td class="n ag">147</td></tr>
+<tr><td>Los Angeles</td><td class="ag">LA Metro</td><td class="ep">api.goswift.ly/real-time/lametro/gtfs-rt-vehicle-positions</td><td class="ag">GTFS-RT</td><td class="n ag">29</td></tr>
+<tr><td>Charlotte</td><td class="ag">CATS</td><td class="ep">gtfsrealtime.ridetransit.org/GTFSRealTime/Vehicle/VehiclePositions.pb</td><td class="ag">GTFS-RT</td><td class="n ag">2265</td></tr>
+<tr><td>Boston</td><td class="ag">MBTA</td><td class="ep">cdn.mbta.com/realtime/VehiclePositions.pb</td><td class="ag">GTFS-RT</td><td class="n ag">437</td></tr>
+<tr><td>New York</td><td class="ag">MTA New York City Bus</td><td class="ep">gtfsrt.prod.obanyc.com/vehiclePositions</td><td class="ag">GTFS-RT</td><td class="n ag">510, 512, 513, 514, 520, 528</td></tr>
+<tr><td>Philadelphia</td><td class="ag">SEPTA</td><td class="ep">www3.septa.org/gtfsrt/septa-pa-us/Vehicle/rtVehiclePosition.pb</td><td class="ag">GTFS-RT</td><td class="n ag">502</td></tr>
+<tr><td>Honolulu</td><td class="ag">TheBus</td><td class="ep">api.thebus.org/arrivalsJSON/</td><td class="ag">TheBus API</td><td class="n ag">2350</td></tr>
+<tr><td>Minneapolis</td><td class="ag">Metro Transit</td><td class="ep">svc.metrotransit.org/mtgtfs/vehiclepositions.pb</td><td class="ag">GTFS-RT</td><td class="n ag">205</td></tr>
+<tr><td>Austin</td><td class="ag">CapMetro</td><td class="ep">data.texas.gov/download/eiei-9rpf</td><td class="ag">GTFS-RT</td><td class="n ag">150</td></tr>
+<tr><td>Pittsburgh</td><td class="ag">PRT</td><td class="ep">truetime.portauthority.org/gtfsrt-bus/vehicles</td><td class="ag">GTFS-RT</td><td class="n ag">409</td></tr>
+<tr><td>Chicago</td><td class="ag">CTA</td><td class="ep">ctabustracker.com/bustime/api/v3/getvehicles</td><td class="ag">CTA Bus Tracker</td><td class="n ag">389</td></tr>
+<tr><td>Baltimore</td><td class="ag">MTA Maryland</td><td class="ep">api.goswift.ly/real-time/mta-maryland/gtfs-rt-vehicle-positions</td><td class="ag">GTFS-RT</td><td class="n ag">466</td></tr>
+</tbody></table></div>
+      <figcaption>The 16 measurable systems. New York is six separate MTA borough feeds merged into
+      one city. Two systems do not publish GTFS-Realtime: Chicago uses the CTA Bus Tracker API, and
+      Honolulu publishes stop arrivals rather than vehicle positions, so its observations are
+      derived from polling 140 stops.</figcaption>
+    </figure>
+
+    <h2>Collected but not counted</h2>
+    <p>These three systems were polled on the same schedule as the rest and are excluded from every
+    figure in this piece.</p>
+
+    <figure class="wide">
+    <div class="scroll"><table class="src"><thead><tr><th>City</th><th>Agency</th><th>Realtime endpoint</th><th class="n">MDB&nbsp;id</th><th>Why it is excluded</th></tr></thead><tbody>
+<tr><td>Atlanta</td><td class="ag">MARTA</td><td class="ep">gtfs-rt.itsmarta.com/TMGTFSRealTimeWebService/vehicle/vehiclepositions</td><td class="n ag">368</td><td class="what">Fleet under-reporting: 25.1 scheduled trips per reporting vehicle.</td></tr>
+<tr><td>Miami</td><td class="ag">Miami-Dade Transit</td><td class="ep">api.goswift.ly/real-time/miami/gtfs-rt-vehicle-positions</td><td class="n ag">none</td><td class="what">No static schedule feed configured, so nothing to compare against.</td></tr>
+<tr><td>Los Angeles rail</td><td class="ag">LA Metro rail</td><td class="ep">api.goswift.ly/real-time/lametro-rail/gtfs-rt-vehicle-positions</td><td class="n ag">none</td><td class="what">No static schedule feed configured.</td></tr>
+</tbody></table></div>
+      <figcaption>Their raw collection continues, so Miami and LA Rail become measurable as soon as
+      a schedule feed is added.</figcaption>
+    </figure>
+
+    <h2>Software</h2>
+    <p>Collection and analysis were written in Python with <a href="https://duckdb.org/">DuckDB</a>
+    for the schedule joins. Schedules are parsed from the GTFS static specification; realtime feeds
+    are parsed as GTFS-Realtime protocol buffers except where noted above.</p>
+  </div>
+    </div>
+
+    <aside class="blog-sidebar" aria-label="Search and browse by date">
+      <div class="sidebar-panel">
+        <h2>Search posts</h2>
+        <form class="search-field" id="sidebarSearchForm">
+          <label class="visually-hidden" for="blogSearch">Search posts</label>
+          <input type="search" id="blogSearch" name="q" placeholder="Search titles, tags, topics…">
+          <button type="submit" class="search-submit" aria-label="Search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4a6 6 0 104.472 10.03l4.749 4.748 1.414-1.414-4.748-4.749A6 6 0 0010 4zm-4 6a4 4 0 118 0 4 4 0 01-8 0z"/></svg>
+          </button>
+        </form>
+        <p class="search-status" id="searchStatus" hidden></p>
+      </div>
+
+      <div class="sidebar-panel">
+        <h2>Browse by date</h2>
+        <div class="cal-head">
+          <button class="cal-nav" id="calPrev" type="button" aria-label="Previous month">&larr;</button>
+          <span class="cal-label" id="calLabel"></span>
+          <button class="cal-nav" id="calNext" type="button" aria-label="Next month">&rarr;</button>
+        </div>
+        <div class="cal-grid" id="calGrid" role="grid" aria-label="Post dates"></div>
+        <button class="cal-clear" id="calClear" type="button" hidden>Clear date filter</button>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <svg class="footer-mark" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="46" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-dasharray="255 40" transform="rotate(-58 60 60)" /></svg>
+    <p class="footer-note">&copy; <a href="mailto:brian@bergstromgis.com">Brian Bergstrom</a>. Built by Claude, hosted on GitHub Pages.</p>
+  </div>
+</footer>
+
+<script>
+  document.documentElement.classList.add('js-ready');
+  var toggle = document.getElementById('navToggle');
+  var links = document.getElementById('navLinks');
+  toggle.addEventListener('click', function () {
+    var open = links.classList.toggle('is-open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+</script>
+<script src="../js/hero-sparkles.js"></script>
+<script src="../js/blog-post-data.js"></script>
+<script src="../js/blog-sidebar.js"></script>
+</body>
+</html>
