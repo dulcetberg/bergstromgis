@@ -1,10 +1,10 @@
 {
-  "last_updated_utc": "2026-09-30T17:28:50Z",
-  "last_updated_local_display": "12:28 PM CDT on Wed, Sep 30",
-  "n_checked": 57837,
-  "n_ghosted": 15340,
+  "last_updated_utc": "2026-09-30T17:58:57Z",
+  "last_updated_local_display": "12:58 PM CDT on Wed, Sep 30",
+  "n_checked": 57903,
+  "n_ghosted": 15350,
   "ghost_rate_pct": 26.5,
-  "stop_n_checked": 486,
+  "stop_n_checked": 487,
   "stop_n_ghosted": 112,
   "stop_ghost_rate_pct": 23.0,
   "missed_at_stop": [
