@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Every Map Is Wrong &mdash; Brian Bergstrom</title>
+<meta name="description" content="Every flat map of the world distorts something. Twenty map projections, drawn and measured in Python, with the history of who made each one and why, from Mercator&#x27;s navigation chart to the 2026 UN vote for equal-area maps.">
+<link rel="canonical" href="https://bergstromgis.com/work/map-projections.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Brian Bergstrom">
+<meta property="og:title" content="Every Map Is Wrong &mdash; Brian Bergstrom">
+<meta property="og:description" content="Every flat map of the world distorts something. Twenty map projections, drawn and measured in Python, with the history of who made each one and why, from Mercator&#x27;s navigation chart to the 2026 UN vote for equal-area maps.">
+<meta property="og:image" content="https://bergstromgis.com/images/map-projections.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Twenty small world maps in a grid on a near-black background, each drawn in a different map projection, from Gnomonic to Equal Earth.">
+<meta property="og:url" content="https://bergstromgis.com/work/map-projections.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Every Map Is Wrong &mdash; Brian Bergstrom">
+<meta name="twitter:description" content="Every flat map of the world distorts something. Twenty map projections, drawn and measured in Python, with the history of who made each one and why, from Mercator&#x27;s navigation chart to the 2026 UN vote for equal-area maps.">
+<meta name="twitter:image" content="https://bergstromgis.com/images/map-projections.jpg">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="alternate icon" href="../favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../css/brand.css">
+<style>
+  /* Page-local only. Every colour is a brand.css token. */
+  .project-body figure { margin: 2rem 0 0.6rem; }
+  .project-body .wide { max-width: none; width: min(100%, 1000px); }
+  .project-body figcaption { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.9rem; line-height: 1.55; max-width: 640px; }
+  .scroll { overflow-x: auto; border: 1px solid var(--rule); background: var(--bg-raised); }
+  .project-body table { border-collapse: collapse; width: 100%; font-size: 0.88rem; }
+  .project-body th { font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted);
+    text-align: left; padding: 0.8rem 0.85rem; border-bottom: 1px solid var(--rule); font-weight: 700; white-space: nowrap; }
+  .project-body td { padding: 0.7rem 0.85rem; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  .project-body tbody tr:last-child td { border-bottom: none; }
+  .project-body code { font-size: 0.85em; background: var(--bg-raised); padding: 0.05em 0.35em; border-radius: 3px; }
+
+  .figures { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--rule);
+    border: 1px solid var(--rule); margin: 0 0 2rem; }
+  .figures div { background: var(--bg-raised); padding: 1rem; }
+  .figures b { display: block; font-family: var(--font-heading); font-size: 1.5rem; font-weight: 600;
+    color: var(--text); font-variant-numeric: tabular-nums; }
+  .figures span { display: block; font-size: 0.66rem; letter-spacing: 0.07em; text-transform: uppercase;
+    color: var(--text-muted); margin-top: 0.35rem; line-height: 1.4; }
+  .figures.score { grid-template-columns: repeat(3, 1fr); margin: 1.2rem 0 0.4rem; }
+  .figures.score b { font-size: 1.2rem; }
+  .score-note { font-size: 0.74rem; color: var(--text-muted); margin: 0 0 0.5rem; }
+  @media (max-width: 720px) { .figures { grid-template-columns: repeat(2, 1fr); } .figures.score { grid-template-columns: repeat(3, 1fr); } }
+
+  .proj { border-top: 1px solid var(--rule); padding-top: 2.2rem; margin-top: 2.6rem; scroll-margin-top: 1rem; }
+  .proj h3 { display: flex; align-items: baseline; gap: 0.7rem; margin-bottom: 0.3rem; }
+  .pn { font-family: var(--font-heading); color: var(--accent); font-variant-numeric: tabular-nums; }
+  .proj-meta { font-size: 0.74rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0; }
+  .proj-fig img { display: block; width: 100%; height: auto; max-height: 560px; object-fit: contain; }
+
+  .proj-toc { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 1px;
+    background: var(--rule); border: 1px solid var(--rule); margin: 1.4rem 0 1rem; }
+  .proj-toc a { display: flex; gap: 0.6rem; align-items: baseline; background: var(--bg-raised); padding: 0.55rem 0.8rem;
+    font-size: 0.84rem; color: var(--text); text-decoration: none; }
+  .proj-toc a:hover, .proj-toc a:focus-visible { color: var(--accent); }
+  .proj-toc span { font-family: var(--font-heading); color: var(--accent); min-width: 1.4em; font-variant-numeric: tabular-nums; }
+
+  .morph .chart { background: var(--bg-raised); border: 1px solid var(--rule); padding: 1.1rem 1.1rem 0.9rem; }
+  .morph-controls { display: grid; grid-template-columns: auto 1fr auto; gap: 0.9rem; align-items: center;
+    font-size: 0.78rem; letter-spacing: 0.04em; color: var(--text-muted); }
+  .morph-controls b { color: var(--text); font-weight: 600; }
+  .morph-controls input[type=range] { width: 100%; accent-color: var(--accent); }
+  #morphMap { display: block; width: 100%; height: auto; margin-top: 0.8rem; }
+  #morphMap .ocean { fill: var(--bg); }
+  #morphMap .grat { fill: none; stroke: var(--rule); stroke-width: 0.6; }
+  #morphMap .land { fill: #4A3A30; }
+  #morphMap .hi { fill: var(--accent); }
+  #morphMap .edge { fill: none; stroke: var(--text-muted); stroke-width: 0.8; }
+  .morph-readout { font-size: 0.95rem; margin: 0.8rem 0 0; min-height: 2.8em; }
+  .morph-readout strong { color: var(--accent); font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <nav class="site-nav container" aria-label="Primary">
+    <a class="wordmark" href="../index.html">Brian Bergstrom</a>
+    <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks">Menu</button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../work-civic.html">Work</a></li>
+      <li><a href="../blog.html">Blog</a></li>
+      <li><a href="../about.html">About</a></li>
+      <li><a href="../../resume/resume.html">Resume</a></li>
+      <li><a href="../ai-use.html">AI Use</a></li>
+      <li><a href="../contact.html">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="redmap" color-interpolation-filters="sRGB">
+    <feColorMatrix type="matrix" values="0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0 0 0 1 0" result="gray"/>
+    <feComponentTransfer in="gray" result="normalized">
+      <feFuncR type="linear" slope="11.087" intercept="-3.348"/>
+      <feFuncG type="linear" slope="11.087" intercept="-3.348"/>
+      <feFuncB type="linear" slope="11.087" intercept="-3.348"/>
+    </feComponentTransfer>
+    <feComponentTransfer in="normalized">
+      <feFuncR type="table" tableValues="0.02 0.18 0.45 0.75 1.0"/>
+      <feFuncG type="table" tableValues="0.00 0.015 0.04 0.10 0.30"/>
+      <feFuncB type="table" tableValues="0.00 0.015 0.03 0.07 0.22"/>
+    </feComponentTransfer>
+  </filter>
+</svg>
+
+<main id="main">
+  <section class="site-hero">
+    <div class="hero-base"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-lines"></div>
+    <div class="hero-vignette"></div>
+    <svg class="hero-sparkles">
+      <defs>
+        <radialGradient id="sparkGrad">
+          <stop offset="0%" stop-color="#FFEFD6" stop-opacity="1"/>
+          <stop offset="35%" stop-color="#FFB199" stop-opacity="0.9"/>
+          <stop offset="100%" stop-color="#C0392B" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <circle class="sparkle" data-sx="211" data-sy="414" r="3.4" fill="url(#sparkGrad)" style="animation-delay:-0.2s; animation-duration:2.3s;"/>
+      <circle class="sparkle" data-sx="988" data-sy="388" r="3.0" fill="url(#sparkGrad)" style="animation-delay:-1.4s; animation-duration:2.9s;"/>
+      <circle class="sparkle" data-sx="634" data-sy="539" r="3.6" fill="url(#sparkGrad)" style="animation-delay:-0.8s; animation-duration:2.5s;"/>
+      <circle class="sparkle" data-sx="849" data-sy="449" r="3.1" fill="url(#sparkGrad)" style="animation-delay:-2.1s; animation-duration:3.1s;"/>
+      <circle class="sparkle" data-sx="1077" data-sy="463" r="3.5" fill="url(#sparkGrad)" style="animation-delay:-0.5s; animation-duration:2.4s;"/>
+      <circle class="sparkle" data-sx="1260" data-sy="552" r="3.0" fill="url(#sparkGrad)" style="animation-delay:-1.8s; animation-duration:2.8s;"/>
+      <circle class="sparkle" data-sx="1745" data-sy="527" r="4.0" fill="url(#sparkGrad)" style="animation-delay:-1.0s; animation-duration:2.6s;"/>
+      <circle class="sparkle" data-sx="965" data-sy="561" r="3.2" fill="url(#sparkGrad)" style="animation-delay:-2.4s; animation-duration:3.0s;"/>
+      <circle class="sparkle" data-sx="1169" data-sy="592" r="3.3" fill="url(#sparkGrad)" style="animation-delay:-0.1s; animation-duration:2.7s;"/>
+      <circle class="sparkle" data-sx="1262" data-sy="617" r="3.6" fill="url(#sparkGrad)" style="animation-delay:-1.6s; animation-duration:2.5s;"/>
+      <circle class="sparkle" data-sx="1060" data-sy="835" r="3.1" fill="url(#sparkGrad)" style="animation-delay:-0.9s; animation-duration:2.9s;"/>
+      <circle class="sparkle" data-sx="1135" data-sy="816" r="3.4" fill="url(#sparkGrad)" style="animation-delay:-2.0s; animation-duration:2.6s;"/>
+    </svg>
+    <svg class="hero-corner" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="46" fill="none" stroke="#FF6A52" stroke-width="5" stroke-linecap="round" stroke-dasharray="255 40" transform="rotate(-58 60 60)" /></svg>
+    <div class="hero-content">
+      <span class="eyebrow">GIS Analyst &middot; Chicago</span>
+      <p class="hero-title">GIS that makes the overlooked undeniable.</p>
+      <p class="lede">Real maps, real data, real people who needed someone to notice. New ones posted here roughly every week.</p>
+    </div>
+  </section>
+
+  <div class="blog-layout container">
+  <div class="blog-main">
+    <div class="container">
+    <a class="breadcrumb" href="../work-personal.html">&larr; Back to personal work</a>
+
+    <header class="project-header">
+      <span class="tag tag-personal">Personal &mdash; Explainer</span>
+      <h1>Every Map Is Wrong</h1>
+      <p class="subtitle">Twenty map projections, from ancient star charts to the map the UN just endorsed: what each one gets right, what it gives up, and why someone thought that trade was worth it.</p>
+      <div class="meta-row">
+        <span class="stat">20 projections, about 2,500 years</span>
+        <span class="stat">Drawn and measured in Python</span>
+        <span class="stat">Sourced to USGS references</span>
+      </div>
+    </header>
+  </div>
+
+  <div class="project-hero-media">
+    <div class="media-inner">
+      <img src="../map-projections/00-contact-sheet.webp" alt="Twenty small world maps in a grid on a near-black background, each drawn in a different map projection, from Gnomonic to Equal Earth.">
+    </div>
+  </div>
+
+  <div class="project-body">
+    <div class="figures">
+      <div><b>20</b><span>Projections drawn</span></div>
+      <div><b>155</b><span>Projection methods in PROJ</span></div>
+      <div><b>5,291</b><span>Projected systems in EPSG</span></div>
+      <div><b>14.7&times;</b><span>Greenland's inflation on Mercator</span></div>
+    </div>
+
+<p>On September 4, 2026, the United Nations General Assembly voted 164 to 1 to ask the world to change its maps. The resolution, nicknamed "Correct the map," encourages governments, schools and tech companies to use the Equal Earth projection and other equal-area maps, and to teach the limitations of any flat map. It doesn't ban anything. But it's a sign that a question cartographers have argued about for 450 years has gone mainstream: how should you flatten a round planet?</p>
+<p>The short answer is that you can't, at least not without breaking something. Every flat map of the world is wrong. The interesting part is <em>how</em> each one is wrong, and why somebody decided that particular kind of wrong was worth it.</p>
+<p>This post covers what a map projection is, why the choice matters (including in everyday GIS work), and then twenty projections from ancient star charts to 2018. Each gets its own map, a measurement of how much it distorts the world, and the story of who made it and what problem they were trying to solve.</p>
+<h2 id="why-you-can-t-flatten-a-globe">Why you can't flatten a globe</h2>
+<p>Try peeling an orange and pressing the peel flat on a table. It tears, or it stretches, or it bunches up. You can't make it lie flat without one of those things happening.</p>
+<p>The Earth has the same problem, and mathematicians proved it. Leonhard Euler showed in 1777 that a sphere can't be flattened onto a plane without distortion. Fifty years later, Carl Friedrich Gauss proved something deeper: no flat map can keep every distance true, not even if you shrink everything evenly. One consequence is that no map can keep both the sizes of places and their shapes correct at the same time.</p>
+<p>A <strong>map projection</strong> is a recipe for doing the flattening anyway. It's a set of rules that turns every latitude and longitude on the globe into an x and y on a flat surface. Since something has to give, each recipe chooses what to protect and what to sacrifice.</p>
+<h2 id="what-a-map-can-protect">What a map can protect</h2>
+<p>There are four things a map might try to get right:</p>
+<ul><li><strong>Shape.</strong> Small areas look the way they really do, and angles are true. Maps that do this are called <strong>conformal</strong>. Navigators love them, because a compass bearing on the map is the real compass bearing.</li><li><strong>Area.</strong> Every region is shown at the correct size relative to every other region. These are <strong>equal-area</strong> maps. If you want to compare how big countries are, or how much forest a continent has, you need one of these.</li><li><strong>Distance.</strong> Distances are true, but only from one point or along certain lines. No map gets every distance right. These are <strong>equidistant</strong> maps.</li><li><strong>Direction.</strong> Directions from the center point are true. These are <strong>azimuthal</strong> maps.</li></ul>
+<p>No map can be both conformal and equal-area. That's the big trade. Many famous world maps choose neither, and spread smaller errors around everywhere instead. Those are called <strong>compromise</strong> projections, and they're usually picked because they <em>look</em> right.</p>
+<h2 id="how-to-read-the-maps-below">How to read the maps below</h2>
+<p>In 1859 a French mathematician named Nicolas Auguste Tissot came up with a clever way to see distortion. Draw identical small circles all over the globe, then project them. On the map, each circle turns into an ellipse, and the shape and size of that ellipse tell you exactly how the map is distorting things at that spot. These are called <strong>Tissot's indicatrices</strong>.</p>
+<p>Every map below has them in coral. Each one started as a circle the same size on the globe (500 km across on the world maps, 150 km on the regional ones). So:</p>
+<ul><li>Circles that stay <strong>round</strong> but change <strong>size</strong> mean the map keeps shapes but not areas.</li><li>Circles that stay the <strong>same size</strong> but get <strong>squashed</strong> mean the map keeps areas but not shapes.</li><li>Circles that both grow and squash mean it's a compromise.</li></ul>
+<p>Each map also gets three numbers, measured at about 28,000 evenly spaced points on land:</p>
+<ul><li><strong>Area range:</strong> how many times more the most-inflated land is blown up than the least-inflated land. 1.0 means equal-area.</li><li><strong>Shape distortion:</strong> the typical bend in angles, in degrees. 0° means conformal.</li><li><strong>Greenland check:</strong> how many times too big Greenland looks next to Africa. 1.0 is honest. In real life, Africa is about 14 times larger than Greenland.</li></ul>
+<h2 id="why-this-matters-even-if-you-never-draw-a-map">Why this matters, even if you never draw a map</h2>
+<p>You use a map projection every time you open a map app. Google Maps launched in 2005 on what's now called <strong>Web Mercator</strong>, and almost every web map since has followed. It was chosen for practical reasons: north is always straight up, the world fits neatly into square tiles, and the math is fast. To keep the map square, it simply cuts off everything beyond about 85° north and south.</p>
+<p>Web Mercator is fine for finding a coffee shop. It's terrible for measuring area. Because it inflates everything away from the equator, a county in the Chicago area measured in Web Mercator comes out about <strong>80% bigger</strong> than it really is. Every GIS analyst learns this the hard way at least once: the projection your data is in quietly changes the answers you get. (Web Mercator isn't even quite the same as Mercator. It uses a shortcut that puts features up to 43 km off on the map compared to true Mercator, which is why the US National Geospatial-Intelligence Agency issued an advisory warning about it in 2014.)</p>
+<p>Projections also carry politics. Mercator's map makes Europe and North America look huge and Africa look small, which is exactly what the 2026 UN resolution was about. Nobody designed it that way to make a point, as you'll see below. But the map you grow up with shapes your sense of how big places are.</p>
+<h2 id="how-many-projections-are-there">How many projections are there?</h2>
+<p>Nobody knows exactly, because there's no limit. John Snyder, whose US Geological Survey manuals are the standard references on the subject, put it this way: "the number of ways in which that distortion can be handled is infinite." His 1989 <em>Album of Map Projections</em> mentions "the hundreds of known projection systems" and only had room to show about 90 of them.</p>
+<p>What we can count is what GIS software actually offers. PROJ, the open-source library that does the math inside QGIS, GDAL, PostGIS and Python's mapping tools, implements <strong>155</strong> different projection methods (as of version 9.5). On top of that, the EPSG registry, the standard catalog GIS software uses, defines <strong>5,291</strong> ready-made projected coordinate systems: projections with specific settings attached for specific places and purposes. <strong>50</strong> of them are valid for downtown Chicago alone.</p>
+<p>The twenty below are the ones with the best stories, and most of the ones you'll actually run into.</p>
+<h2 id="projection-datum-coordinate-system-where-wgs-84-fits">Projection, datum, coordinate system: where WGS 84 fits</h2>
+<p>If you've worked with GIS data, you've probably heard someone say their data is "in WGS 84." WGS 84 is one of the most important names in mapping, but it isn't a projection. It's a <strong>datum</strong>.</p>
+<ul><li>A <strong>datum</strong> is a model of the Earth's shape (a slightly squashed sphere, called an ellipsoid) plus the rules for where latitude and longitude sit on it. WGS 84 is maintained by the US National Geospatial-Intelligence Agency, and it's the reference system for GPS. GPS positions come out in WGS 84.</li><li>A <strong>projection</strong> is the recipe for flattening that latitude and longitude onto a map, which is what this post is about.</li><li>A <strong>coordinate reference system</strong> bundles the two together, along with units like meters or feet. Each one has an ID number in the EPSG registry, and that number is what you actually pick in GIS software.</li></ul>
+<p>When people say data is "in WGS 84," they usually mean <strong>EPSG:4326</strong>: plain latitude and longitude on the WGS 84 datum, with no projection at all. That's how a lot of data gets stored and shared. When software draws it on screen without projecting it, you get the simple grid of the equirectangular map, #4 below.</p>
+<h2 id="the-coordinate-systems-you-ll-actually-meet">The coordinate systems you'll actually meet</h2>
+<figure class="wide"><div class="scroll"><table><thead><tr><th>EPSG code</th><th>Name</th><th>What it is</th><th>Typical use</th></tr></thead><tbody><tr><td>4326</td><td>WGS 84</td><td>Latitude and longitude, no projection</td><td>Storing and sharing data, GPS</td></tr><tr><td>3857</td><td>WGS 84 / Pseudo-Mercator</td><td>Web Mercator (#6's web cousin)</td><td>Web map tiles: Google, OpenStreetMap, nearly every map app</td></tr><tr><td>32616</td><td>WGS 84 / UTM zone 16N</td><td>Transverse Mercator (#11)</td><td>Accurate local distances and areas around Chicago</td></tr><tr><td>3435</td><td>NAD83 / Illinois East (ftUS)</td><td>Transverse Mercator (#11), in US feet</td><td>Local government, surveying and engineering in eastern Illinois</td></tr><tr><td>5070</td><td>NAD83 / Conus Albers</td><td>Albers (#12)</td><td>Comparing areas across the lower 48 states</td></tr><tr><td>3035</td><td>ETRS89-extended / LAEA Europe</td><td>Lambert Azimuthal Equal-Area (#10)</td><td>European Union statistics</td></tr><tr><td>8857</td><td>WGS 84 / Equal Earth Greenwich</td><td>Equal Earth (#20)</td><td>World maps where size matters</td></tr></tbody></table></div></figure>
+<p>Two details are worth noticing. The registry's official name for Web Mercator is "Pseudo-Mercator," which tells you what the people who maintain it think of it. And Illinois's State Plane zones use Transverse Mercator rather than Lambert Conformal Conic, because Illinois is tall and narrow. You'll see why in entries #9 and #11.</p>
+<figure class="wide morph">
+  <div class="chart">
+    <div class="morph-controls">
+      <span><b>Mercator</b> 1569</span>
+      <input type="range" id="morphT" min="0" max="1000" value="0" step="1" aria-label="Morph the map from Mercator to Equal Earth" aria-describedby="morphReadout">
+      <span><b>Equal Earth</b> 2018</span>
+    </div>
+    <svg id="morphMap" viewBox="0 0 960 520" role="img" aria-label="World map that morphs from Mercator to Equal Earth, with Greenland and Africa highlighted"></svg>
+    <p class="morph-readout" id="morphReadout" aria-live="polite">Loading the map&hellip;</p>
+  </div>
+  <figcaption>Drag the slider to morph the same world from Mercator into Equal Earth. Greenland and Africa
+  are in coral. The land never changes, only the math that flattens it. Both maps are cut off at 60&deg;S and
+  84&deg;N, because Mercator can't show the poles at all.</figcaption>
+</figure>
+<h2 id="the-twenty-projections">The twenty projections</h2>
+<p>They're in date order, from star charts drawn more than 2,000 years ago to a map designed in 2018.</p>
+<nav class="proj-toc" aria-label="Jump to a projection"><a href="#gnomonic"><span>1</span>Gnomonic</a><a href="#stereographic"><span>2</span>Stereographic</a><a href="#orthographic"><span>3</span>Orthographic</a><a href="#equirectangular"><span>4</span>Equirectangular (Plate Carrée)</a><a href="#azimuthal-equidistant"><span>5</span>Azimuthal Equidistant</a><a href="#mercator"><span>6</span>Mercator</a><a href="#sinusoidal"><span>7</span>Sinusoidal</a><a href="#bonne"><span>8</span>Bonne</a><a href="#lambert-conformal-conic"><span>9</span>Lambert Conformal Conic</a><a href="#lambert-azimuthal-equal-area"><span>10</span>Lambert Azimuthal Equal-Area</a><a href="#transverse-mercator"><span>11</span>Transverse Mercator (UTM)</a><a href="#albers"><span>12</span>Albers Equal-Area Conic</a><a href="#mollweide"><span>13</span>Mollweide</a><a href="#polyconic"><span>14</span>Polyconic</a><a href="#gall-peters"><span>15</span>Gall-Peters</a><a href="#van-der-grinten"><span>16</span>Van der Grinten</a><a href="#winkel-tripel"><span>17</span>Winkel Tripel</a><a href="#goode-homolosine"><span>18</span>Goode Homolosine</a><a href="#robinson"><span>19</span>Robinson</a><a href="#equal-earth"><span>20</span>Equal Earth</a></nav>
+<section class="proj" id="gnomonic"><h3><span class="pn">1</span>Gnomonic</h3><p class="proj-meta">Around 580 BC (traditionally) · Azimuthal · Straight lines are shortest routes</p><figure class="proj-fig"><img src="../map-projections/01-gnomonic.webp" width="1045" height="790" loading="lazy" alt="Gnomonic projection of the North Atlantic, with coral circles that were all the same size on the globe, showing how the map distorts them."></figure>
+<p>Tradition credits Thales of Miletus with using this projection for star maps, though nothing he wrote about it survives. Picture a light at the very center of a glass globe, shining the coastlines onto a flat sheet touching the surface. For centuries it was mostly a tool for designing sundials, and it was called the "horologium." The lines of a sundial for a given latitude match the meridians on a gnomonic map centered there.</p>
+<p>Its one superpower is rare and useful: every straight line on a gnomonic map is a <strong>great circle</strong>, the shortest path between two points on the globe. The line from New York to London on the map below is the route a plane would actually fly. Navigators drew their route on a gnomonic chart, then transferred it to a Mercator chart to work out compass headings. The price is that it can't show even half the world, and distortion explodes toward the edges.</p>
+<div class="figures score"><div><b>6.7×</b><span>Area range</span></div><div><b>21°</b><span>Shape distortion</span></div><div><b>n/a</b><span>Greenland check</span></div></div>
+</section>
+<section class="proj" id="stereographic"><h3><span class="pn">2</span>Stereographic</h3><p class="proj-meta">2nd century BC · Azimuthal · Conformal</p><figure class="proj-fig"><img src="../map-projections/02-stereographic.webp" width="788" height="790" loading="lazy" alt="Stereographic projection of the Northern Hemisphere seen from above the North Pole, with coral circles that were all the same size on the globe, showing how the map distorts them."></figure>
+<p>The stereographic projection is often credited to the Greek astronomer Hipparchus, though the oldest surviving text about it is Ptolemy's <em>Planisphaerium</em>, written about 300 years later. Its first big job was the <strong>astrolabe</strong>, the handheld star computer used by astronomers and sailors for centuries. It works for that because it maps every circle on the sky to a circle on the flat plate.</p>
+<p>It's also conformal: shapes are correct in any small area. In fact, it's the only perspective projection (one you could make with a light and a screen) that keeps shapes right. Today it maps the poles, where the military's Universal Polar Stereographic grid takes over from UTM north of 84°N and south of 80°S.</p>
+<div class="figures score"><div><b>3.7×</b><span>Area range</span></div><div><b>0°</b><span>Shape distortion</span></div><div><b>n/a</b><span>Greenland check</span></div></div>
+</section>
+<section class="proj" id="orthographic"><h3><span class="pn">3</span>Orthographic</h3><p class="proj-meta">2nd century BC · Azimuthal · The view from space</p><figure class="proj-fig"><img src="../map-projections/03-orthographic.webp" width="790" height="790" loading="lazy" alt="Orthographic projection of a globe centered on Chicago, with coral circles that were all the same size on the globe, showing how the map distorts them."></figure>
+<p>The orthographic projection is how the Earth looks from very far away: one hemisphere, curving away at the edges like a globe. Hipparchus is said to have used it for astronomical calculations, and the Egyptians may have known it before him. Early writers called it the "analemma." The name "orthographic" came in 1613.</p>
+<p>It doesn't preserve area, shape or distance. It just looks real, which is its whole point. During World War II, the illustrator Richard Edes Harrison drew striking orthographic "global" maps for the American public. Ours is centered on Chicago.</p>
+<div class="figures score"><div><b>5.5×</b><span>Area range</span></div><div><b>36°</b><span>Shape distortion</span></div><div><b>n/a</b><span>Greenland check</span></div></div>
+</section>
+<section class="proj" id="equirectangular"><h3><span class="pn">4</span>Equirectangular (Plate Carrée)</h3><p class="proj-meta">Around AD 100, possibly earlier · Cylindrical · The simplest map there is</p><figure class="proj-fig"><img src="../map-projections/04-equirectangular.webp" width="1260" height="639" loading="lazy" alt="Equirectangular (Plate Carrée) projection of the world, with coral circles that were all the same size on the globe, showing how the map distorts them."></figure>
+<p>Draw latitude and longitude as a plain square grid and you have the equirectangular projection. Ptolemy credited Marinus of Tyre with it around AD 100, and Snyder thought it might go back to Eratosthenes three centuries earlier. Marinus's version wasn't quite square, though, and Ptolemy wasn't impressed. He called it "a manner of representing the distances which gives the worst results of all."</p>
+<p>It survives because it's simple. Sixteenth-century sailors used it as their "plane chart" until Mercator's map caught on. Today it's the default for global satellite imagery and climate data, since every pixel lines up directly with a latitude and longitude. If you've ever plotted raw GPS coordinates without choosing a projection, this is the map you made.</p>
+<div class="figures score"><div><b>7.2×</b><span>Area range</span></div><div><b>10°</b><span>Shape distortion</span></div><div><b>3.6×</b><span>Greenland check</span></div></div>
+</section>
+<section class="proj" id="azimuthal-equidistant"><h3><span class="pn">5</span>Azimuthal Equidistant</h3><p class="proj-meta">Ancient; oldest surviving map 1426 · Azimuthal · True distance and direction from the center</p><figure class="proj-fig"><img src="../map-projections/05-azimuthal-equidistant.webp" width="792" height="790" loading="lazy" alt="Azimuthal Equidistant projection of the world centered on the North Pole, with coral circles that were all the same size on the globe, showing how the map distorts them."></figure>
+<p>On this map, the distance and direction from the center point to anywhere else on Earth are both exactly right. It may go back to Egyptian star charts. The oldest one that survives is a 1426 star map by Conrad of Dyffenbach, and Mercator put it in the polar corners of his famous 1569 map.</p>
+<p>You've seen it on the <strong>United Nations emblem</strong>, which shows the world as an azimuthal equidistant map centered on the North Pole. It was designed in 1945, and that's the version shown here. Aviation-era maps used it centered on a single city, to show true distances from there to everywhere else. The far side of the world gets stretched into a ring around the edge, which is why Antarctica looks like a circular wall.</p>
+<div class="figures score"><div><b>6.9×</b><span>Area range</span></div><div><b>12°</b><span>Shape distortion</span></div><div><b>0.7×</b><span>Greenland check</span></div></div>
+</section>
+<section class="proj" id="mercator"><h3><span class="pn">6</span>Mercator</h3><p class="proj-meta">1569 · Cylindrical · Conformal · Straight compass headings</p><figure class="proj-fig"><img src="../map-projections/06-mercator.webp" width="920" height="790" loading="lazy" alt="Mercator projection of the world, with coral circles that were all the same size on the globe, showing how the map distorts them."></figure>
+<p>Gerardus Mercator's 1569 world map has a long Latin title that ends, roughly, "corrected for use in navigation." That was the point. On his map, a line of constant compass heading (a <strong>rhumb line</strong>) is straight. A sailor could draw a line from port to port, read the angle, and steer that heading the whole way. To make that work, Mercator had to stretch the map north and south more and more toward the poles, which is why the poles never appear at all.</p>
+<p>Mercator probably spaced his latitude lines by hand, since the math tables he needed didn't exist yet. The Englishman Edward Wright published the exact numbers in 1599. On the map below, the dashed line from New York to London is the constant heading, and the solid line is the actual shortest route. Notice how the circles stay round but balloon toward the poles.</p>
+<p>Using it for general world maps was, in one historian's words, "a use unintended by Mercator." It's still the standard for nautical charts, which is what it was built for. The trouble came when publishers hung it on classroom walls. On Mercator, Greenland looks slightly bigger than Africa, which is 14 times its size.</p>
+<div class="figures score"><div><b>26.1×</b><span>Area range</span></div><div><b>0°</b><span>Shape distortion</span></div><div><b>14.7×</b><span>Greenland check</span></div></div>
+</section>
+<section class="proj" id="sinusoidal"><h3><span class="pn">7</span>Sinusoidal</h3><p class="proj-meta">By 1570 · Pseudocylindrical · Equal-area</p><figure class="proj-fig"><img src="../map-projections/07-sinusoidal.webp" width="1260" height="638" loading="lazy" alt="Sinusoidal projection of the world, with coral circles that were all the same size on the globe, showing how the map distorts them."></figure>
+<p>Nobody knows who invented the sinusoidal projection. The earliest map that uses it is a 1570 world map by Jean Cossin of Dieppe. It's been named after two later users, Nicolas Sanson and John Flamsteed, neither of whom created it, and it was even called "Mercator Equal-Area" after appearing in editions of Mercator's atlas.</p>
+<p>The idea is beautifully simple. Every line of latitude is drawn at its true length, so the map gets narrower toward the poles and areas come out exactly right. The cost is shape: the far edges of the map are badly sheared. It's still at work today. NASA stores most of its high-resolution MODIS satellite land data on a sinusoidal grid, because equal-area tiles make global statistics simpler.</p>
+<div class="figures score"><div><b>1.0×</b><span>Area range</span></div><div><b>35°</b><span>Shape distortion</span></div><div><b>1.0× (honest)</b><span>Greenland check</span></div></div>
+</section>
+<section class="proj" id="bonne"><h3><span class="pn">8</span>Bonne</h3><p class="proj-meta">1752 (much older roots) · Pseudoconic · Equal-area · The heart</p><figure class="proj-fig"><img src="../map-projections/08-bonne.webp" width="831" height="790" loading="lazy" alt="Bonne projection of the world, with coral circles that were all the same size on the globe, showing how the map distorts them."></figure>
+<p>This one is named for Rigobert Bonne, a French cartographer who used it for a 1752 atlas of the French coast, but its ideas go back to Ptolemy. Its ancestor is the heart-shaped Werner projection from around 1514. Bonne's version centers the map on the area being drawn, which keeps that area accurate.</p>
+<p>The lines of latitude are arcs of circles, all at their true length, and areas are exactly right. France's topographic maps switched to it in 1803, and atlases used it for maps of individual continents into the 20th century. Shown as a whole world, it becomes a heart.</p>
+<div class="figures score"><div><b>1.0×</b><span>Area range</span></div><div><b>17°</b><span>Shape distortion</span></div><div><b>1.0× (honest)</b><span>Greenland check</span></div></div>
+</section>
+<section class="proj" id="lambert-conformal-conic"><h3><span class="pn">9</span>Lambert Conformal Conic</h3><p class="proj-meta">1772 · Conic · Conformal</p><figure class="proj-fig"><img src="../map-projections/09-lambert-conformal-conic.webp" width="1260" height="699" loading="lazy" alt="Lambert Conformal Conic projection of the lower 48 US states, with coral circles that were all the same size on the globe, showing how the map distorts them."></figure>
+<p>In 1772 the mathematician Johann Heinrich Lambert published seven new projections in a single work, and three of them are in this list. This was the first. Lambert was curious whether the stereographic and the Mercator, which look nothing alike, were really two ends of one family of shape-preserving maps. They are, and this projection sits in between.</p>
+<p>Then it sat almost unused for 140 years. The French used a version of it for battle maps in World War I, and the US Coast and Geodetic Survey revived it in 1918. Today it's everywhere. US aeronautical charts use it, so do many State Plane zones (the official coordinate systems for each US state), and it's ideal for regions that are wider east to west than north to south.</p>
+<div class="figures score"><div><b>1.1×</b><span>Area range</span></div><div><b>0°</b><span>Shape distortion</span></div><div><b>n/a</b><span>Greenland check</span></div></div><p class="score-note">measured over the lower 48</p>
+</section>
+<section class="proj" id="lambert-azimuthal-equal-area"><h3><span class="pn">10</span>Lambert Azimuthal Equal-Area</h3><p class="proj-meta">1772 · Azimuthal · Equal-area</p><figure class="proj-fig"><img src="../map-projections/10-lambert-azimuthal-equal-area.webp" width="1083" height="790" loading="lazy" alt="Lambert Azimuthal Equal-Area projection of Europe, with coral circles that were all the same size on the globe, showing how the map distorts them."></figure>
+<p>The last major projection in Lambert's 1772 book keeps areas exactly right while keeping directions from the center true. Of the classic azimuthal maps, it's the one whose scale changes least as you move away from the center.</p>
+<p>It's the official map of European statistics. The European Union's standard grid for comparing data across countries, known as EPSG:3035, is a Lambert azimuthal equal-area projection centered at 52°N, 10°E, in northern Germany. If you've seen EU maps of population or land use, there's a good chance they were drawn on it. GIS people can spot its coordinates by their oddly familiar offsets: 4,321,000 and 3,210,000 meters.</p>
+<div class="figures score"><div><b>1.0×</b><span>Area range</span></div><div><b>1°</b><span>Shape distortion</span></div><div><b>n/a</b><span>Greenland check</span></div></div><p class="score-note">measured over Europe</p>
+</section>
+<section class="proj" id="transverse-mercator"><h3><span class="pn">11</span>Transverse Mercator (UTM)</h3><p class="proj-meta">1772 · Cylindrical · Conformal · The workhorse</p><figure class="proj-fig"><img src="../map-projections/11-transverse-mercator.webp" width="851" height="790" loading="lazy" alt="Transverse Mercator (UTM) projection of the Americas, with coral circles that were all the same size on the globe, showing how the map distorts them."></figure>
+<p>Take Mercator, turn it on its side, and you get the transverse Mercator. Lambert described it in the same 1772 book. Mercator is most accurate along the equator. The transverse version is most accurate along one north-south line, so it works brilliantly for a narrow north-south strip.</p>
+<p>The 1911 <em>Encyclopaedia Britannica</em> left it out as "seldom used." Then Gauss and later Louis Krüger worked out the precise math for the real, slightly squashed Earth, and in 1947 the US Army built the <strong>Universal Transverse Mercator (UTM)</strong> system on it: 60 zones, each 6° wide, covering the world from 84°N to 80°S. Snyder called it probably the most-used projection of all for precise mapping. The USGS's current US Topo maps use it. The dashed lines here mark UTM zone 16, the zone Chicago is in. Inside the strip, distortion is tiny. Outside it, the circles start to swell.</p>
+<div class="figures score"><div><b>1.0×</b><span>Area range</span></div><div><b>0°</b><span>Shape distortion</span></div><div><b>n/a</b><span>Greenland check</span></div></div><p class="score-note">measured inside UTM zone 16</p>
+</section>
+<section class="proj" id="albers"><h3><span class="pn">12</span>Albers Equal-Area Conic</h3><p class="proj-meta">1805 · Conic · Equal-area</p><figure class="proj-fig"><img src="../map-projections/12-albers.webp" width="1260" height="702" loading="lazy" alt="Albers Equal-Area Conic projection of the lower 48 US states, with coral circles that were all the same size on the globe, showing how the map distorts them."></figure>
+<p>Heinrich Christian Albers, a German, published this projection in 1805. It's built for regions in the middle latitudes that are wide east to west, which describes the United States almost perfectly.</p>
+<p>The US Coast and Geodetic Survey's Oscar Adams promoted it in 1927, calling it "as good as any other and in many respects superior to all others." The USGS adopted it for national maps, and today's standard version for the lower 48 (EPSG:5070) is what you're looking at. If you've seen a map of the US where the northern border curves gently, that's probably Albers. It's the right choice whenever you're comparing areas across states, like acres of farmland or forest cover.</p>
+<div class="figures score"><div><b>1.0×</b><span>Area range</span></div><div><b>1°</b><span>Shape distortion</span></div><div><b>n/a</b><span>Greenland check</span></div></div><p class="score-note">measured over the lower 48</p>
+</section>
+<section class="proj" id="mollweide"><h3><span class="pn">13</span>Mollweide</h3><p class="proj-meta">1805 · Pseudocylindrical · Equal-area</p><figure class="proj-fig"><img src="../map-projections/13-mollweide.webp" width="1260" height="639" loading="lazy" alt="Mollweide projection of the world, with coral circles that were all the same size on the globe, showing how the map distorts them."></figure>
+<p>Carl Mollweide, a mathematician in Halle, published this in 1805, the same year as Albers. It fits the whole world into an ellipse while keeping every area correct. It went mostly unnoticed until the French physicist Jacques Babinet revived it in 1857.</p>
+<p>Astronomers love it. NASA's famous maps of the cosmic microwave background, the afterglow of the Big Bang, use Mollweide, because an equal-area map is the fair way to show a whole sky. It also inspired several later projections on this list, including Goode's.</p>
+<div class="figures score"><div><b>1.0×</b><span>Area range</span></div><div><b>25°</b><span>Shape distortion</span></div><div><b>1.0× (honest)</b><span>Greenland check</span></div></div>
+</section>
+<section class="proj" id="polyconic"><h3><span class="pn">14</span>Polyconic</h3><p class="proj-meta">Around 1820 · Polyconic · America's survey map</p><figure class="proj-fig"><img src="../map-projections/14-polyconic.webp" width="1066" height="790" loading="lazy" alt="Polyconic projection of North America, with coral circles that were all the same size on the globe, showing how the map distorts them."></figure>
+<p>Ferdinand Hassler, the first head of the US Survey of the Coast, began promoting this projection around 1820 for one huge job: mapping the American coastline. His idea was to treat each line of latitude as the edge of its own cone. Each map sheet could then be built from simple tables, and every sheet would be accurate near its own center.</p>
+<p>It worked well enough that the US Geological Survey used it for its topographic maps from the 1880s until the late 1950s. Hassler himself died in 1843 after a fall while trying to protect his instruments in a storm. The projection's weakness shows up when you stretch one version too far. A 1928 USGS manual warned that it was "not at all suitable for a single-sheet map of the United States," even though people did it anyway, as the curved edges here show.</p>
+<div class="figures score"><div><b>1.2×</b><span>Area range</span></div><div><b>1°</b><span>Shape distortion</span></div><div><b>n/a</b><span>Greenland check</span></div></div><p class="score-note">measured over North America</p>
+</section>
+<section class="proj" id="gall-peters"><h3><span class="pn">15</span>Gall-Peters</h3><p class="proj-meta">1855 / 1973 · Cylindrical · Equal-area · The controversy</p><figure class="proj-fig"><img src="../map-projections/15-gall-peters.webp" width="1229" height="790" loading="lazy" alt="Gall-Peters projection of the world, with coral circles that were all the same size on the globe, showing how the map distorts them."></figure>
+<p>In 1855, a Scottish minister named James Gall presented an equal-area world map with tall, stretched-looking continents. He published it properly in 1885. It got little attention.</p>
+<p>In 1973, the German historian Arno Peters called a press conference in Bonn to announce what he presented as a revolutionary new map, the fairest picture of the world, which showed the global south at its true size instead of Mercator's shrunken version. It was essentially Gall's projection. Cartographers objected. They pointed out that it wasn't new and that it distorts shapes about as badly as Mercator distorts sizes. Peters's map caught on anyway. In 1989 a group of North American geography organizations, National Geographic among them, urged publishers to stop using rectangular world maps altogether, Mercator <em>and</em> Peters. In 2017, Boston Public Schools switched to Gall-Peters maps, and the news coverage led directly to the last projection on this list.</p>
+<div class="figures score"><div><b>1.0×</b><span>Area range</span></div><div><b>32°</b><span>Shape distortion</span></div><div><b>1.0× (honest)</b><span>Greenland check</span></div></div>
+</section>
+<section class="proj" id="van-der-grinten"><h3><span class="pn">16</span>Van der Grinten</h3><p class="proj-meta">1904 · Compromise · The whole world in a circle</p><figure class="proj-fig"><img src="../map-projections/16-van-der-grinten.webp" width="790" height="790" loading="lazy" alt="Van der Grinten projection of the world, with coral circles that were all the same size on the globe, showing how the map distorts them."></figure>
+<p>Alphons van der Grinten was a Chicagoan. He invented this projection in 1898 and patented it in 1904, aiming to blend the familiar look of Mercator with the rounded edges of Mollweide. The whole world fits inside a circle.</p>
+<p>National Geographic made it the standard for its world maps in 1922, according to the Society itself (Snyder's manual says 1943), and kept it until 1988. That's a lot of classroom walls. The catch is the polar regions. When National Geographic finally dropped it, the Society said its Van der Grinten maps showed Greenland 554% too large.</p>
+<div class="figures score"><div><b>17.0×</b><span>Area range</span></div><div><b>7°</b><span>Shape distortion</span></div><div><b>6.3×</b><span>Greenland check</span></div></div>
+</section>
+<section class="proj" id="winkel-tripel"><h3><span class="pn">17</span>Winkel Tripel</h3><p class="proj-meta">1921 · Compromise · National Geographic's current choice</p><figure class="proj-fig"><img src="../map-projections/17-winkel-tripel.webp" width="1260" height="640" loading="lazy" alt="Winkel Tripel projection of the world, with coral circles that were all the same size on the globe, showing how the map distorts them."></figure>
+<p>The German cartographer Oswald Winkel created this in 1921 by averaging two other projections. "Tripel" isn't a person. It's German for "triple," usually explained as an effort to keep three kinds of distortion (area, direction and distance) all low at once instead of eliminating just one.</p>
+<p>National Geographic began using it in the mid-1990s and made it the standard for its world maps by 1998, replacing Robinson. A 2007 study by the astrophysicists David Goldberg and J. Richard Gott, which scored world maps on several kinds of error, found that Winkel Tripel "has low distortion on most measures and excellent quality overall." Its poles are drawn as lines, and the edges curve gently, which most people find natural-looking.</p>
+<div class="figures score"><div><b>3.9×</b><span>Area range</span></div><div><b>16°</b><span>Shape distortion</span></div><div><b>2.4×</b><span>Greenland check</span></div></div>
+</section>
+<section class="proj" id="goode-homolosine"><h3><span class="pn">18</span>Goode Homolosine</h3><p class="proj-meta">1923 · Pseudocylindrical, interrupted · Equal-area · The orange peel</p><figure class="proj-fig"><img src="../map-projections/18-goode-homolosine.webp" width="1260" height="557" loading="lazy" alt="Goode Homolosine projection of the world, with coral circles that were all the same size on the globe, showing how the map distorts them."></figure>
+<p>J. Paul Goode, a geography professor at the University of Chicago, took the orange-peel problem literally. If you have to tear the peel to flatten it, why not choose where to tear? In 1923 he joined the sinusoidal projection (good near the equator) to the Mollweide (good at higher latitudes) where their scales match, and cut the result along the oceans so each continent gets its own center line.</p>
+<p>The result is an equal-area map where the continents keep their shapes remarkably well, at the cost of the oceans being sliced apart. ("Homolosine" combines <em>homolographic</em>, an old name for Mollweide, with <em>sine</em>.) It also anchored <em>Goode's World Atlas</em> for Rand McNally, and it was the most-used equal-area world map in American textbooks from 1940 to 1960.</p>
+<div class="figures score"><div><b>1.0×</b><span>Area range</span></div><div><b>11°</b><span>Shape distortion</span></div><div><b>1.0× (honest)</b><span>Greenland check</span></div></div>
+</section>
+<section class="proj" id="robinson"><h3><span class="pn">19</span>Robinson</h3><p class="proj-meta">1963 · Compromise · Designed by eye</p><figure class="proj-fig"><img src="../map-projections/19-robinson.webp" width="1260" height="648" loading="lazy" alt="Robinson projection of the world, with coral circles that were all the same size on the globe, showing how the map distorts them."></figure>
+<p>In 1963 the map company Rand McNally asked Arthur Robinson, a geography professor at the University of Wisconsin, for a world map that simply looked right. He did something unusual. Instead of deriving it from a mathematical formula, he defined it with a table of coordinates, chosen so that the shapes and sizes looked right. He called it "orthophanic," meaning "right-appearing."</p>
+<p>In 1988 National Geographic's cartographers reviewed twenty candidates and unanimously chose Robinson to replace Van der Grinten, cutting Greenland's exaggeration from 554% to 60%. Robinson was no stranger to big maps. During World War II, he had run the map division of the Office of Strategic Services.</p>
+<div class="figures score"><div><b>2.6×</b><span>Area range</span></div><div><b>14°</b><span>Shape distortion</span></div><div><b>1.9×</b><span>Greenland check</span></div></div>
+</section>
+<section class="proj" id="equal-earth"><h3><span class="pn">20</span>Equal Earth</h3><p class="proj-meta">2018 · Pseudocylindrical · Equal-area · The modern answer</p><figure class="proj-fig"><img src="../map-projections/20-equal-earth.webp" width="1260" height="623" loading="lazy" alt="Equal Earth projection of the world, with coral circles that were all the same size on the globe, showing how the map distorts them."></figure>
+<p>When Boston's schools adopted Gall-Peters in 2017, three cartographers, Bojan Šavrič, Tom Patterson and Bernhard Jenny, decided the world deserved a better equal-area map. Their goal was a map with every area correct that still looked as pleasant as Robinson. They published Equal Earth in 2018, built from simple equations so computers can draw it quickly.</p>
+<p>It caught on fast. NASA's climate scientists at the Goddard Institute for Space Studies use it for their global temperature maps, and mapping software added it soon after it was published. Then came the 2026 UN resolution, which singles out Equal Earth as a projection that "more accurately represents relative size." So the oldest argument in cartography got a new answer, at least for the question of size.</p>
+<div class="figures score"><div><b>1.0×</b><span>Area range</span></div><div><b>20°</b><span>Shape distortion</span></div><div><b>1.0× (honest)</b><span>Greenland check</span></div></div>
+</section>
+<h2 id="so-which-one-is-right">So which one is right?</h2>
+<p>None of them, and all of them. The question is what job the map has to do.</p>
+<figure class="wide"><div class="scroll"><table><thead><tr><th>If you need to...</th><th>Use something like</th></tr></thead><tbody><tr><td>Steer a constant compass heading</td><td>Mercator</td></tr><tr><td>Find the shortest route</td><td>Gnomonic</td></tr><tr><td>Compare sizes of countries or regions worldwide</td><td>Equal Earth, Mollweide, Goode</td></tr><tr><td>Compare areas across the US</td><td>Albers</td></tr><tr><td>Measure precise distances in a small area</td><td>UTM or your State Plane zone</td></tr><tr><td>Show the whole world in a way that looks natural</td><td>Winkel Tripel or Robinson</td></tr><tr><td>Browse a map on your phone</td><td>Web Mercator is fine. Just don't measure with it.</td></tr></tbody></table></div></figure>
+<p>The real lesson is that a map is an argument about what matters. Mercator argued that sailors need straight compass lines. Peters argued that the global south deserves its true size. Robinson argued that people should see a world that looks familiar. Knowing which argument a map is making is the first step to reading it well.</p>
+<h2 id="how-this-was-made">How this was made</h2>
+<p>All the maps and numbers come from a Python notebook using cartopy, pyproj and geopandas, with Natural Earth data. The distortion numbers use PROJ's built-in distortion calculations at about 100,000 evenly spaced points, kept to land. The notebook and data are on <a href="https://github.com/dulcetberg/map-projections">GitHub</a>.</p>
+<h2 id="sources">Sources</h2>
+<ul><li>John P. Snyder, <em>Map Projections: A Working Manual</em>, USGS Professional Paper 1395 (1987). The main source for nearly every date in this post. <a href="https://pubs.usgs.gov/pp/1395/report.pdf">https://pubs.usgs.gov/pp/1395/report.pdf</a></li><li>John P. Snyder and Philip M. Voxland, <em>An Album of Map Projections</em>, USGS Professional Paper 1453 (1989). <a href="https://pubs.usgs.gov/pp/1453/report.pdf">https://pubs.usgs.gov/pp/1453/report.pdf</a></li><li>John P. Snyder, "Map Projections in the Renaissance," in <em>The History of Cartography</em>, vol. 3 (2007). <a href="https://press.uchicago.edu/books/hoc/HOC_V3_Pt1/HOC_VOLUME3_Part1_chapter10.pdf">https://press.uchicago.edu/books/hoc/HOC_V3_Pt1/HOC_VOLUME3_Part1_chapter10.pdf</a></li><li>UN News, "UN tells the world: Stop making Africa look small" (Sept. 4, 2026). <a href="https://news.un.org/en/story/2026/09/1168284">https://news.un.org/en/story/2026/09/1168284</a></li><li>Associated Press, "Geographic Society Unveils Map of World That's 'More Realistic'" (Oct. 14, 1988). <a href="https://www.deseret.com/1988/10/14/18781372/geographic-society-unveils-map-of-world-that-s-more-realistic/">https://www.deseret.com/1988/10/14/18781372/geographic-society-unveils-map-of-world-that-s-more-realistic/</a></li><li>National Geographic Education, "Selecting a Map Projection." <a href="https://education.nationalgeographic.org/resource/selecting-map-projection/">https://education.nationalgeographic.org/resource/selecting-map-projection/</a></li><li>Šavrič, Patterson and Jenny, "The Equal Earth map projection," <em>International Journal of Geographical Information Science</em> (2019). <a href="https://doi.org/10.1080/13658816.2018.1504949">https://doi.org/10.1080/13658816.2018.1504949</a></li><li>EPSG registry entries for 3857 (Web Mercator), 3035 (LAEA Europe) and 5070 (CONUS Albers), via <a href="https://spatialreference.org">https://spatialreference.org</a></li><li>NASA MODIS Land, "MODIS Sinusoidal grid." <a href="https://modis-land.gsfc.nasa.gov/MODLAND_grid.html">https://modis-land.gsfc.nasa.gov/MODLAND_grid.html</a></li><li>PROJ documentation. <a href="https://proj.org">https://proj.org</a></li></ul>
+
+    <div class="evidence-panel">
+      <p>The notebook that draws every map and computes every scorecard, the fact sheet with page-level
+      citations for each history, and the data behind the slider are all in the repo.</p>
+      <a class="btn btn-outline" href="https://github.com/dulcetberg/map-projections" target="_blank" rel="noopener">
+        View the code <span class="visually-hidden">(opens in a new tab)</span>
+      </a>
+    </div>
+  </div>
+    </div>
+
+    <aside class="blog-sidebar" aria-label="Search and browse by date">
+      <div class="sidebar-panel">
+        <h2>Search posts</h2>
+        <form class="search-field" id="sidebarSearchForm">
+          <label class="visually-hidden" for="blogSearch">Search posts</label>
+          <input type="search" id="blogSearch" name="q" placeholder="Search titles, tags, topics…">
+          <button type="submit" class="search-submit" aria-label="Search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4a6 6 0 104.472 10.03l4.749 4.748 1.414-1.414-4.748-4.749A6 6 0 0010 4zm-4 6a4 4 0 118 0 4 4 0 01-8 0z"/></svg>
+          </button>
+        </form>
+        <p class="search-status" id="searchStatus" hidden></p>
+      </div>
+
+      <div class="sidebar-panel">
+        <h2>Browse by date</h2>
+        <div class="cal-head">
+          <button class="cal-nav" id="calPrev" type="button" aria-label="Previous month">&larr;</button>
+          <span class="cal-label" id="calLabel"></span>
+          <button class="cal-nav" id="calNext" type="button" aria-label="Next month">&rarr;</button>
+        </div>
+        <div class="cal-grid" id="calGrid" role="grid" aria-label="Post dates"></div>
+        <button class="cal-clear" id="calClear" type="button" hidden>Clear date filter</button>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <svg class="footer-mark" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="46" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-dasharray="255 40" transform="rotate(-58 60 60)" /></svg>
+    <p class="footer-note">&copy; <a href="mailto:brian@bergstromgis.com">Brian Bergstrom</a>. Built by Claude, hosted on GitHub Pages.</p>
+  </div>
+</footer>
+
+<script>
+  document.documentElement.classList.add('js-ready');
+  var toggle = document.getElementById('navToggle');
+  var links = document.getElementById('navLinks');
+  toggle.addEventListener('click', function () {
+    var open = links.classList.toggle('is-open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+</script>
+<script src="../js/hero-sparkles.js"></script>
+<script src="../js/blog-post-data.js"></script>
+<script src="../js/blog-sidebar.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script>
+(function () {
+  // Mercator to Equal Earth: blend the two projections' raw formulas by t, then refit.
+  var W = 960, H = 520, LIM = 85 * Math.PI / 180;
+  var svg = d3.select('#morphMap'), slider = document.getElementById('morphT'),
+      readout = document.getElementById('morphReadout');
+  if (!window.d3 || svg.empty()) return;
+  var rawAt = function (t) {
+    return function (x, y) {
+      var c = Math.max(-LIM, Math.min(LIM, y));            // Mercator is infinite at the poles
+      var a = d3.geoMercatorRaw(x, c), b = d3.geoEqualEarthRaw(x, y);
+      return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+    };
+  };
+  var mutate = d3.geoProjectionMutator(rawAt), proj = mutate(0), path = d3.geoPath(proj);
+  var outline = d3.geoGraticule().extent([[-180, -60], [180, 84]]).outline();
+  var grat = d3.geoGraticule().step([30, 30]).extent([[-180, -60], [180, 84]])();
+  var ocean = svg.append('path').attr('class', 'ocean'),
+      lines = svg.append('path').attr('class', 'grat'),
+      layers = {}, edge;
+
+  fetch('../map-projections/world.json').then(function (r) { return r.json(); }).then(function (world) {
+    var f = {};
+    world.features.forEach(function (d) { f[d.properties.name] = d; });
+    layers.other = svg.append('path').attr('class', 'land').datum(f.other);
+    layers.greenland = svg.append('path').attr('class', 'hi').datum(f.greenland);
+    layers.africa = svg.append('path').attr('class', 'hi').datum(f.africa);
+    edge = svg.append('path').attr('class', 'edge');
+    var truth = f.greenland.properties.true_km2 / f.africa.properties.true_km2;
+
+    function draw() {
+      var t = +slider.value / 1000;
+      mutate(t);
+      proj.clipExtent(null).fitExtent([[6, 6], [W - 6, H - 6]], outline);
+      var b = path.bounds(outline);
+      proj.clipExtent(b);
+      ocean.attr('d', path(outline));
+      lines.attr('d', path(grat));
+      Object.keys(layers).forEach(function (k) { layers[k].attr('d', path); });
+      edge.attr('d', path(outline));
+      var looks = path.area(f.greenland) / path.area(f.africa);
+      var name = t === 0 ? 'Mercator' : t === 1 ? 'Equal Earth' : 'this in-between map';
+      readout.innerHTML = 'On ' + name + ', Greenland looks <strong>' + Math.round(looks * 100) +
+        '%</strong> the size of Africa. In reality it is <strong>' + Math.round(truth * 100) + '%</strong>.';
+    }
+    slider.addEventListener('input', draw);
+    draw();
+  }).catch(function () {
+    readout.textContent = 'The interactive map could not load. The static maps below show the same comparison.';
+  });
+})();
+</script>
+</body>
+</html>
