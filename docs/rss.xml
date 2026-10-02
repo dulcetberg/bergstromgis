@@ -5,7 +5,14 @@
   <link>https://bergstromgis.com/blog.html</link>
   <description>Weekly and biweekly GIS projects and write-ups from Brian Bergstrom: civic data journalism, humanitarian mapping, and personal-interest builds.</description>
   <language>en-us</language>
-  <lastBuildDate>Thu, 01 Oct 2026 14:00:00 GMT</lastBuildDate>
+  <lastBuildDate>Fri, 02 Oct 2026 14:00:00 GMT</lastBuildDate>
+    <item>
+      <title>The 309 Doesn't Always Leave Elmhurst</title>
+      <link>https://bergstromgis.com/work/pace-ghost-buses.html</link>
+      <guid isPermaLink="true">https://bergstromgis.com/work/pace-ghost-buses.html</guid>
+      <pubDate>Fri, 02 Oct 2026 14:00:00 GMT</pubDate>
+      <description>I tracked every Pace bus for a month and checked it against Pace's own schedule. Between 1 in 94 and 1 in 53 trips never appeared, most of them in the south suburbs. At my own stop, a quarter to a third of rush-hour buses never left.</description>
+    </item>
     <item>
       <title>Every Map Is Wrong</title>
       <link>https://bergstromgis.com/work/map-projections.html</link>

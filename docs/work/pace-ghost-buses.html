@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The 309 Doesn&#x27;t Always Leave Elmhurst &mdash; Brian Bergstrom</title>
+<meta name="description" content="I tracked every Pace bus for a month and checked it against Pace&#x27;s own schedule. Between 1 in 94 and 1 in 53 trips never appeared, most of them in the south suburbs. At my own stop, a quarter to a third of rush-hour buses never left.">
+<link rel="canonical" href="https://bergstromgis.com/work/pace-ghost-buses.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Brian Bergstrom">
+<meta property="og:title" content="The 309 Doesn&#x27;t Always Leave Elmhurst &mdash; Brian Bergstrom">
+<meta property="og:description" content="I tracked every Pace bus for a month and checked it against Pace&#x27;s own schedule. Between 1 in 94 and 1 in 53 trips never appeared, most of them in the south suburbs. At my own stop, a quarter to a third of rush-hour buses never left.">
+<meta property="og:image" content="https://bergstromgis.com/images/pace-ghost-buses.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Map of Pace suburban bus routes on a near-black background, each line colored from dim brown to bright coral by the share of its scheduled trips that never appeared on Pace's bus tracker.">
+<meta property="og:url" content="https://bergstromgis.com/work/pace-ghost-buses.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The 309 Doesn&#x27;t Always Leave Elmhurst &mdash; Brian Bergstrom">
+<meta name="twitter:description" content="I tracked every Pace bus for a month and checked it against Pace&#x27;s own schedule. Between 1 in 94 and 1 in 53 trips never appeared, most of them in the south suburbs. At my own stop, a quarter to a third of rush-hour buses never left.">
+<meta name="twitter:image" content="https://bergstromgis.com/images/pace-ghost-buses.jpg">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="alternate icon" href="../favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../css/brand.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+  /* Page-local only. Every colour is a brand.css token, apart from the map's own ramp. */
+  .project-body figure { margin: 2rem 0 0.6rem; }
+  .project-body .wide { max-width: none; width: min(100%, 1000px); }
+  .project-body figcaption { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.9rem; line-height: 1.55; max-width: 640px; }
+  .chart { background: var(--bg-raised); border: 1px solid var(--rule); padding: 1rem 1rem 1rem; }
+  #paceMap { height: 560px; background: var(--bg); }
+  @media (max-width: 720px) { #paceMap { height: 420px; } }
+  .legend { display: flex; flex-wrap: wrap; gap: 0.5rem 1.1rem; align-items: center; margin-bottom: 0.8rem;
+    font-size: 0.78rem; color: var(--text-muted); }
+  .legend .key { display: inline-flex; align-items: center; gap: 0.45rem; }
+  .legend i { width: 22px; height: 4px; border-radius: 2px; display: inline-block; }
+  .legend i.dash { background: repeating-linear-gradient(90deg, #6B5B50 0 5px, transparent 5px 9px); }
+  .leaflet-container { font: inherit; }
+  .leaflet-control-attribution { background: rgba(18, 13, 11, 0.85) !important; color: var(--text-muted); font-size: 0.68rem; }
+  .leaflet-control-attribution a { color: var(--accent); }
+  .pace-tip { background: var(--bg-raised); color: var(--text); border: 1px solid var(--rule); border-radius: 4px;
+    font-size: 0.82rem; line-height: 1.45; box-shadow: none; }
+  .pace-tip::before { display: none; }
+  .scroll { overflow-x: auto; border: 1px solid var(--rule); background: var(--bg-raised); }
+  .project-body table { border-collapse: collapse; width: 100%; font-size: 0.88rem; }
+  .project-body th { font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted);
+    text-align: left; padding: 0.8rem 0.85rem; border-bottom: 1px solid var(--rule); font-weight: 700; white-space: nowrap; }
+  .project-body td { padding: 0.7rem 0.85rem; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  .project-body tbody tr:last-child td { border-bottom: none; }
+  .project-body td.n, .project-body th.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .alltable { margin: 1rem 0 2rem; max-width: 1000px; }
+  .alltable summary { cursor: pointer; color: var(--accent); font-size: 0.88rem; margin-bottom: 0.8rem; }
+  .alltable .scroll { max-height: 420px; overflow-y: auto; }
+  .figures { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--rule);
+    border: 1px solid var(--rule); margin: 0 0 2rem; }
+  .figures div { background: var(--bg-raised); padding: 1rem; }
+  .figures b { display: block; font-family: var(--font-heading); font-size: 1.35rem; font-weight: 600; white-space: nowrap;
+    color: var(--text); font-variant-numeric: tabular-nums; }
+  .figures span { display: block; font-size: 0.66rem; letter-spacing: 0.07em; text-transform: uppercase;
+    color: var(--text-muted); margin-top: 0.35rem; line-height: 1.4; }
+  @media (max-width: 720px) { .figures { grid-template-columns: repeat(2, 1fr); } }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <nav class="site-nav container" aria-label="Primary">
+    <a class="wordmark" href="../index.html">Brian Bergstrom</a>
+    <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks">Menu</button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../work-civic.html">Work</a></li>
+      <li><a href="../blog.html">Blog</a></li>
+      <li><a href="../about.html">About</a></li>
+      <li><a href="../../resume/resume.html">Resume</a></li>
+      <li><a href="../ai-use.html">AI Use</a></li>
+      <li><a href="../contact.html">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="redmap" color-interpolation-filters="sRGB">
+    <feColorMatrix type="matrix" values="0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0 0 0 1 0" result="gray"/>
+    <feComponentTransfer in="gray" result="normalized">
+      <feFuncR type="linear" slope="11.087" intercept="-3.348"/>
+      <feFuncG type="linear" slope="11.087" intercept="-3.348"/>
+      <feFuncB type="linear" slope="11.087" intercept="-3.348"/>
+    </feComponentTransfer>
+    <feComponentTransfer in="normalized">
+      <feFuncR type="table" tableValues="0.02 0.18 0.45 0.75 1.0"/>
+      <feFuncG type="table" tableValues="0.00 0.015 0.04 0.10 0.30"/>
+      <feFuncB type="table" tableValues="0.00 0.015 0.03 0.07 0.22"/>
+    </feComponentTransfer>
+  </filter>
+</svg>
+
+<main id="main">
+  <section class="site-hero">
+    <div class="hero-base"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-lines"></div>
+    <div class="hero-vignette"></div>
+    <svg class="hero-sparkles">
+      <defs>
+        <radialGradient id="sparkGrad">
+          <stop offset="0%" stop-color="#FFEFD6" stop-opacity="1"/>
+          <stop offset="35%" stop-color="#FFB199" stop-opacity="0.9"/>
+          <stop offset="100%" stop-color="#C0392B" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <circle class="sparkle" data-sx="211" data-sy="414" r="3.4" fill="url(#sparkGrad)" style="animation-delay:-0.2s; animation-duration:2.3s;"/>
+      <circle class="sparkle" data-sx="988" data-sy="388" r="3.0" fill="url(#sparkGrad)" style="animation-delay:-1.4s; animation-duration:2.9s;"/>
+      <circle class="sparkle" data-sx="634" data-sy="539" r="3.6" fill="url(#sparkGrad)" style="animation-delay:-0.8s; animation-duration:2.5s;"/>
+      <circle class="sparkle" data-sx="849" data-sy="449" r="3.1" fill="url(#sparkGrad)" style="animation-delay:-2.1s; animation-duration:3.1s;"/>
+      <circle class="sparkle" data-sx="1077" data-sy="463" r="3.5" fill="url(#sparkGrad)" style="animation-delay:-0.5s; animation-duration:2.4s;"/>
+      <circle class="sparkle" data-sx="1260" data-sy="552" r="3.0" fill="url(#sparkGrad)" style="animation-delay:-1.8s; animation-duration:2.8s;"/>
+      <circle class="sparkle" data-sx="1745" data-sy="527" r="4.0" fill="url(#sparkGrad)" style="animation-delay:-1.0s; animation-duration:2.6s;"/>
+      <circle class="sparkle" data-sx="965" data-sy="561" r="3.2" fill="url(#sparkGrad)" style="animation-delay:-2.4s; animation-duration:3.0s;"/>
+      <circle class="sparkle" data-sx="1169" data-sy="592" r="3.3" fill="url(#sparkGrad)" style="animation-delay:-0.1s; animation-duration:2.7s;"/>
+      <circle class="sparkle" data-sx="1262" data-sy="617" r="3.6" fill="url(#sparkGrad)" style="animation-delay:-1.6s; animation-duration:2.5s;"/>
+      <circle class="sparkle" data-sx="1060" data-sy="835" r="3.1" fill="url(#sparkGrad)" style="animation-delay:-0.9s; animation-duration:2.9s;"/>
+      <circle class="sparkle" data-sx="1135" data-sy="816" r="3.4" fill="url(#sparkGrad)" style="animation-delay:-2.0s; animation-duration:2.6s;"/>
+    </svg>
+    <svg class="hero-corner" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="46" fill="none" stroke="#FF6A52" stroke-width="5" stroke-linecap="round" stroke-dasharray="255 40" transform="rotate(-58 60 60)" /></svg>
+    <div class="hero-content">
+      <span class="eyebrow">GIS Analyst &middot; Chicago</span>
+      <p class="hero-title">GIS that makes the overlooked undeniable.</p>
+      <p class="lede">Real maps, real data, real people who needed someone to notice. New ones posted here roughly every week.</p>
+    </div>
+  </section>
+
+  <div class="blog-layout container">
+  <div class="blog-main">
+    <div class="container">
+    <a class="breadcrumb" href="../work-civic.html">&larr; Back to civic work</a>
+
+    <header class="project-header">
+      <span class="tag tag-civic">Civic &mdash; Independent Study</span>
+      <h1>The 309 Doesn&#x27;t Always Leave Elmhurst</h1>
+      <p class="subtitle">A month of Pace's own bus tracker data, checked against Pace's own schedule: which buses
+      never showed up, where, when, and why the wait at my stop was worse than any average suggested.</p>
+      <div class="meta-row">
+        <span class="stat">Aug 30 to Sep 30, 2026</span>
+        <span class="stat">86 Pace routes</span>
+        <span class="stat">123,187 scheduled trips checked</span>
+      </div>
+    </header>
+  </div>
+
+  <div class="project-body">
+    <div class="figures">
+      <div><b>1.06&ndash;1.89%</b><span>Of Pace trips never on the tracker</span></div>
+      <div><b>68%</b><span>Of confirmed missing trips are on 10 routes</span></div>
+      <div><b>103 of 525</b><span>Elmhurst 309 departures that never left</span></div>
+      <div><b>34%</b><span>Missing in the weekday afternoon rush</span></div>
+    </div>
+
+<p>I catch the Pace 309 at the Elmhurst Metra station. It's the start of the line: every eastbound 309 trip begins there, at 1st Street and York, and heads out along Lake Street to Austin Boulevard. More than once this summer I stood at that stop on a weekday afternoon for over an hour with no bus. At that time of day, Pace's schedule says one should leave every half hour.</p>
+<p>I wanted to know whether that was bad luck or a pattern. Pace doesn't publish any record of where its buses actually went, so I started keeping one.</p>
+<h2>How I got the data</h2>
+<p>Pace's Bus Tracker website shows live bus positions on a map. Behind that map is a request the page makes to Pace's server, route by route, that returns every bus currently on the route with its location. It needs no login or key. I wrote a small script that makes the same request for all 94 routes on the tracker, every minute or two, and saves the answers.</p>
+<p>It ran from August 30 to September 30, 2026, and collected about 2.3 million bus positions from 575 different buses.</p>
+<p>Then I compared those positions to Pace's published schedule (the GTFS feed Pace gives to Google Maps and other apps). For every scheduled trip, I checked each of its stops: did any bus on that route come within 500 meters of the stop within 15 minutes of the scheduled time? A trip where at least five stops could be checked, and not one of them was served, counts as a <strong>ghost trip</strong>: a trip on the schedule that never appeared on Pace's own tracker.</p>
+<p>A few things this can and can't do:</p>
+<ul><li><strong>My computer wasn't watching all the time.</strong> The collector went down a few times (a reboot, a sleeping computer). Any stretch it wasn't watching is marked "unknown," not counted as a ghost.</li><li><strong>The tracker doesn't cover every route.</strong> Its route menu lists 94 routes. Another 40 routes that run on weekdays, about 17% of Pace's weekday trips, aren't on it at all, so I can't say anything about them. One more route, the 221 on Wolf Road, appears on the menu but showed just 2 positions all month. I left it out rather than call it a 100% ghost route.</li><li><strong>"Never appeared on the tracker" is not the same as "never ran."</strong> A bus that ran with its tracker switched off looks exactly like a bus that didn't run. I can't tell those apart, and nobody outside Pace can.</li><li><strong>The test is generous.</strong> Any bus on the route counts, in either direction, so a bus going the other way past a stop gives that stop credit. I'll come back to why that matters.</li></ul>
+<p>That left 123,187 scheduled trips on 86 routes that I could judge.</p>
+<h2>The whole system</h2>
+<p>Between <strong>1.06% and 1.89%</strong> of the trips I could check never appeared on the tracker. That's roughly <strong>1 in 94 to 1 in 53</strong>. On a typical weekday Pace schedules about 5,450 trips on these routes, and somewhere between 52 and 95 of them didn't show up.</p>
+<p>It's a range because some trips are hard to call. When I looked closer at each ghost trip, some had a bus labeled with a different route passing a lot of their stops. Sometimes that's a bus running the trip under the wrong route number on the tracker; sometimes it's just two routes sharing a street. Trips where one such bus covered most of the stops I dropped as explained. The low end counts only trips where no single bus covered more than a fifth of the stops. The high end adds the ones in between, which I can't call either way.</p>
+<figure class="wide">
+  <div class="chart">
+    <div class="legend" aria-hidden="true"><span class="key"><i style="background:#6E4034"></i>under 1%</span><span class="key"><i style="background:#94503F"></i>1 to 3%</span><span class="key"><i style="background:#BF5E48"></i>3 to 6%</span><span class="key"><i style="background:#E8735A"></i>6 to 10%</span><span class="key"><i style="background:#FFB09E"></i>10% or more</span><span class="key"><i class="dash"></i>not on the tracker</span></div>
+    <div id="paceMap" role="img" aria-label="Map of Pace bus routes colored by the share of scheduled trips that never appeared on Pace's tracker. The brightest routes are in the south suburbs around Park Forest and Chicago Heights. The same numbers are in the table below the map."></div>
+  </div>
+  <figcaption>Every Pace route, colored by the share of its scheduled trips that never appeared on Pace's tracker in
+  September (the low end of each route's range, so the colors are conservative). Hover or tap a route for its full
+  range. Dashed gray routes aren't on the tracker, so I couldn't measure them. The dot is the Elmhurst Metra stop.</figcaption>
+</figure>
+<details class="alltable">
+  <summary>All 86 measured routes as a table</summary>
+  <div class="scroll"><table><thead><tr><th>Route</th><th>Name</th><th class="n">Trips checked</th><th class="n">Never appeared</th></tr></thead>
+  <tbody><tr><td>366</td><td>Park Forest - Chicago Heights</td><td class="n">1,069</td><td class="n">10.8% to 26.4%</td></tr><tr><td>367</td><td>University Park - Park Forest</td><td class="n">738</td><td class="n">25.5% to 26.1%</td></tr><tr><td>357</td><td>Lincoln Highway</td><td class="n">1,535</td><td class="n">7.8% to 13.6%</td></tr><tr><td>356</td><td>Harvey - Homewood - Tinley Park</td><td class="n">1,483</td><td class="n">2.1% to 9.2%</td></tr><tr><td>542</td><td>Bluff City</td><td class="n">1,171</td><td class="n">3.0% to 9.1%</td></tr><tr><td>890</td><td>Chicago Heights - UPS Hodgkins Limited</td><td class="n">232</td><td class="n">3.0% to 9.1%</td></tr><tr><td>604</td><td>Wheeling - Schaumburg</td><td class="n">1,005</td><td class="n">8.5% to 8.7%</td></tr><tr><td>508</td><td>East Joliet</td><td class="n">550</td><td class="n">4.4% to 8.6%</td></tr><tr><td>564</td><td>Jackson / 14th</td><td class="n">534</td><td class="n">0.2% to 7.9%</td></tr><tr><td>354</td><td>Harvey - Oak Forest Loop</td><td class="n">634</td><td class="n">3.1% to 7.7%</td></tr><tr><td>358</td><td>Torrence</td><td class="n">759</td><td class="n">7.2%</td></tr><tr><td>509</td><td>Joliet-Fairmont</td><td class="n">751</td><td class="n">2.5% to 5.7%</td></tr><tr><td>471</td><td>Highland Park-Northbrook Court</td><td class="n">413</td><td class="n">0.0% to 5.6%</td></tr><tr><td>359</td><td>Robbins - South Kedzie Avenue</td><td class="n">1,113</td><td class="n">5.1% to 5.4%</td></tr><tr><td>310</td><td>West Madison - Hillside</td><td class="n">807</td><td class="n">0.1% to 5.2%</td></tr><tr><td>353</td><td>95th/Dan Ryan CTA-Calumet City-Homewood</td><td class="n">1,761</td><td class="n">4.9% to 5.1%</td></tr><tr><td>803</td><td>Carpentersville Local</td><td class="n">876</td><td class="n">3.1% to 4.8%</td></tr><tr><td>801</td><td>Elgin-Geneva</td><td class="n">407</td><td class="n">4.7%</td></tr><tr><td>350</td><td>Sibley</td><td class="n">3,175</td><td class="n">4.0% to 4.4%</td></tr><tr><td>549</td><td>South Randall</td><td class="n">840</td><td class="n">0.6% to 3.9%</td></tr><tr><td>392</td><td>Green Line Cicero CTA - UPS Hodgkins Limited</td><td class="n">158</td><td class="n">2.5% to 3.8%</td></tr><tr><td>317</td><td>Westchester</td><td class="n">1,337</td><td class="n">0.0% to 3.4%</td></tr><tr><td>395</td><td>95th/Dan Ryan CTA - UPS Hodgkins Limited</td><td class="n">409</td><td class="n">3.2%</td></tr><tr><td>314</td><td>Ridgeland Avenue</td><td class="n">628</td><td class="n">1.4% to 2.4%</td></tr><tr><td>223</td><td>Elk Grove - Rosemont CTA Station</td><td class="n">2,669</td><td class="n">0.7% to 2.2%</td></tr><tr><td>270</td><td>Milwaukee Avenue</td><td class="n">784</td><td class="n">0.0% to 2.2%</td></tr><tr><td>541</td><td>Northeast Elgin</td><td class="n">1,192</td><td class="n">0.2% to 2.1%</td></tr><tr><td>302</td><td>Ogden - Stanley</td><td class="n">674</td><td class="n">1.5% to 1.9%</td></tr><tr><td>472</td><td>Highland Park - Highwood</td><td class="n">415</td><td class="n">1.4% to 1.9%</td></tr><tr><td>561</td><td>Castlecrest via McAree</td><td class="n">492</td><td class="n">0.0% to 1.8%</td></tr><tr><td>563</td><td>Great Lakes Naval Station</td><td class="n">630</td><td class="n">0.2% to 1.6%</td></tr><tr><td>505</td><td>West Joliet Loop</td><td class="n">1,073</td><td class="n">0.3% to 1.6%</td></tr><tr><td>319</td><td>Grand Avenue</td><td class="n">910</td><td class="n">1.3% to 1.4%</td></tr><tr><td>571</td><td>Zion</td><td class="n">1,148</td><td class="n">1.1% to 1.3%</td></tr><tr><td>507</td><td>Plainfield</td><td class="n">1,190</td><td class="n">0.3% to 1.3%</td></tr><tr><td>308</td><td>Medical Center</td><td class="n">2,051</td><td class="n">0.1% to 1.2%</td></tr><tr><td>208</td><td>Golf Road</td><td class="n">1,924</td><td class="n">0.6% to 1.1%</td></tr><tr><td>316</td><td>Laramie Avenue</td><td class="n">1,276</td><td class="n">0.6% to 1.1%</td></tr><tr><td>305</td><td>East Roosevelt</td><td class="n">1,382</td><td class="n">0.9% to 1.1%</td></tr><tr><td>349</td><td>South Western</td><td class="n">3,230</td><td class="n">1.0% to 1.0%</td></tr><tr><td>215</td><td>Crawford-Howard</td><td class="n">1,717</td><td class="n">1.0%</td></tr><tr><td>552</td><td>North State - Spring Hill Mall</td><td class="n">1,138</td><td class="n">0.0% to 0.9%</td></tr><tr><td>290</td><td>Touhy Avenue</td><td class="n">3,300</td><td class="n">0.7% to 0.8%</td></tr><tr><td>543</td><td>Dundee-Carpentersville</td><td class="n">787</td><td class="n">0.1% to 0.8%</td></tr><tr><td>606</td><td>Rosemont - Schaumburg Limited</td><td class="n">2,548</td><td class="n">0.2% to 0.8%</td></tr><tr><td>524</td><td>West Aurora</td><td class="n">563</td><td class="n">0.4% to 0.7%</td></tr><tr><td>384</td><td>Narragansett - Ridgeland</td><td class="n">573</td><td class="n">0.0% to 0.7%</td></tr><tr><td>303</td><td>Forest Park - Rosemont</td><td class="n">1,198</td><td class="n">0.0% to 0.7%</td></tr><tr><td>332</td><td>River Road - York Road</td><td class="n">761</td><td class="n">0.0% to 0.7%</td></tr><tr><td>554</td><td>Elgin - Woodfield</td><td class="n">763</td><td class="n">0.4% to 0.7%</td></tr><tr><td>834</td><td>Joliet - Downers Grove</td><td class="n">690</td><td class="n">0.6%</td></tr><tr><td>574</td><td>CLC - Hawthorn Mall</td><td class="n">575</td><td class="n">0.5%</td></tr><tr><td>559</td><td>Illinois Route 59</td><td class="n">1,041</td><td class="n">0.0% to 0.5%</td></tr><tr><td>547</td><td>Wing Park</td><td class="n">1,087</td><td class="n">0.0% to 0.5%</td></tr><tr><td>548</td><td>Highland</td><td class="n">1,089</td><td class="n">0.0% to 0.5%</td></tr><tr><td>379</td><td>Midway - Orland Park</td><td class="n">1,585</td><td class="n">0.3% to 0.4%</td></tr><tr><td>272</td><td>Milwaukee Avenue North</td><td class="n">974</td><td class="n">0.4%</td></tr><tr><td>301</td><td>Roosevelt Road</td><td class="n">1,977</td><td class="n">0.2% to 0.4%</td></tr><tr><td>352</td><td>Halsted</td><td class="n">4,567</td><td class="n">0.3% to 0.4%</td></tr><tr><td>572</td><td>Washington</td><td class="n">1,139</td><td class="n">0.0% to 0.3%</td></tr><tr><td>570</td><td>Fox Lake - CLC</td><td class="n">626</td><td class="n">0.3%</td></tr><tr><td>364</td><td>159th Street</td><td class="n">2,830</td><td class="n">0.3%</td></tr><tr><td>100</td><td>Pulse Milwaukee Line</td><td class="n">3,749</td><td class="n">0.2%</td></tr><tr><td>330</td><td>Mannheim - LaGrange Roads</td><td class="n">2,125</td><td class="n">0.1% to 0.2%</td></tr><tr><td>568</td><td>Belvidere</td><td class="n">1,386</td><td class="n">0.2%</td></tr><tr><td>309</td><td>Lake Street</td><td class="n">1,139</td><td class="n">0.0% to 0.2%</td></tr><tr><td>331</td><td>Cumberland - 5th Avenue</td><td class="n">1,879</td><td class="n">0.1% to 0.2%</td></tr><tr><td>533</td><td>Northeast Aurora</td><td class="n">1,270</td><td class="n">0.2%</td></tr><tr><td>307</td><td>Harlem</td><td class="n">2,958</td><td class="n">0.1%</td></tr><tr><td>565</td><td>Grand Avenue</td><td class="n">1,389</td><td class="n">0.1% to 0.1%</td></tr><tr><td>381</td><td>95th Street</td><td class="n">3,521</td><td class="n">0.1%</td></tr><tr><td>250</td><td>Dempster Street</td><td class="n">1,092</td><td class="n">0.0% to 0.1%</td></tr><tr><td>313</td><td>St. Charles Rd.</td><td class="n">1,212</td><td class="n">0.0% to 0.1%</td></tr><tr><td>383</td><td>South Cicero</td><td class="n">2,408</td><td class="n">0.1%</td></tr><tr><td>386</td><td>South Harlem</td><td class="n">1,235</td><td class="n">0.1%</td></tr><tr><td>530</td><td>West Galena - Naperville</td><td class="n">1,227</td><td class="n">0.1%</td></tr><tr><td>501</td><td>West Jefferson</td><td class="n">1,365</td><td class="n">0.1%</td></tr><tr><td>315</td><td>Austin Boulevard</td><td class="n">3,437</td><td class="n">0.1%</td></tr><tr><td>322</td><td>Cermak Road - 22nd St.</td><td class="n">3,481</td><td class="n">0.0%</td></tr><tr><td>101</td><td>Pulse Dempster Line</td><td class="n">3,888</td><td class="n">0.0%</td></tr><tr><td>213</td><td>Green Bay Road</td><td class="n">1,875</td><td class="n">0.0%</td></tr><tr><td>311</td><td>Oak Park Avenue</td><td class="n">1,631</td><td class="n">0.0%</td></tr><tr><td>318</td><td>West North Avenue</td><td class="n">3,207</td><td class="n">0.0%</td></tr><tr><td>390</td><td>Midway CTA - UPS Hodgkins Limited</td><td class="n">314</td><td class="n">0.0%</td></tr><tr><td>722</td><td>Ogden Avenue</td><td class="n">1,213</td><td class="n">0.0%</td></tr><tr><td>802</td><td>Aurora - Geneva via Lake Street</td><td class="n">1,233</td><td class="n">0.0%</td></tr></tbody></table></div>
+</details>
+<h2>Where: the south suburbs</h2>
+<p>The missing trips are not spread evenly. The 10 routes with the most confirmed ghost trips account for <strong>68% of them</strong>, while running only 11% of the trips.</p>
+<p>These are the 10 routes with the highest rates, among routes with at least 100 trips checked:</p>
+<figure class="wide"><div class="scroll"><table><thead><tr><th>Route</th><th>Name</th><th class="n">Trips checked</th><th class="n">Never appeared</th></tr></thead><tbody><tr><td>366</td><td>Park Forest to Chicago Heights</td><td class="n">1,069</td><td class="n">11% to 26%</td></tr><tr><td>367</td><td>University Park to Park Forest</td><td class="n">738</td><td class="n">26%</td></tr><tr><td>357</td><td>Lincoln Highway</td><td class="n">1,535</td><td class="n">8% to 14%</td></tr><tr><td>356</td><td>Harvey, Homewood, Tinley Park</td><td class="n">1,483</td><td class="n">2% to 9%</td></tr><tr><td>542</td><td>Bluff City</td><td class="n">1,171</td><td class="n">3% to 9%</td></tr><tr><td>890</td><td>Chicago Heights to UPS Hodgkins</td><td class="n">232</td><td class="n">3% to 9%</td></tr><tr><td>604</td><td>Wheeling to Schaumburg</td><td class="n">1,005</td><td class="n">9%</td></tr><tr><td>508</td><td>East Joliet</td><td class="n">550</td><td class="n">4% to 8%</td></tr><tr><td>564</td><td>Jackson / 14th</td><td class="n">534</td><td class="n">0% to 8%</td></tr><tr><td>354</td><td>Harvey to Oak Forest</td><td class="n">634</td><td class="n">3% to 8%</td></tr></tbody></table></div></figure>
+<p>Six of the ten are in the south suburbs, around Park Forest, Chicago Heights and Harvey. Route 604 in the northwest suburbs stands out because its range is narrow: about 9% either way. On Routes 366 and 367, about one scheduled trip in four never appeared.</p>
+<p>I'm deliberately not saying anything here about who lives along these routes. That's worth asking, but it needs Census data, not a guess.</p>
+<h2>When: late nights and weekends</h2>
+<p>By time of day, the morning rush is the most reliable: under 1.3% of trips starting between 6 and 9am went missing. After 7pm it climbs, and trips starting around midnight go missing 6 to 7% of the time. Weekends are worse than weekdays, with Saturdays roughly twice the weekday rate.</p>
+<h2>Why my stop didn't show up in any of this</h2>
+<p>Here's the part that surprised me. By the whole-trip test, the 309 is one of Pace's most reliable routes: almost none of its trips are ghosts. If I'd stopped there, I'd have concluded my hour-long waits were bad luck.</p>
+<p>The problem is the generous test. At rush hour the 309 runs every half hour in both directions. If one trip doesn't run, the buses before and after it, and the buses going the other way, still pass most of its stops within 15 minutes. The trip gets credit for stops it never served. On a busy route, a whole missing trip can look like it ran.</p>
+<p>So that system-wide range is a floor. On frequent routes, the real number is probably higher.</p>
+<p>To check my own stop properly, I stopped asking "did a bus come near the stop?" and asked the question a rider asks: <strong>did an eastbound bus actually leave Elmhurst?</strong> Elmhurst is the end of the line, so buses arrive, park for a few minutes and then leave. I counted a departure only when a bus that had been at the station was, within 15 minutes, at least a kilometer and a half away and heading east, and timed it at the moment it left.</p>
+<p>Getting that right took a few tries, and two of my early versions were wrong. The first one timed each bus at the moment it <em>arrived</em> rather than when it left. Buses park about 200 meters up York Street before leaving, so a bus that sat there for ten minutes made it look like a 129-minute wait that never happened. I found that by tracing individual buses ping by ping, and only trusted the method once it matched those traces.</p>
+<h2>What happened at Elmhurst</h2>
+<p>I paired every scheduled eastbound departure in September with the real departures, one bus per scheduled time, allowing a bus to be up to 5 minutes early and up to 30 minutes late (or until the next scheduled bus, if that's sooner).</p>
+<p><strong>103 of 525 scheduled departures never left.</strong> That's about one in five. But it depends heavily on the time of day:</p>
+<figure class="wide"><div class="scroll"><table><thead><tr><th>Weekdays</th><th class="n">Scheduled departures checked</th><th class="n">Never left</th></tr></thead><tbody><tr><td>Before 6am</td><td class="n">21</td><td class="n">5%</td></tr><tr><td>Morning rush, 6 to 9am</td><td class="n">126</td><td class="n"><strong>25%</strong></td></tr><tr><td>Midday, 9am to 2pm</td><td class="n">100</td><td class="n">4%</td></tr><tr><td>Afternoon rush, 2 to 7pm</td><td class="n">161</td><td class="n"><strong>34%</strong></td></tr><tr><td>Evening, after 7pm</td><td class="n">57</td><td class="n">7%</td></tr></tbody></table></div></figure>
+<p>At midday the 309 runs almost exactly to schedule. At rush hour, when the most people are trying to get home from the train, a quarter to a third of the scheduled buses never leave.</p>
+<p>From the platform, that looks like this. Across all of September, the typical wait for the next bus was 4 minutes. But on weekday afternoons between 2 and 6pm, <strong>roughly a third or more of the scheduled departures were followed by a wait of over half an hour.</strong> On Wednesday, September 2, the 2:57, 3:33, 4:03, 4:33 and 5:03 buses never left. The next bus pulled out at 5:39pm, 2 hours and 42 minutes after the first one that didn't come. That's the kind of afternoon I'd been having.</p>
+<p><strong>It's the same trips, over and over.</strong> Some scheduled departures were missing on most of the weekdays I could check:</p>
+<figure class="wide"><div class="scroll"><table><thead><tr><th>Scheduled departure</th><th class="n">Weekdays missing</th></tr></thead><tbody><tr><td>6:31am</td><td class="n">12 of 21</td></tr><tr><td>2:57pm</td><td class="n">9 of 17</td></tr><tr><td>5:03pm</td><td class="n">9 of 17</td></tr><tr><td>3:33pm</td><td class="n">8 of 18</td></tr><tr><td>6:01am</td><td class="n">8 of 21</td></tr><tr><td>4:33pm</td><td class="n">7 of 17</td></tr></tbody></table></div></figure>
+<p>The 2:57 and the 5:03 are scheduled for the same bus.</p>
+<p><strong>The first trip of a bus's day is the one most likely to go missing.</strong> Pace's schedule data says which bus is meant to run each trip. When the Elmhurst departure is the first trip of that bus's day, it was missing <strong>45%</strong> of the time (17 of 38, a small sample). When it's a later trip, 18%. That points less to buses running late in traffic and more to buses not getting out of the garage on time, or at all. Why that happens (drivers, vehicles, something else) is something only Pace can answer.</p>
+<p><strong>I checked the obvious alternative.</strong> Nearly every 309 bus also runs Route 313 during the day, switching at the Austin Boulevard end. If the tracker kept showing "313" on a bus that had switched to the 309, my method would have missed it. So I reran everything counting buses of <em>any</em> route label. Not one of the 103 missing departures turned out to have been run by a bus under another label.</p>
+<h2>What I can't tell you</h2>
+<ul><li><strong>Whether a trip was cancelled or just very late.</strong> A bus more than 30 minutes late, or later than the next scheduled one, counts as missing. To someone standing at the stop, those feel the same.</li><li><strong>Whether a bus ran with its tracker off.</strong> I found one bus all month that left Elmhurst and then vanished from the tracker. Counting it or not changes nothing.</li><li><strong>Anything about the 40 routes the tracker doesn't cover.</strong></li><li><strong>Whether September was typical.</strong> It's one month.</li></ul>
+
+    <h2>An earlier version</h2>
+    <p>In early September I put up a live page for the Route 309, with a flyer at the stop, using a first version of
+    this method. That version counted hours when my collector was switched off as missed buses, so it overstated the
+    problem. It's <a href="../route309-report/">still online</a>, marked as out of date, and this page replaces it.</p>
+  </div>
+    </div>
+
+    <aside class="blog-sidebar" aria-label="Search and browse by date">
+      <div class="sidebar-panel">
+        <h2>Search posts</h2>
+        <form class="search-field" id="sidebarSearchForm">
+          <label class="visually-hidden" for="blogSearch">Search posts</label>
+          <input type="search" id="blogSearch" name="q" placeholder="Search titles, tags, topics…">
+          <button type="submit" class="search-submit" aria-label="Search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4a6 6 0 104.472 10.03l4.749 4.748 1.414-1.414-4.748-4.749A6 6 0 0010 4zm-4 6a4 4 0 118 0 4 4 0 01-8 0z"/></svg>
+          </button>
+        </form>
+        <p class="search-status" id="searchStatus" hidden></p>
+      </div>
+
+      <div class="sidebar-panel">
+        <h2>Browse by date</h2>
+        <div class="cal-head">
+          <button class="cal-nav" id="calPrev" type="button" aria-label="Previous month">&larr;</button>
+          <span class="cal-label" id="calLabel"></span>
+          <button class="cal-nav" id="calNext" type="button" aria-label="Next month">&rarr;</button>
+        </div>
+        <div class="cal-grid" id="calGrid" role="grid" aria-label="Post dates"></div>
+        <button class="cal-clear" id="calClear" type="button" hidden>Clear date filter</button>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <svg class="footer-mark" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="46" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-dasharray="255 40" transform="rotate(-58 60 60)" /></svg>
+    <p class="footer-note">&copy; <a href="mailto:brian@bergstromgis.com">Brian Bergstrom</a>. Built by Claude, hosted on GitHub Pages.</p>
+  </div>
+</footer>
+
+<script>
+  document.documentElement.classList.add('js-ready');
+  var toggle = document.getElementById('navToggle');
+  var links = document.getElementById('navLinks');
+  toggle.addEventListener('click', function () {
+    var open = links.classList.toggle('is-open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+</script>
+<script src="../js/hero-sparkles.js"></script>
+<script src="../js/blog-post-data.js"></script>
+<script src="../js/blog-sidebar.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+(function () {
+  if (!window.L || !document.getElementById('paceMap')) return;
+  var BINS = [[1, "#6E4034"], [3, "#94503F"], [6, "#BF5E48"], [10, "#E8735A"], [1000000000.0, "#FFB09E"]];
+  var NODATA = '#6B5B50';
+  var color = function (p) { for (var i = 0; i < BINS.length; i++) if (p < BINS[i][0]) return BINS[i][1]; };
+  var map = L.map('paceMap', { scrollWheelZoom: false, preferCanvas: true, zoomSnap: 0.25 });
+  var renderer = L.canvas({ tolerance: 8 });   // generous hit area around thin lines
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+    { attribution: 'Esri, HERE, Garmin &copy; OpenStreetMap contributors | Data: Pace GTFS and Bus Tracker, Aug 30 to Sep 30, 2026', maxZoom: 16 }).addTo(map);
+  map.createPane('labels'); map.getPane('labels').style.zIndex = 450; map.getPane('labels').style.pointerEvents = 'none';
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}',
+    { pane: 'labels', maxZoom: 16 }).addTo(map);
+  var pct = function (x) { return x.toFixed(1) + '%'; };
+  fetch('../pace-ghost-buses/routes.geojson').then(function (r) { return r.json(); }).then(function (g) {
+    // Draw unmeasured routes first and the worst routes last, so bright lines sit on top
+    g.features.sort(function (a, b) {
+      var A = a.properties, B = b.properties;
+      return (A.status === 'tracked' ? A.low_pct : -1) - (B.status === 'tracked' ? B.low_pct : -1);
+    });
+    var layer = L.geoJSON(g, {
+      renderer: renderer,
+      style: function (f) {
+        var p = f.properties;
+        return p.status === 'tracked'
+          ? { color: color(p.low_pct), weight: p.low_pct >= 6 ? 3.5 : 2.5, opacity: 1, lineCap: 'round' }
+          : { color: NODATA, weight: 1.5, opacity: 0.7, dashArray: '4 5' };
+      },
+      onEachFeature: function (f, l) {
+        var p = f.properties, head = '<b>Route ' + p.route + '</b> &middot; ' + p.name + '<br>';
+        var body = p.status === 'tracked'
+          ? 'Never on the tracker: ' + (Math.abs(p.high_pct - p.low_pct) < 0.05 ? pct(p.low_pct) : pct(p.low_pct) + ' to ' + pct(p.high_pct)) +
+            '<br>of ' + p.trips.toLocaleString() + ' scheduled trips checked'
+          : p.status === 'dark' ? 'On the tracker menu, but reported almost nothing all month. Not measured.'
+          : 'Not on Pace\'s tracker, so not measured.';
+        l.bindTooltip(head + body, { sticky: true, className: 'pace-tip' });
+        l.on('mouseover', function () { l.setStyle({ weight: (l.options.weight || 2) + 2 }); if (p.status === 'tracked') l.bringToFront(); });
+        l.on('mouseout', function () { layer.resetStyle(l); });
+      }
+    }).addTo(map);
+    var tracked = L.geoJSON({ type: 'FeatureCollection', features: g.features.filter(function (f) { return f.properties.status === 'tracked'; }) });
+    map.fitBounds(tracked.getBounds(), { padding: [10, 10] });
+    L.circleMarker([41.8998, -87.9406], { radius: 6, color: '#120D0B', weight: 2, fillColor: '#F1E7D6', fillOpacity: 1, renderer: renderer })
+      .bindTooltip('<b>Elmhurst Metra</b><br>where every eastbound 309 starts', { className: 'pace-tip' }).addTo(map);
+  }).catch(function () {
+    document.getElementById('paceMap').innerHTML = '<p style="padding:1rem">The map data didn\'t load. The table below has the same numbers.</p>';
+  });
+})();
+</script>
+</body>
+</html>
